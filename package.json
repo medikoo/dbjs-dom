@@ -1,0 +1,31 @@
+{
+  "name": "dbjs-dom",
+  "version": "0.0.0",
+  "author": "Mariusz Nowak <medikoo+signaldb@medikoo.com> (http://www.medikoo.com/)",
+  "description": "DOM methods for dbjs types",
+  "scripts": {
+    "test": "node node_modules/tad/bin/tad lib"
+  },
+  "keywords": [
+    "dbjs",
+    "dom",
+    "html",
+    "form",
+    "html5",
+    "input",
+    "control",
+    "database",
+    "generator"
+  ],
+  "dependencies": {
+    "medikoo/dbjs": "*"
+  },
+  "devDependencies": {
+    "tad": "~0.1.12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:medikoo/dbjs-dom.git"
+  },
+  "license": "MIT"
+}
