@@ -1,6 +1,6 @@
 # dbjs-dom - DOM methods for DBJS database types
 
-Framework agnostic DOM generators and bindings for [DBJS engine](https://github.com/medikoo/dbjs) types
+Framework agnostic DOM bindings for [DBJS database engine](https://github.com/medikoo/dbjs) types
 
 _…Full documentation coming soon…_
 
