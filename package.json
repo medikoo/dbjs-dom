@@ -18,7 +18,8 @@
     "generator"
   ],
   "dependencies": {
-    "dbjs": "git://github.com/medikoo/dbjs"
+    "dbjs": "git://github.com/medikoo/dbjs",
+    "dbjs-ext": "git://github.com/medikoo/dbjs-ext"
   },
   "devDependencies": {
     "tad": "~0.1.12"
