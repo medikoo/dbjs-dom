@@ -1,7 +1,8 @@
 'use strict';
 
-var Db         = require('./base')
-  , NumberType = require('dbjs/lib/types/number');
+var Db = require('dbjs')
+
+  , NumberType = module.exports = Db.Number;
 
 NumberType.set('DOMInputBox', Db.external(function () {
 	var Parent, Box, proto;
@@ -28,5 +29,3 @@ NumberType.set('DOMInputBox', Db.external(function () {
 	return Box;
 }));
 NumberType.fromDOMInputValue = function (value) { return Number(value); };
-
-module.exports = NumberType;

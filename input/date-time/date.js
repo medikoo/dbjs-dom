@@ -1,7 +1,9 @@
 'use strict';
 
-var Db       = require('../base')
+var Db       = require('../')
   , DateType = require('dbjs-ext/date-time/date');
+
+module.exports = DateType;
 
 DateType.set('DOMInputBox', Db.external(function () {
 	var Parent, Box, proto;
@@ -38,5 +40,3 @@ DateType.fromDOMInputValue = function (value) {
 	return this.normalize((value && value.getTime) ? value :
 			new Date(Date.parse(value)));
 };
-
-module.exports = DateType;

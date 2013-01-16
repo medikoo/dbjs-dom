@@ -1,11 +1,10 @@
 'use strict';
 
-var Db       = require('dbjs')
-  , relation = require('dbjs/lib/_relation');
+var Db = require('dbjs')
 
-module.exports = Db;
+  , Base = module.exports = Db.Base;
 
-Db.Base.set('DOMInputBox', Db.external(function () {
+Base.set('DOMInputBox', Db.external(function () {
 	var Box, proto;
 	Box = function (document, ns) {
 		this.document = document;
@@ -43,9 +42,11 @@ Db.Base.set('DOMInputBox', Db.external(function () {
 	};
 	return Box;
 }));
-Db.Base.set('toDOMInputBox', function (document, options) {
-	var box = new this.DOMInputBox(document, this);
-	if (options) {
+Base.set('toDOMInputBox', function (document/*, options*/) {
+	var box = new this.DOMInputBox(document, this)
+	  , options = arguments[1];
+
+	if (options != null) {
 		Object.keys(Object(options)).forEach(function (name) {
 			if (name === 'type') return;
 			box.setAttribute(name, options[name]);
@@ -53,29 +54,12 @@ Db.Base.set('toDOMInputBox', function (document, options) {
 	}
 	return box;
 });
-Db.Base.prototype.set('toDOMInputBox', function (document, options) {
-	var box = this.ns.toDOMInputBox(document, options);
+Base.prototype.set('toDOMInputBox', function (document/*, options*/) {
+	var box = this.ns.toDOMInputBox(document, arguments[1]);
 	box.set(this);
 	return box;
 });
-Db.Base.prototype.set('toDOMInput', function (document, options) {
-	return this.toDOMInputBox(document, options).dom;
+Base.prototype.set('toDOMInput', function (document/*, options*/) {
+	return this.toDOMInputBox(document, arguments[1]).dom;
 });
-Db.Base.set('fromDOMInputValue', function (value) {
-	return value;
-});
-
-relation.set('toDOMInputBox', function (document/*, options*/) {
-	var box, options = arguments[1];
-	box = this.ns.toDOMInputBox(document, options);
-	box.set(this.objectValue);
-	box.setAttribute('name', this._id_);
-	if (this.required && (!options || (options.type !== 'checkbox'))) {
-		box.setAttribute('required', true);
-	}
-	this.on('change', function () { box.set(this.objectValue); });
-	return box;
-});
-relation.set('toDOMInput', function (document, options) {
-	return this.toDOMInputBox(document, options).dom;
-});
+Base.set('fromDOMInputValue', function (value) { return value; });

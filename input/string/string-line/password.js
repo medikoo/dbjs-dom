@@ -1,9 +1,9 @@
 'use strict';
 
-var Db       = require('dbjs')
+var Db       = require('../../')
   , Password = require('dbjs-ext/string/string-line/password');
 
-require('../string-line');
+module.exports = Password;
 
 Password.set('DOMInputBox', Db.external(function () {
 	var Parent, Box, proto;
@@ -20,5 +20,3 @@ Password.set('DOMInputBox', Db.external(function () {
 	proto.constructor = Box;
 	return Box;
 }));
-
-module.exports = Password;

@@ -1,7 +1,8 @@
 'use strict';
 
-var Db         = require('./base')
-  , StringType = require('dbjs/lib/types/string');
+var Db = require('dbjs')
+
+  , StringType = module.exports = Db.String;
 
 StringType.set('DOMInputBox', Db.external(function () {
 	var Parent, Box, proto;
@@ -26,5 +27,3 @@ StringType.set('DOMInputBox', Db.external(function () {
 	};
 	return Box;
 }));
-
-module.exports = StringType;

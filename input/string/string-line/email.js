@@ -1,9 +1,9 @@
 'use strict';
 
-var Db    = require('dbjs')
+var Db    = require('../../')
   , Email = require('dbjs-ext/string/string-line/email');
 
-require('../string-line');
+module.exports = Email;
 
 Email.set('DOMInputBox', Db.external(function () {
 	var Parent, Box, proto;
@@ -17,5 +17,3 @@ Email.set('DOMInputBox', Db.external(function () {
 	proto.constructor = Box;
 	return Box;
 }));
-
-module.exports = Email;

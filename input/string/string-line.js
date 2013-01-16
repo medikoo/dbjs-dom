@@ -1,9 +1,9 @@
 'use strict';
 
-var Db         = require('dbjs')
+var Db         = require('../')
   , StringLine = require('dbjs-ext/string/string-line');
 
-require('../string');
+module.exports = StringLine;
 
 StringLine.set('DOMInputBox', Db.external(function () {
 	var Parent, Box, proto;
@@ -20,5 +20,3 @@ StringLine.set('DOMInputBox', Db.external(function () {
 	proto.constructor = Box;
 	return Box;
 }));
-
-module.exports = StringLine;

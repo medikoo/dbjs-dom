@@ -1,6 +1,6 @@
 'use strict';
 
-var Db = require('./base');
+var Db = require('dbjs');
 
 Db.Base.set('DOMSelectBox', Db.external(function () {
 	var Parent, Box, proto;
