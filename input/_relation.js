@@ -18,3 +18,4 @@ relation.set('toDOMInputBox', function (document/*, options*/) {
 });
 
 relation.set('toDOMInput', Db.Base.prototype.toDOMInput);
+relation._getRel_('fieldHint').ns = Db.String;
