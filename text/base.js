@@ -22,6 +22,7 @@ Base.set('DOMBox', Db.external(function () {
 		}
 		this.dom.data = value;
 	};
+	proto.dismiss = function () {};
 	return Box;
 }));
 Base.set('toDOMBox', function (document) {
