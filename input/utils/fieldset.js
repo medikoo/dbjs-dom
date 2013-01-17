@@ -18,7 +18,7 @@ Db.prototype.set('toDOMFieldset', function (document/*, options*/) {
 	}, this).filter(Boolean).sort(function (relA, relB) {
 		return relA.order - relB.order;
 	}).map(function (rel) {
-		return rel.toDOMInputRow(document, options.rowOptions);
+		return rel.toDOMInputRow(document, options.control);
 	});
 
 	if (!rows.length) return null;
