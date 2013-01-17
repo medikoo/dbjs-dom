@@ -10,7 +10,8 @@ relation.set('toDOMInputBox', function (document/*, options*/) {
 	box = this.ns.toDOMInputBox(document, options);
 	box.set(this.objectValue);
 	box.setAttribute('name', this._id_);
-	if (this.required && ((options.type !== 'checkbox') && !options.required)) {
+	if (this.required && ((options.type !== 'checkbox') &&
+			((options.required == null) || options.required))) {
 		box.setAttribute('required', true);
 	}
 	this.on('change', function () { box.set(this.objectValue); });
