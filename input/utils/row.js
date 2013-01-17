@@ -1,0 +1,37 @@
+'use strict';
+
+require('../');
+
+var relation = require('dbjs/lib/_relation');
+
+require('../../text');
+
+relation.set('toDOMInputRow', function (document/*, options*/) {
+	var container, labelBox, inputBox, id, classes, el;
+	id = this.DOMId;
+	container = document.createElement('tr');
+	container.id = 'tr-' + id;
+	classes = this.tags.values;
+	if (this.required) classes.unshift('required');
+	classes.unshift('dbjs');
+	container.setAttribute('class', classes.join(' '));
+
+	labelBox = container.appendChild(document.createElement('th'))
+		.appendChild(document.createElement('label'));
+	labelBox.setAttribute('for', 'input-' + id);
+	inputBox = container.appendChild(document.createElement('td'));
+	labelBox.appendChild(this._label.toDOM(document));
+	labelBox.appendChild(document.createTextNode(':'));
+	inputBox.appendChild(this.toDOMInput(document, { id: 'input-' + id }));
+	if (this.required) {
+		el = inputBox.appendChild(document.createElement('span'));
+		el.setAttribute('class', 'required-icon');
+		el.appendChild(document.createTextNode(' *'));
+	}
+	if (this.fieldHint) {
+		el = inputBox.appendChild(document.createElement('p'));
+		el.setAttribute('class', 'hint');
+		el.appendChild(this._fieldHint.toDOM(document));
+	}
+	return container;
+});
