@@ -31,6 +31,9 @@ relation.set('toDOMInputRow', function (document/*, options*/) {
 		el.setAttribute('class', 'required-icon');
 		el.appendChild(document.createTextNode(' *'));
 	}
+	el = inputBox.appendChild(document.createElement('span'));
+	el.setAttribute('id', 'error-' + id);
+	el.setAttribute('class', 'error-message');
 	if (this.fieldHint) {
 		el = inputBox.appendChild(document.createElement('p'));
 		el.setAttribute('class', 'hint');
