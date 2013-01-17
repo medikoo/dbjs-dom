@@ -7,7 +7,8 @@ var relation = require('dbjs/lib/_relation');
 require('../../text');
 
 relation.set('toDOMInputRow', function (document/*, options*/) {
-	var container, labelBox, inputBox, id, classes, el;
+	var container, labelBox, inputBox, id, classes, el, box
+	  , options = Object(arguments[1]);
 	id = this.DOMId;
 	container = document.createElement('tr');
 	container.id = 'tr-' + id;
@@ -22,7 +23,9 @@ relation.set('toDOMInputRow', function (document/*, options*/) {
 	inputBox = container.appendChild(document.createElement('td'));
 	labelBox.appendChild(this._label.toDOM(document));
 	labelBox.appendChild(document.createTextNode(':'));
-	inputBox.appendChild(this.toDOMInput(document, { id: 'input-' + id }));
+	box = this.toDOMInputBox(document, options);
+	box.setAttribute('id', 'input-' + id);
+	inputBox.appendChild(box.dom);
 	if (this.required) {
 		el = inputBox.appendChild(document.createElement('span'));
 		el.setAttribute('class', 'required-icon');
