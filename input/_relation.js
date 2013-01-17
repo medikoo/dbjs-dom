@@ -6,11 +6,11 @@ var Db       = require('dbjs')
 require('./base');
 
 relation.set('toDOMInputBox', function (document/*, options*/) {
-	var box, options = arguments[1];
+	var box, options = Object(arguments[1]);
 	box = this.ns.toDOMInputBox(document, options);
 	box.set(this.objectValue);
 	box.setAttribute('name', this._id_);
-	if (this.required && (!options || (options.type !== 'checkbox'))) {
+	if (this.required && ((options.type !== 'checkbox') && !options.required)) {
 		box.setAttribute('required', true);
 	}
 	this.on('change', function () { box.set(this.objectValue); });
