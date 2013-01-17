@@ -42,15 +42,21 @@ Base.set('DOMInputBox', Db.external(function () {
 	};
 	return Box;
 }));
+Base.set('allowedDOMInputAttrs', Db.StringLine.rel({
+	value: ['class', 'id', 'style'],
+	multiple: true
+}));
 Base.set('toDOMInputBox', function (document/*, options*/) {
 	var box = new this.DOMInputBox(document, this)
 	  , options = arguments[1];
 
 	if (options != null) {
 		Object.keys(Object(options)).forEach(function (name) {
-			if (name === 'type') return;
-			box.setAttribute(name, options[name]);
-		});
+			if ((name.indexOf('data-') === 0) ||
+					this.allowedDOMInputAttrs.has(name)) {
+				box.setAttribute(name, options[name]);
+			}
+		}, this);
 	}
 	return box;
 });
