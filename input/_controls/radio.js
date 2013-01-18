@@ -9,6 +9,7 @@ Db.Base.set('DOMRadioBox', Db.external(function () {
 	Box = function (document) {
 		this.document = document;
 		this.dom = document.createElement('ul');
+		this.dom.setAttribute('class', 'radio');
 		this.options = {};
 	};
 	proto = Box.prototype = Object.create(Parent.prototype);
