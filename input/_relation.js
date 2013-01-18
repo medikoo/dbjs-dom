@@ -14,6 +14,7 @@ relation.set('toDOMInputBox', function (document/*, options*/) {
 			((options.required == null) || options.required))) {
 		box.setAttribute('required', true);
 	}
+	if (options.disabled) box.setAttribute('disabled', true);
 	this.on('change', function () { box.set(this.objectValue); });
 	return box;
 });
