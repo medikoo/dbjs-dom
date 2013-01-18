@@ -9,7 +9,7 @@ require('../../text');
 relation.set('toDOMInputRow', function (document/*, options*/) {
 	var container, labelBox, inputBox, id, classes, el, box
 	  , options = Object(arguments[1]);
-	id = this.DOMId;
+	id = this.DOMId + (options.idPostfix || '');
 	container = document.createElement('tr');
 	container.id = 'tr-' + id;
 	classes = this.tags.values;
