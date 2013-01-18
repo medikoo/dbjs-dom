@@ -14,7 +14,8 @@ Db.prototype.set('toDOMFieldset', function (document/*, options*/) {
 
 	rows = Array.prototype.map.call(names, function (name) {
 		var rel = this['_' + name];
-		return (rel.ns === this.db.Base) ? null : rel;
+		return ((rel.ns === this.db.Base) || (rel.ns === this.db.Function)) ? null :
+				rel;
 	}, this).filter(Boolean).sort(function (relA, relB) {
 		return relA.order - relB.order;
 	}).map(function (rel) {
