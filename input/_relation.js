@@ -22,5 +22,5 @@ relation.set('toDOMInputBox', function (document/*, options*/) {
 relation.set('toDOMInput', Db.Base.prototype.toDOMInput);
 relation.get('fieldHint').ns = Db.String;
 relation.set('DOMId', function () {
-	return this._id_.replace(/:/g, '-');
+	return this._id_.replace(/:/g, '-').replace('#', '-');
 });
