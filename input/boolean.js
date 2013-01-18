@@ -15,9 +15,9 @@ BooleanType.set('DOMInputBox', Db.external(function () {
 		this.ns = ns;
 		this.relation = relation;
 		trueText = (relation && relation.trueLabel) ?
-			relation._trueLabel.toDOM(document) : ns._trueLabel.toDOM(document);
+				relation._trueLabel.toDOM(document) : ns._trueLabel.toDOM(document);
 		falseText = (relation && relation.falseLabel) ?
-			relation._falseLabel.toDOM(document) : ns._falseLabel.toDOM(document);
+				relation._falseLabel.toDOM(document) : ns._falseLabel.toDOM(document);
 		this.dom.appendChild(this.createOption('1', trueText));
 		this.dom.appendChild(document.createTextNode(' '));
 		this.dom.appendChild(this.createOption('0', falseText));
