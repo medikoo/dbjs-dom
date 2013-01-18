@@ -18,8 +18,14 @@ Db.prototype.set('toDOMFieldset', function (document/*, options*/) {
 	}, this).filter(Boolean).sort(function (relA, relB) {
 		return relA.order - relB.order;
 	}).map(function (rel) {
-		return rel.toDOMInputRow(document, options.control);
-	});
+		var controlOpts;
+		if (options.control) controlOpts = this.plainCopy(options.control);
+		if (options.controls && options.controls[rel.name]) {
+			controlOpts = this.plainExtend(Object(controlOpts),
+				options.controls[rel.name]);
+		}
+		return rel.toDOMInputRow(document, controlOpts);
+	}, this.db);
 
 	if (!rows.length) return null;
 
