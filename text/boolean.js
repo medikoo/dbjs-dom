@@ -17,7 +17,7 @@ BooleanType.set('DOMBox', Db.external(function () {
 	proto.set = function (value) {
 		var label;
 		if (this.dom.firstChild) this.dom.removeChild(this.dom.firstChild);
-		label = this.ns[value.valueOf() ? '_trueString' : '_falseString'];
+		label = this.ns[value.valueOf() ? '_trueLabel' : '_falseLabel'];
 		this.dom.appendChild(label.toDOM(this.document));
 	};
 	return Box;
