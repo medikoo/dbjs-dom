@@ -7,7 +7,7 @@ require('./base');
 
 relation.set('toDOMInputBox', function (document/*, options*/) {
 	var box, options = Object(arguments[1]);
-	box = this.ns.toDOMInputBox(document, options);
+	box = this.ns.toDOMInputBox(document, options, this);
 	box.set(this.objectValue);
 	box.setAttribute('name', this._id_);
 	if (this.required && ((options.type !== 'checkbox') &&

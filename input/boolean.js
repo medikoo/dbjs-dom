@@ -9,13 +9,18 @@ require('./_controls/radio');
 BooleanType.set('DOMInputBox', Db.external(function () {
 	var Parent, Box, proto;
 	Parent = this.Base.DOMRadioBox;
-	Box = function (document, ns) {
-		Parent.call(this, document, ns);
-		this.dom.appendChild(this.createOption('1',
-			ns._trueString.toDOM(document)));
+	Box = function (document, ns, relation) {
+		var trueText, falseText;
+		Parent.call(this, document);
+		this.ns = ns;
+		this.relation = relation;
+		trueText = (relation && relation.trueLabel) ?
+			relation._trueLabel.toDOM(document) : ns._trueLabel.toDOM(document);
+		falseText = (relation && relation.falseLabel) ?
+			relation._falseLabel.toDOM(document) : ns._falseLabel.toDOM(document);
+		this.dom.appendChild(this.createOption('1', trueText));
 		this.dom.appendChild(document.createTextNode(' '));
-		this.dom.appendChild(this.createOption('0',
-			ns._falseString.toDOM(document)));
+		this.dom.appendChild(this.createOption('0', falseText));
 	};
 	proto = Box.prototype = Object.create(Parent.prototype);
 	proto.constructor = Box;
@@ -46,19 +51,17 @@ BooleanType.set('DOMCheckboxBox', Db.external(function () {
 	};
 	return Box;
 }));
-BooleanType.set('toDOMInputBox', function (document, options) {
-	var box;
-	if (options && (options.type === 'checkbox')) {
+BooleanType.set('toDOMInputBox', function (document/*, options, relation*/) {
+	var box, options = Object(arguments[1]), relation = arguments[2];
+	if (options.type === 'checkbox') {
 		box = new this.DOMCheckboxBox(document, this);
 	} else {
-		box = new this.DOMInputBox(document, this);
+		box = new this.DOMInputBox(document, this, relation);
 	}
-	if (options) {
-		Object.keys(Object(options)).forEach(function (name) {
-			if (name === 'type') return;
-			box.setAttribute(name, options[name]);
-		});
-	}
+	Object.keys(options).forEach(function (name) {
+		if (name === 'type') return;
+		box.setAttribute(name, options[name]);
+	});
 	return box;
 });
 BooleanType.fromDOMInputValue = function (value) {
