@@ -59,9 +59,11 @@ BooleanType.set('toDOMInputBox', function (document/*, options, relation*/) {
 		box = new this.DOMInputBox(document, this, relation);
 	}
 	Object.keys(options).forEach(function (name) {
-		if (name === 'type') return;
-		box.setAttribute(name, options[name]);
-	});
+		if ((name.indexOf('data-') === 0) ||
+				this.allowedDOMInputAttrs.has(name)) {
+			box.setAttribute(name, options[name]);
+		}
+	}, this);
 	return box;
 });
 BooleanType.fromDOMInputValue = function (value) {
