@@ -19,8 +19,9 @@ Enum.set('DOMInputBox', Db.external(function () {
 		this.dom.appendChild(this.createOption('',
 			ns._chooseLabel.toDOM(document)));
 		ns.options.forEach(function (value, item) {
+			var label = item._label, toDOM = label.__toDOM.__value;
 			this.dom.appendChild(this.createOption(value,
-				item._label.toDOM(document)));
+					toDOM.call(label, document)));
 		}, this);
 	};
 	proto = Box.prototype = Object.create(Parent.prototype);
@@ -37,8 +38,9 @@ Enum.set('DOMRadioBox', Db.external(function () {
 		this.ns = ns;
 		this.relation = relation;
 		ns.options.forEach(function (value, item) {
+			var label = item._label, toDOM = label.__toDOM.__value;
 			this.dom.appendChild(this.createOption(value,
-				item._label.toDOM(document)));
+				toDOM.call(label, document)));
 		}, this);
 	};
 	proto = Box.prototype = Object.create(Parent.prototype);

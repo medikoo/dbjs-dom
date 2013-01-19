@@ -20,6 +20,7 @@ Base.set('DOMBox', Db.external(function () {
 			this.dom.data = '';
 			return;
 		}
+		if (value && value.__toString) value = value.__toString.__value.call(value);
 		this.dom.data = value;
 	};
 	proto.dismiss = function () {};
@@ -39,5 +40,5 @@ Base.prototype.set('toDOMBox', function (document) {
 	return box;
 });
 Base.prototype.set('toDOM', function (document) {
-	return this.toDOMBox(document).dom;
+	return this.__toDOMBox.__value.call(this, document).dom;
 });

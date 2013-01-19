@@ -25,7 +25,7 @@ Db.prototype.set('toDOMFieldset', function (document/*, options*/) {
 			controlOpts = this.plainExtend(Object(controlOpts),
 				options.controls[rel.name]);
 		}
-		return rel.toDOMInputRow(document, controlOpts);
+		return rel.__toDOMInputRow.__value.call(rel, document, controlOpts);
 	}, this.db);
 
 	if (!rows.length) return null;

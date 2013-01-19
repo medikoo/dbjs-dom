@@ -61,11 +61,14 @@ Base.set('toDOMInputBox', function (document/*, options*/) {
 	return box;
 });
 Base.prototype.set('toDOMInputBox', function (document/*, options*/) {
-	var box = this.ns.toDOMInputBox(document, arguments[1]);
+	var ns, toBox, box;
+	ns = this.__ns.__value;
+	toBox = ns.__toDOMInputBox.__value;
+	box = toBox.call(ns, document, arguments[1]);
 	box.set(this);
 	return box;
 });
 Base.prototype.set('toDOMInput', function (document/*, options*/) {
-	return this.toDOMInputBox(document, arguments[1]).dom;
+	return this.__toDOMInputBox.__value.call(this, document, arguments[1]).dom;
 });
 Base.set('fromDOMInputValue', function (value) { return value; });

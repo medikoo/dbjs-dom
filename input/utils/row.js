@@ -7,9 +7,9 @@ var relation = require('dbjs/lib/_relation');
 require('../../text');
 
 relation.set('toDOMInputRow', function (document/*, options*/) {
-	var container, labelBox, inputBox, id, classes, el, box
+	var container, labelBox, inputBox, id, classes, el, box, label, toDOM
 	  , options = Object(arguments[1]);
-	id = this.DOMId + (options.idPostfix || '');
+	id = this.__DOMId._value.call(this) + (options.idPostfix || '');
 	container = document.createElement('tr');
 	container.id = 'tr-' + id;
 	classes = this.tags.values;
@@ -21,9 +21,11 @@ relation.set('toDOMInputRow', function (document/*, options*/) {
 		.appendChild(document.createElement('label'));
 	labelBox.setAttribute('for', 'input-' + id);
 	inputBox = container.appendChild(document.createElement('td'));
-	labelBox.appendChild(this._label.toDOM(document));
+	label = this._label;
+	toDOM = label.__toDOM.__value;
+	labelBox.appendChild(toDOM.call(label, document));
 	labelBox.appendChild(document.createTextNode(':'));
-	box = this.toDOMInputBox(document, options);
+	box = this.__toDOMInputBox.__value.call(this, document, options);
 	box.setAttribute('id', 'input-' + id);
 	inputBox.appendChild(box.dom);
 	if (this.required) {
@@ -34,7 +36,7 @@ relation.set('toDOMInputRow', function (document/*, options*/) {
 	el = inputBox.appendChild(document.createElement('span'));
 	el.setAttribute('id', 'error-' + id);
 	el.setAttribute('class', 'error-message');
-	if (this.fieldHint) {
+	if (this.__fieldHint && this.__fieldHint.__value) {
 		el = inputBox.appendChild(document.createElement('p'));
 		el.setAttribute('class', 'hint');
 		el.appendChild(this._fieldHint.toDOM(document));
