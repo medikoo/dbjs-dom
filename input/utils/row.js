@@ -12,7 +12,8 @@ relation.set('toDOMInputRow', function (document/*, options*/) {
 	  , options = Object(arguments[1]), checkChanged, rel = this;
 	id = this.__DOMId._value.call(this) + (options.idPostfix || '');
 	container = document.createElement('tr');
-	container.id = 'tr-' + id;
+	container.setAttribute('id', 'tr-' + id);
+	container.setAttribute('data-name', this.name);
 	classes = this.tags.values;
 	if (this.required) classes.unshift('required');
 	classes.unshift('dbjs');
