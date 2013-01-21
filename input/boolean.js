@@ -11,8 +11,7 @@ BooleanType.set('DOMInputBox', Db.external(function () {
 	Parent = this.Base.DOMRadioBox;
 	Box = function (document, ns, relation) {
 		var trueText, falseText;
-		Parent.call(this, document);
-		this.ns = ns;
+		Parent.call(this, document, ns);
 		this.relation = relation;
 		trueText = (relation && relation.trueLabel) ?
 				relation._trueLabel.toDOM(document) : ns._trueLabel.toDOM(document);

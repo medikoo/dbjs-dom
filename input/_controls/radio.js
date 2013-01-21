@@ -6,8 +6,9 @@ Db.Base.set('DOMRadioBox', Db.external(function () {
 	var Parent, Box, proto, localAttrs;
 	localAttrs = { name: true, required: true };
 	Parent = this.DOMInputBox;
-	Box = function (document) {
+	Box = function (document, ns) {
 		this.document = document;
+		this.ns = ns;
 		this.dom = document.createElement('ul');
 		this.dom.setAttribute('class', 'radio');
 		this.options = {};
@@ -45,6 +46,18 @@ Db.Base.set('DOMRadioBox', Db.external(function () {
 			return;
 		}
 		Parent.prototype.setAttribute.call(this, name, value);
+	};
+	proto.get = function () {
+		var selectedValue;
+		Object.keys(this.options).some(function (value) {
+			if (this[value].checked) {
+				selectedValue = value;
+				return true;
+			}
+			return false;
+		}, this.options);
+		if (selectedValue == null) return null;
+		return this.ns.__fromDOMInputValue.__value.call(this.ns, selectedValue);
 	};
 	return Box;
 }));

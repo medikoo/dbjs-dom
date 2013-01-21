@@ -33,9 +33,8 @@ Enum.set('DOMRadioBox', Db.external(function () {
 	var Parent, Box, proto;
 	Parent = this.Base.DOMRadioBox;
 	Box = function (document, ns, relation) {
-		Parent.call(this, document);
+		Parent.call(this, document, ns);
 		this.dom.classList.add('enum');
-		this.ns = ns;
 		this.relation = relation;
 		ns.options.forEach(function (value, item) {
 			var label = item._label, toDOM = label.__toDOM.__value;

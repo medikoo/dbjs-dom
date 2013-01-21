@@ -5,8 +5,9 @@ var Db = require('dbjs');
 Db.Base.set('DOMSelectBox', Db.external(function () {
 	var Parent, Box, proto;
 	Parent = this.DOMInputBox;
-	Box = function (document) {
+	Box = function (document, ns) {
 		this.document = document;
+		this.ns = ns;
 		this.dom = document.createElement('select');
 		this.options = {};
 	};

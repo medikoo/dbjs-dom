@@ -14,7 +14,9 @@ Base.set('DOMInputBox', Db.external(function () {
 	proto = Box.prototype;
 	proto.toDOM = function () { return this.dom; };
 	proto.get = function () {
-		return this.ns.fromDOMInputValue(this.dom.value);
+		var value = this.dom.value;
+		if (value === '') value = null;
+		return this.ns.__fromDOMInputValue.__value.call(this.ns, value);
 	};
 	proto.set = function (value) {
 		if (value == null) {

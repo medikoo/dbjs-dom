@@ -28,4 +28,6 @@ NumberType.set('DOMInputBox', Db.external(function () {
 	};
 	return Box;
 }));
-NumberType.fromDOMInputValue = function (value) { return Number(value); };
+NumberType.fromDOMInputValue = function (value) {
+	return isNaN(value) ? null : Number(value);
+};
