@@ -37,6 +37,6 @@ DateType.set('DOMInputBox', Db.external(function () {
 }));
 
 DateType.fromDOMInputValue = function (value) {
-	return this.normalize((value && value.getTime) ? value :
+	return this.__normalize.__value.call(this, (value && value.getTime) ? value :
 			new Date(Date.parse(value)));
 };
