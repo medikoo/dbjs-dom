@@ -8,7 +8,7 @@ require('../../text');
 
 relation.set('toDOMInputRow', function (document/*, options*/) {
 	var container, labelBox, inputBox, id, classes, el, box, label, toDOM
-	  , options = Object(arguments[1]);
+	  , validate, options = Object(arguments[1]);
 	id = this.__DOMId._value.call(this) + (options.idPostfix || '');
 	container = document.createElement('tr');
 	container.id = 'tr-' + id;
@@ -33,6 +33,15 @@ relation.set('toDOMInputRow', function (document/*, options*/) {
 		el.setAttribute('class', 'required-icon');
 		el.appendChild(document.createTextNode(' *'));
 	}
+	el = inputBox.appendChild(document.createElement('span'));
+	el.setAttribute('class', 'validated-icon');
+	el.appendChild(document.createTextNode(' ✓ '));
+	validate = function (el) {
+		el.style.visibility =
+			(!this.__required.__value || (this.__value == null)) ? 'hidden' : '';
+	}.bind(this, el);
+	validate();
+	this.on('change', validate);
 	el = inputBox.appendChild(document.createElement('span'));
 	el.setAttribute('id', 'error-' + id);
 	el.setAttribute('class', 'error-message');
