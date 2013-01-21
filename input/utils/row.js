@@ -5,10 +5,11 @@ require('../');
 var relation = require('dbjs/lib/_relation');
 
 require('../../text');
+require('./validation-tick');
 
 relation.set('toDOMInputRow', function (document/*, options*/) {
 	var container, labelBox, inputBox, id, classes, el, box, label, toDOM
-	  , validate, options = Object(arguments[1]);
+	  , options = Object(arguments[1]), checkChanged, rel = this;
 	id = this.__DOMId._value.call(this) + (options.idPostfix || '');
 	container = document.createElement('tr');
 	container.id = 'tr-' + id;
@@ -33,15 +34,8 @@ relation.set('toDOMInputRow', function (document/*, options*/) {
 		el.setAttribute('class', 'required-icon');
 		el.appendChild(document.createTextNode(' *'));
 	}
-	el = inputBox.appendChild(document.createElement('span'));
-	el.setAttribute('class', 'validated-icon');
-	el.appendChild(document.createTextNode(' ✓ '));
-	validate = function (el) {
-		el.style.visibility =
-			(!this.__required.__value || (this.__value == null)) ? 'hidden' : '';
-	}.bind(this, el);
-	validate();
-	this.on('change', validate);
+	inputBox.appendChild(this.__toDOMValidationTick.__value.call(this, box));
+
 	el = inputBox.appendChild(document.createElement('span'));
 	el.setAttribute('id', 'error-' + id);
 	el.setAttribute('class', 'error-message');
@@ -50,5 +44,13 @@ relation.set('toDOMInputRow', function (document/*, options*/) {
 		el.setAttribute('class', 'hint');
 		el.appendChild(this._fieldHint.toDOM(document));
 	}
+
+	checkChanged = function () {
+		container.classList[(rel.__value === box.get()) ? 'remove' :
+				'add']('changed');
+	};
+	box.dom.addEventListener('change', checkChanged, false);
+	box.dom.addEventListener('keyup', checkChanged, false);
+	this.on('change', checkChanged);
 	return container;
 });
