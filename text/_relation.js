@@ -1,27 +1,23 @@
 'use strict';
 
-var Db       = require('dbjs')
+var d        = require('es5-ext/lib/Object/descriptor')
   , relation = require('dbjs/lib/_relation');
 
-module.exports = relation;
-
-require('./base');
-
-relation.set('toDOMBox', function (document) {
-	var ns, toBox, assign;
-	ns = this.__ns.__value;
-	toBox = ns.__toDOMBox.__value;
-	assign = this.__assignDOMBox.__value;
-	return assign.call(this, toBox.call(ns, document, ns));
+module.exports = Object.defineProperties(relation, {
+	toDOMText: d(function (document) {
+		return this.assignDOMText(this.__ns.__value.toDOMText(document));
+	}),
+	assignDOMText: d(function (text) {
+		var listener;
+		text.dismiss();
+		text.value = this.objectValue;
+		this.on('change', listener = function () {
+			text.value = this.objectValue;
+		});
+		text.dismiss = this.off.bind(this, 'change', listener);
+		return text;
+	}),
+	toDOM: d(function (document) {
+		return this.toDOMText(document).dom;
+	})
 });
-relation.set('assignDOMBox', function (box) {
-	var dom, listener;
-	box.dismiss();
-	box.set(this.objectValue);
-	dom = box.dom;
-	if (dom.setAttribute) dom.setAttribute('data-dbjsid', this._id_);
-	this.on('change', function () { box.set(this.objectValue); });
-	box.dismiss = this.off.bind(this, 'change', listener);
-	return box;
-});
-relation.set('toDOM', Db.Base.prototype.toDOM);

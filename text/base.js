@@ -1,44 +1,25 @@
 'use strict';
 
-var Db = require('dbjs')
+var d  = require('es5-ext/lib/Object/descriptor')
+  , Db = require('dbjs')
 
-  , Base = module.exports = Db.Base;
+  , Base = Db.Base;
 
-// Constructor
-Base.set('DOMBox', Db.external(function () {
-	var Box, proto;
-	Box = function (document, ns) {
-		this.document = document;
-		this.ns = ns;
-		this.dom = document.createTextNode('');
-	};
-	proto = Box.prototype;
-	proto.toDOM = function () { return this.dom; };
-	proto.get = function () { return this.dom.data; };
-	proto.set = function (value) {
-		if (value == null) {
-			this.dom.data = '';
-			return;
-		}
-		if (value && value.__toString) value = value.__toString.__value.call(value);
-		this.dom.data = value;
-	};
-	proto.dismiss = function () {};
-	return Box;
+require('./_text');
+
+module.exports = Base;
+
+Object.defineProperty(Base, 'toDOMText', d(function (document) {
+	return new this.DOMText(document, this);
 }));
-Base.set('toDOMBox', function (document) {
-	return new this.DOMBox(document, this);
-});
-Base.set('toDOM', function (document) {
-	return this.toDOMBox(document).dom;
-});
 
-// Prototype
-Base.prototype.set('toDOMBox', function (document) {
-	var box = this.ns.toDOMBox(document);
-	box.set(this);
-	return box;
-});
-Base.prototype.set('toDOM', function (document) {
-	return this.__toDOMBox.__value.call(this, document).dom;
+Object.defineProperties(Base.prototype, {
+	toDOMText: d(function (document) {
+		var text = new this.ns.toDOMText(document);
+		text.value = this;
+		return text;
+	}),
+	toDOM: d(function (document) {
+		return this.toDOMText(document).dom;
+	})
 });

@@ -1,24 +1,26 @@
 'use strict';
 
-var Db = require('dbjs')
+var d        = require('es5-ext/lib/Object/descriptor')
+  , Db       = require('dbjs')
+  , DOMText  = require('./_text')
+  , getValue = Object.getOwnPropertyDescriptor(DOMText.prototype, 'value').get
 
-  , BooleanType = module.exports = Db.Boolean;
+  , Base = Db.Base
+  , Text;
 
-BooleanType.set('DOMBox', Db.external(function () {
-	var Parent, Box, proto;
-	Parent = this.Base.DOMBox;
-	Box = function (document, ns) {
-		this.document = document;
-		this.ns = ns;
-		this.dom = document.createElement('span');
-	};
-	proto = Box.prototype = Object.create(Parent.prototype);
-	proto.constructor = Box;
-	proto.set = function (value) {
-		var label;
-		if (this.dom.firstChild) this.dom.removeChild(this.dom.firstChild);
-		label = this.ns[value.valueOf() ? '_trueLabel' : '_falseLabel'];
-		this.dom.appendChild(label.toDOM(this.document));
-	};
-	return Box;
-}));
+Text = function (document, ns) {
+	this.document = document;
+	this.ns = ns;
+	this.text = new DOMText(document, Base);
+	this.dom = this.text.dom;
+};
+
+Text.prototype = Object.create(DOMText.prototype, {
+	constructor: d(Text),
+	value: d.gs(getValue, function (value) {
+		this.ns[value.valueOf() ? '_trueLabel' : '_assignDOMText']
+			.assignDOMText(this.text);
+	})
+});
+
+module.exports = Object.defineProperty(Db.Boolean, 'DOMText', d(Text));

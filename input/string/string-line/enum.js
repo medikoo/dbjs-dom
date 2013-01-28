@@ -1,64 +1,52 @@
 'use strict';
 
-var Db   = require('../../')
-  , Enum = require('dbjs-ext/string/string-line/enum');
+var d           = require('es5-ext/lib/Object/descriptor')
+  , getObject   = require('dbjs/lib/objects')._get
+  , DOMRadio    = require('../../_controls/radio')
+  , DOMSelect   = require('../../_controls/select')
 
-module.exports = Enum;
+  , Enum = getObject('Enum'), StringLine = getObject('StringLine')
 
-require('../../_controls/radio');
-require('../../_controls/select');
+  , Radio, Select;
 
-Enum.set('chooseLabel',
-	Db.StringLine.rel({ required: true, value: 'Choose:' }));
+require('../../');
 
-Enum.set('DOMInputBox', Db.external(function () {
-	var Parent, Box, proto;
-	Parent = this.Base.DOMSelectBox;
-	Box = function (document, ns) {
-		Parent.call(this, document, ns);
-		this.dom.appendChild(this.createOption('',
-			ns._chooseLabel.toDOM(document)));
-		ns.options.forEach(function (value, item) {
-			var label = item._label, toDOM = label.__toDOM.__value;
-			this.dom.appendChild(this.createOption(value,
-					toDOM.call(label, document)));
-		}, this);
-	};
-	proto = Box.prototype = Object.create(Parent.prototype);
-	proto.constructor = Box;
-	return Box;
-}));
+Enum.set('chooseLabel', StringLine.rel({ required: true, value: 'Choose:' }));
 
-Enum.set('DOMRadioBox', Db.external(function () {
-	var Parent, Box, proto;
-	Parent = this.Base.DOMRadioBox;
-	Box = function (document, ns, relation) {
-		Parent.call(this, document, ns);
-		this.dom.classList.add('enum');
-		this.relation = relation;
-		ns.options.forEach(function (value, item) {
-			var label = item._label, toDOM = label.__toDOM.__value;
-			this.dom.appendChild(this.createOption(value,
-				toDOM.call(label, document)));
-		}, this);
-	};
-	proto = Box.prototype = Object.create(Parent.prototype);
-	proto.constructor = Box;
-	return Box;
-}));
-
-Enum.set('toDOMInputBox', function (document/*, options*/) {
-	var box, options = Object(arguments[1]);
-	if (options.type === 'radio') {
-		box = new this.DOMRadioBox(document, this);
-	} else {
-		box = new this.DOMInputBox(document, this);
-	}
-	Object.keys(options).forEach(function (name) {
-		if ((name.indexOf('data-') === 0) ||
-				this.allowedDOMInputAttrs.has(name)) {
-			box.setAttribute(name, options[name]);
-		}
+Select = function (document, ns) {
+	DOMSelect.call(this, document, ns);
+	this.dom.appendChild(this.createOption('',
+		ns._chooseLabel.toDOM(document)));
+	ns.options.forEach(function (value, item) {
+		this.dom.appendChild(this.createOption(value, item._label.toDOM(document)));
 	}, this);
-	return box;
+};
+Select.prototype = Object.create(DOMSelect.prototype, {
+	constructor: d(Select)
+});
+
+Radio = function (document, ns) {
+	DOMRadio.call(this, document, ns);
+	this.dom.classList.add('enum');
+	ns.options.forEach(function (value, item) {
+		this.dom.appendChild(this.createOption(value, item._label.toDOM(document)));
+	}, this);
+};
+Radio.prototype = Object.create(DOMRadio.prototype, {
+	constructor: d(Radio)
+});
+
+module.exports = Object.defineProperties(Enum, {
+	DOMRadio: d(Radio),
+	DOMSelect: d(Select),
+	toDOMInput: d(function (document/*, options, relation*/) {
+		var box, options = Object(arguments[1]);
+		if (options.type === 'radio') {
+			box = new this.DOMRadio(document, this);
+		} else {
+			box = new this.DOMSelect(document, this);
+		}
+		box.castKnownAttributes(options);
+		return box;
+	})
 });

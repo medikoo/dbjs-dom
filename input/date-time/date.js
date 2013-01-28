@@ -1,42 +1,48 @@
 'use strict';
 
-var Db       = require('../')
-  , DateType = require('dbjs-ext/date-time/date');
+var isDate   = require('es5-ext/lib/Date/is-date')
+  , d        = require('es5-ext/lib/Object/descriptor')
+  , DOMInput = require('../_controls/input')
 
-module.exports = DateType;
+  , DateType = require('dbjs/lib/objects')._get('Date')
+  , castAttribute = DOMInput.prototype.castAttribute
+  , Input;
 
-DateType.set('DOMInputBox', Db.external(function () {
-	var Parent, Box, proto;
-	Parent = this.Base.DOMInputBox;
-	Box = function (document, ns) {
-		Parent.call(this, document, ns);
-		this.dom.setAttribute('type', 'date');
-		if (ns.max) this.setAttribute('max', ns.max);
-		if (ns.min) this.setAttribute('min', ns.min);
-		if (ns.step) this.dom.setAttribute('step', ns.step);
-	};
-	proto = Box.prototype = Object.create(Parent.prototype);
-	proto.constructor = Box;
-	proto.set = function (value) {
+require('../');
+
+Input = function (document, ns) {
+	DOMInput.call(this, document, ns);
+	this.dom.setAttribute('type', 'date');
+	if (ns.max) this.castAttribute('max', ns.max);
+	if (ns.min) this.castAttribute('min', ns.min);
+	if (ns.step) this.dom.setAttribute('step', ns.step);
+	this.dom.addEventListener('input', this.onchange.bind(this), false);
+};
+
+Input.prototype = Object.create(DOMInput.prototype, {
+	constructor: d(Input),
+	dateAttributes: d({ min: true, max: true }),
+	value: d.gs(function () {
+		return DateType.normalize(new Date(Date.parse(this.dom.value)));
+	}, function (value) {
 		if (value == null) {
 			this.dom.value = '';
 			this.dom.removeAttribute('value');
-			return;
+		} else {
+			value = value.toISOString().slice(0, 10);
+			this.dom.value = value;
+			this.dom.setAttribute('value', value);
 		}
-		this.dom.setAttribute('value',
-			this.dom.value = value.toISOString().slice(0, 10));
-	};
-	proto.setAttribute = function (name, value) {
-		if ((name === 'min') || (name === 'max')) {
+		this._value = value;
+		if (this.changed) this.emit('change:changed', this.changed = false);
+	}),
+	castAttribute: d(function (name, value) {
+		if (this.dateAttributes[name] && isDate(value)) {
 			this.dom.setAttribute(name, value.toISOString().slice(0, 10));
 		} else {
-			Parent.prototype.setAttribute.call(this, name, value);
+			castAttribute.call(this, name, value);
 		}
-	};
-	return Box;
-}));
+	})
+});
 
-DateType.fromDOMInputValue = function (value) {
-	return this.__normalize.__value.call(this, (value && value.getTime) ? value :
-			new Date(Date.parse(value)));
-};
+module.exports = Object.defineProperty(DateType, 'DOMInput', d(Input));

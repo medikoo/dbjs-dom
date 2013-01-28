@@ -1,63 +1,76 @@
 'use strict';
 
-var Db = require('dbjs');
+var d             = require('es5-ext/lib/Object/descriptor')
+  , forEach       = require('es5-ext/lib/Object/for-each')
+  , some          = require('es5-ext/lib/Object/some')
+  , castAttribute = require('dom-ext/lib/Element/prototype/cast-attribute')
+  , Db            = require('dbjs')
+  , DOMInput      = require('./input')
 
-Db.Base.set('DOMRadioBox', Db.external(function () {
-	var Parent, Box, proto, localAttrs;
-	localAttrs = { name: true, required: true };
-	Parent = this.DOMInputBox;
-	Box = function (document, ns) {
-		this.document = document;
-		this.ns = ns;
-		this.dom = document.createElement('ul');
-		this.dom.setAttribute('class', 'radio');
-		this.options = {};
-	};
-	proto = Box.prototype = Object.create(Parent.prototype);
-	proto.constructor = Box;
-	proto.createOption = function (value, labelTextDOM) {
+  , Input;
+
+module.exports = Input = function (document, ns) {
+	this.document = document;
+	this.ns = ns;
+	this.dom = document.createElement('ul');
+	this.dom._dbjsInput = this;
+	this.dom.setAttribute('class', 'radio');
+	this.options = {};
+};
+
+Input.prototype = Object.create(DOMInput.prototype, {
+	constructor: d(Input),
+	inputAttributes: d({ name: true, required: true, disabled: true }),
+	createOption: d(function (value, labelTextDOM) {
 		var dom, label, input;
 		dom = this.document.createElement('li');
 		label = dom.appendChild(this.document.createElement('label'));
 		input = this.options[value] =
 			label.appendChild(this.document.createElement('input'));
+		input._dbjsInput = this;
 		input.setAttribute('type', 'radio');
 		input.setAttribute('value', value);
 		label.appendChild(this.document.createTextNode(' '));
 		label.appendChild(labelTextDOM);
+		input.addEventListener('change', this.onchange.bind(this), false);
 		return dom;
-	};
-	proto.set = function (value) {
-		if (value == null) {
-			Object.keys(this.options).forEach(function (name) {
-				this[name].checked = false;
-				this[name].removeAttribute('checked');
-			}, this.options);
-		} else {
-			this.options[value].setAttribute('checked', 'checked');
-			this.options[value].checked = true;
-		}
-	};
-	proto.setAttribute = function (name, value) {
-		if (localAttrs.hasOwnProperty(name)) {
-			Object.keys(this.options).forEach(function (iName) {
-				this[iName].setAttribute(name, value);
-			}, this.options);
-			return;
-		}
-		Parent.prototype.setAttribute.call(this, name, value);
-	};
-	proto.get = function () {
+	}),
+	value: d.gs(function () {
 		var selectedValue;
-		Object.keys(this.options).some(function (value) {
-			if (this[value].checked) {
-				selectedValue = value;
+		some(this.options, function (radio) {
+			if (radio.checked) {
+				selectedValue = radio.value;
 				return true;
 			}
 			return false;
-		}, this.options);
-		if (selectedValue == null) return null;
-		return this.ns.__fromDOMInputValue.__value.call(this.ns, selectedValue);
-	};
-	return Box;
-}));
+		});
+		return (selectedValue == null) ? null : selectedValue;
+	}, function (nu) {
+		if (nu != null) {
+			if (nu.__toString) nu = nu.__toString.__value.call(nu);
+			else nu = String(nu);
+		}
+		forEach(this.options, function (radio, value) {
+			if (nu === value) return;
+			radio.checked = false;
+			radio.removeAttribute('checked');
+		});
+		if (nu != null) {
+			this.options[nu].setAttribute('checked', 'checked');
+			this.options[nu].checked = true;
+		}
+		this._value = nu;
+		if (this.changed) this.emit('change:changed', this.changed = false);
+	}),
+	castAttribute: d(function (name, value) {
+		if (this.inputAttributes[name]) {
+			forEach(this.options, function (input) {
+				castAttribute.call(input, name, value);
+			});
+			return;
+		}
+		castAttribute.call(this.dom, name, value);
+	})
+});
+
+Object.defineProperty(Db.Base, 'DOMRadio', d(Input));

@@ -1,19 +1,19 @@
 'use strict';
 
-var Db    = require('../../')
-  , Email = require('dbjs-ext/string/string-line/email');
+var d        = require('es5-ext/lib/Object/descriptor')
+  , DOMInput = require('../../_controls/input')
 
-module.exports = Email;
+  , Email = require('dbjs/lib/objects')._get('Email')
+  , Input;
 
-Email.set('DOMInputBox', Db.external(function () {
-	var Parent, Box, proto;
-	Parent = this.Base.DOMInputBox;
-	Box = function (document, ns) {
-		Parent.apply(this, arguments);
-		this.dom.setAttribute('type', 'email');
-		if (ns.max) this.dom.setAttribute('maxlength', ns.max);
-	};
-	proto = Box.prototype = Object.create(Parent.prototype);
-	proto.constructor = Box;
-	return Box;
-}));
+require('../../');
+
+Input = function (document, ns) {
+	DOMInput.apply(this, arguments);
+	this.dom.setAttribute('type', 'email');
+	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
+	this.dom.addEventListener('input', this.onchange.bind(this), false);
+};
+Input.prototype = Object.create(DOMInput.prototype, { constructor: d(Input) });
+
+module.exports = Object.defineProperty(Email, 'DOMInput', d(Input));

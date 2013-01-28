@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = require('dbjs');
+module.exports = require('../text');
 
 require('./_relation');
 require('./base');

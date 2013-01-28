@@ -1,22 +1,22 @@
 'use strict';
 
-var Db       = require('../../')
-  , Password = require('dbjs-ext/string/string-line/password');
+var d        = require('es5-ext/lib/Object/descriptor')
+  , DOMInput = require('../../_controls/input')
 
-module.exports = Password;
+  , Password = require('dbjs/lib/objects')._get('Password')
+  , Input;
 
-Password.set('DOMInputBox', Db.external(function () {
-	var Parent, Box, proto;
-	Parent = this.Base.DOMInputBox;
-	Box = function (document, ns) {
-		Parent.apply(this, arguments);
-		this.dom.setAttribute('type', 'password');
-		if (ns.pattern) {
-			this.dom.setAttribute('pattern', ns.pattern.source.slice(1, -1));
-		}
-		if (ns.max) this.dom.setAttribute('maxlength', ns.max);
-	};
-	proto = Box.prototype = Object.create(Parent.prototype);
-	proto.constructor = Box;
-	return Box;
-}));
+require('../../');
+
+Input = function (document, ns) {
+	DOMInput.apply(this, arguments);
+	this.dom.setAttribute('type', 'password');
+	if (ns.pattern) {
+		this.dom.setAttribute('pattern', ns.pattern.source.slice(1, -1));
+	}
+	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
+	this.dom.addEventListener('input', this.onchange.bind(this), false);
+};
+Input.prototype = Object.create(DOMInput.prototype, { constructor: d(Input) });
+
+module.exports = Object.defineProperty(Password, 'DOMInput', d(Input));

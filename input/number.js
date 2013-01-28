@@ -1,33 +1,38 @@
 'use strict';
 
-var Db = require('dbjs')
+var d        = require('es5-ext/lib/Object/descriptor')
+  , Db       = require('dbjs')
+  , DOMInput = require('./_controls/input')
 
-  , NumberType = module.exports = Db.Number;
+  , NumberType = Db.Number
+  , Input;
 
-NumberType.set('DOMInputBox', Db.external(function () {
-	var Parent, Box, proto;
-	Parent = this.Base.DOMInputBox;
-	Box = function (document, ns) {
-		Parent.call(this, document, ns);
-		this.dom.setAttribute('type', 'number');
-		if (ns.max < Infinity) this.dom.setAttribute('max', ns.max);
-		if (ns.min > -Infinity) this.dom.setAttribute('min', ns.min);
-		if (ns.step) this.dom.setAttribute('step', ns.step);
-	};
-	proto = Box.prototype = Object.create(Parent.prototype);
-	proto.constructor = Box;
-	proto.set = function (value) {
+Input = function (document, ns) {
+	DOMInput.call(this, document, ns);
+	this.dom.setAttribute('type', 'number');
+	if (ns.max < Infinity) this.dom.setAttribute('max', ns.max);
+	if (ns.min > -Infinity) this.dom.setAttribute('min', ns.min);
+	if (ns.step) this.dom.setAttribute('step', ns.step);
+	this.dom.addEventListener('input', this.onchange.bind(this), false);
+};
+
+Input.prototype = Object.create(DOMInput.prototype, {
+	constructor: d(Input),
+	value: d.gs(function () {
+		var value = this.dom.value;
+		return isNaN(value) ? null : Number(value);
+	}, function (value) {
+		value = isNaN(value) ? null : Number(value);
 		if (value == null) {
 			this.dom.value = '';
 			this.dom.removeAttribute('value');
-			return;
+		} else {
+			this.dom.value = value;
+			this.dom.setAttribute('value', value);
 		}
-		value = Number(value);
-		this.dom.value = value;
-		this.dom.setAttribute('value', value);
-	};
-	return Box;
-}));
-NumberType.fromDOMInputValue = function (value) {
-	return isNaN(value) ? null : Number(value);
-};
+		this._value = value;
+		if (this.changed) this.emit('change:changed', this.changed = false);
+	})
+});
+
+module.exports = Object.defineProperty(NumberType, 'DOMInput', d(Input));

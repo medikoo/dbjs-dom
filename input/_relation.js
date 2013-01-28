@@ -1,29 +1,33 @@
 'use strict';
 
-var Db       = require('dbjs')
-  , relation = module.exports = require('dbjs/lib/_relation');
+var d        = require('es5-ext/lib/Object/descriptor')
+  , Db       = require('dbjs')
+  , relation = require('dbjs/lib/_relation');
 
-require('./base');
-
-relation.set('toDOMInputBox', function (document/*, options*/) {
-	var box, options, ns, toBox;
-	options = Object(arguments[1]);
-	ns = this.__ns.__value;
-	toBox = ns.__toDOMInputBox.__value;
-	box = toBox.call(ns, document, options, this);
-	box.set(this.objectValue);
-	box.setAttribute('name', this._id_);
-	if (this.required && ((options.type !== 'checkbox') &&
-			((options.required == null) || options.required))) {
-		box.setAttribute('required', true);
-	}
-	if (options.disabled) box.setAttribute('disabled', true);
-	this.on('change', function () { box.set(this.objectValue); });
-	return box;
+module.exports = Object.defineProperties(relation, {
+	toDOMInput: d(function (document/*, options*/) {
+		var input, options, ns, required;
+		options = Object(arguments[1]);
+		ns = this.__ns.__value;
+		input = ns.toDOMInput(document, options, this);
+		input.value = this.objectValue;
+		input.castAttribute('name', this._id_);
+		required = this.__required.__value;
+		if (required && ((options.type !== 'checkbox') &&
+				((options.required == null) || options.required))) {
+			input.castAttribute('required', true);
+		}
+		if (required) {
+			input.required = required;
+			input.valid = (input.value != null);
+		}
+		if (options.disabled) input.castAttribute('disabled', true);
+		this.on('change', function () { input.value = this.objectValue; });
+		return input;
+	}),
+	DOMId: d.gs(function () {
+		return this._id_.replace(/:/g, '-').replace('#', '-');
+	})
 });
 
-relation.set('toDOMInput', Db.Base.prototype.toDOMInput);
 relation.get('fieldHint').ns = Db.String;
-relation.set('DOMId', function () {
-	return this._id_.replace(/:/g, '-').replace('#', '-');
-});
