@@ -43,6 +43,7 @@ ee(Object.defineProperties(Input.prototype, {
 		return (value === '') ? null : value;
 	}, function (value) {
 		if (value == null) {
+			value = null;
 			this.dom.value = '';
 			this.dom.removeAttribute('value');
 		} else {
