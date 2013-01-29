@@ -23,8 +23,13 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 
 	this.input = this.relation.toDOMInput(this.document, controlOptions);
 	this.input.fieldsetItem = this;
-	this.label = options.label ? document.createTextNode(options.label) :
-			relation._label;
+	this.label = (options.label != null) ?
+			document.createTextNode(options.label) : relation._label;
+	if (options.hint != null) {
+		this.hint = document.createTextNode(options.hint);
+	} else if (relation.__fieldHint.__value) {
+		this.hint = relation._fieldHint.toDOM(document);
+	}
 	this.build();
 
 	this.dom.setAttribute('id', 'tr-' + this.id);
@@ -79,8 +84,7 @@ Object.defineProperties(FieldsetItem.prototype, {
 				// error message
 				this.domError = el('span', { class: 'error-message' }),
 				// hint
-				this.relation.__fieldHint.__value ?
-						el('p', { 'class': 'hint' }, this.relation._fieldHint) : null));
+				this.hint && el('p', { 'class': 'hint' }, this.hint)));
 	}),
 	toDOM: d(function () { return this.dom; })
 });
