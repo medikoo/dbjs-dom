@@ -55,18 +55,18 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 	if (relation.__required.__value) {
 		relation.on('change', function (nu, old) {
 			if (((nu != null) && (old != null)) || (nu == old)) return; //jslint: skip
-			this.dom.classList[(nu == null) ? 'add' : 'remove']('db-invalid');
+			this.dom.classList[(nu == null) ? 'add' : 'remove']('dbjs-invalid');
 		}.bind(this));
 	}
 	if (!relation.hasOwnProperty('_value')) {
-		this.dom.classList.add('db-undefined');
+		this.dom.classList.add('dbjs-undefined');
 	}
 	relation.on('selfupdate', function (nu, old) {
 		if (nu && old && (nu.value !== undefined) && (old.value !== undefined)) {
 			return;
 		}
 		this.dom.classList[(!nu || (nu.value === undefined)) ? 'add' :
-				'remove']('db-undefined');
+				'remove']('dbjs-undefined');
 	}.bind(this));
 	this.input.on('change:valid', function (status) {
 		this.dom.classList[status ? 'remove' : 'add']('invalid');
