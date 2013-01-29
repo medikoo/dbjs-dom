@@ -16,6 +16,8 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 	if (options.idPostfix != null) this.id += options.idPostfix;
 
 	this.input = this.relation.toDOMInput(this.document, options);
+	this.label = options.label ? document.createTextNode(options.label) :
+			relation._label;
 	this.build();
 
 	this.dom.setAttribute('id', 'tr-' + this.id);
@@ -59,7 +61,7 @@ Object.defineProperties(FieldsetItem.prototype, {
 		el = el.bind(this.document);
 		this.dom = el('tr',
 			// label
-			el('th', this.domLabel = el('label', this.relation._label, ':')),
+			el('th', this.domLabel = el('label', this.label, ':')),
 			// input
 			el('td', this.input,
 				// required mark
