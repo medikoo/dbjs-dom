@@ -12,7 +12,7 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 	var options = Object(arguments[2]), tags;
 	this.document = document;
 	this.relation = relation;
-	this.id = this.relation.DOMId;
+	this.id = (options.id == null) ? this.relation.DOMId : String(options.id);
 	if (options.idPostfix != null) this.id += options.idPostfix;
 
 	this.input = this.relation.toDOMInput(this.document, options);

@@ -33,6 +33,9 @@ module.exports = Fieldset = function (document, obj/*, options*/) {
 		if (options.controls && options.controls[rel.name]) {
 			controlOpts = extend(Object(controlOpts), options.controls[rel.name]);
 		}
+		if (options.idPostfix != null) {
+			controlOpts.id = rel.DOMId + options.idPostfix;
+		}
 		return rel.toDOMFieldsetItem(document, controlOpts);
 	});
 
