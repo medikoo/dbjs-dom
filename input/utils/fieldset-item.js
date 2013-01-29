@@ -1,6 +1,7 @@
 'use strict';
 
-var d        = require('es5-ext/lib/Object/descriptor')
+var copy     = require('es5-ext/lib/Object/copy')
+  , d        = require('es5-ext/lib/Object/descriptor')
   , el       = require('dom-ext/lib/Document/prototype/make-element')
   , Db       = require('../')
   , relation = require('dbjs/lib/_relation')
@@ -9,13 +10,18 @@ var d        = require('es5-ext/lib/Object/descriptor')
   , Base = Db.Base, FieldsetItem;
 
 module.exports = FieldsetItem = function (document, relation/*, options*/) {
-	var options = Object(arguments[2]), tags;
+	var options = Object(arguments[2]), tags, controlOptions;
 	this.document = document;
 	this.relation = relation;
 	this.id = (options.id == null) ? this.relation.DOMId : String(options.id);
 	if (options.idPostfix != null) this.id += options.idPostfix;
 
-	this.input = this.relation.toDOMInput(this.document, options);
+	controlOptions = copy(options);
+	delete controlOptions.id;
+	delete controlOptions.class;
+	delete controlOptions.style;
+
+	this.input = this.relation.toDOMInput(this.document, controlOptions);
 	this.label = options.label ? document.createTextNode(options.label) :
 			relation._label;
 	this.build();
