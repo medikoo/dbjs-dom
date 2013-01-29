@@ -22,6 +22,7 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 	delete controlOptions.style;
 
 	this.input = this.relation.toDOMInput(this.document, controlOptions);
+	this.input.fieldsetItem = this;
 	this.label = options.label ? document.createTextNode(options.label) :
 			relation._label;
 	this.build();
