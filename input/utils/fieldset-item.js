@@ -10,7 +10,7 @@ var copy     = require('es5-ext/lib/Object/copy')
   , Base = Db.Base, FieldsetItem;
 
 module.exports = FieldsetItem = function (document, relation/*, options*/) {
-	var options = Object(arguments[2]), tags, controlOptions, dbRequired;
+	var options = Object(arguments[2]), tags, controlOptions, dbRequired, classes;
 	this.document = document;
 	this.relation = relation;
 	this.id = (options.id == null) ? this.relation.DOMId : String(options.id);
@@ -36,6 +36,13 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 	this.dom.setAttribute('data-name', relation.name);
 	tags = relation.__tags.values;
 	if (tags.length) apply.call(this.dom.classList.add, this.dom.classList, tags);
+	if (options.class) {
+		classes = options.class.split(' ')
+			.map(function (str) { return str.trim(); }).filter(Boolean);
+		if (classes.length) {
+			apply.call(this.dom.classList.add, this.dom.classList, classes);
+		}
+	}
 	dbRequired = relation.__required.__value;
 	if (dbRequired) this.dom.classList.add('dbjs-required');
 	if (((options.required == null) && dbRequired) || options.required) {
