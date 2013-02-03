@@ -18,6 +18,11 @@ Text = function (document, ns) {
 Text.prototype = Object.create(DOMText.prototype, {
 	constructor: d(Text),
 	value: d.gs(getValue, function (value) {
+		if (value == null) {
+			this.text.dismiss();
+			this.text.value = value;
+			return;
+		}
 		this.ns.options.getItem(value)._label.assignDOMText(this.text);
 	})
 });
