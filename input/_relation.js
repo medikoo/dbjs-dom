@@ -9,7 +9,8 @@ module.exports = Object.defineProperties(relation, {
 		var input, options, ns, required;
 		options = Object(arguments[1]);
 		ns = this.__ns.__value;
-		input = ns.toDOMInput(document, options, this);
+		options.relation = this;
+		input = ns.toDOMInput(document, options);
 		input.value = this.objectValue;
 		if (options.name == null) input.castAttribute('name', this._id_);
 		required = this.__required.__value;

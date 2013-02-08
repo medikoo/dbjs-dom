@@ -8,14 +8,15 @@ var d           = require('es5-ext/lib/Object/descriptor')
   , BooleanType = Db.Boolean
   , Radio, Checkbox;
 
-Radio = function (document, ns, relation) {
+Radio = function (document, ns, options) {
 	var trueText, falseText;
 	DOMRadio.call(this, document, ns);
-	this.relation = relation;
-	trueText = (relation && relation.__trueLabel.__value) ?
-			relation._trueLabel.toDOM(document) : ns._trueLabel.toDOM(document);
-	falseText = (relation && relation.__falseLabel.__value) ?
-			relation._falseLabel.toDOM(document) : ns._falseLabel.toDOM(document);
+	this.relation = options && options.relation;
+	trueText = (this.relation && this.relation.__trueLabel.__value) ?
+			this.relation._trueLabel.toDOM(document) : ns._trueLabel.toDOM(document);
+	falseText = (this.relation && this.relation.__falseLabel.__value) ?
+			this.relation._falseLabel.toDOM(document) :
+			ns._falseLabel.toDOM(document);
 	this.dom.appendChild(this.createOption('1', trueText));
 	this.dom.appendChild(document.createTextNode(' '));
 	this.dom.appendChild(this.createOption('0', falseText));
@@ -68,12 +69,12 @@ Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 module.exports = Object.defineProperties(BooleanType, {
 	DOMRadio: d(Radio),
 	DOMCheckbox: d(Checkbox),
-	toDOMInput: d(function (document/*, options, relation*/) {
-		var box, options = Object(arguments[1]), relation = arguments[2];
+	toDOMInput: d(function (document/*, options*/) {
+		var box, options = Object(arguments[1]);
 		if (options.type === 'checkbox') {
-			box = new this.DOMCheckbox(document, this);
+			box = new this.DOMCheckbox(document, this, options);
 		} else {
-			box = new this.DOMRadio(document, this, relation);
+			box = new this.DOMRadio(document, this, options);
 		}
 		box.castKnownAttributes(options);
 		return box;
