@@ -9,17 +9,17 @@ require('./_text');
 
 module.exports = Base;
 
-Object.defineProperty(Base, 'toDOMText', d(function (document) {
-	return new this.DOMText(document, this);
+Object.defineProperty(Base, 'toDOMText', d(function (document/*, options*/) {
+	return new this.DOMText(document, this, arguments[1]);
 }));
 
 Object.defineProperties(Base.prototype, {
-	toDOMText: d(function (document) {
-		var text = new this.ns.toDOMText(document);
+	toDOMText: d(function (document/*, options*/) {
+		var text = new this.ns.toDOMText(document, arguments[1]);
 		text.value = this;
 		return text;
 	}),
-	toDOM: d(function (document) {
-		return this.toDOMText(document).dom;
+	toDOM: d(function (document/*, options*/) {
+		return this.toDOMText(document, arguments[1]).dom;
 	})
 });

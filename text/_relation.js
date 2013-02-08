@@ -4,8 +4,10 @@ var d        = require('es5-ext/lib/Object/descriptor')
   , relation = require('dbjs/lib/_relation');
 
 module.exports = Object.defineProperties(relation, {
-	toDOMText: d(function (document) {
-		return this.assignDOMText(this.__ns.__value.toDOMText(document));
+	toDOMText: d(function (document/*, options*/) {
+		var options = Object(arguments[1]);
+		options.relation = this;
+		return this.assignDOMText(this.__ns.__value.toDOMText(document, options));
 	}),
 	assignDOMText: d(function (text) {
 		var listener;
@@ -17,7 +19,7 @@ module.exports = Object.defineProperties(relation, {
 		text.dismiss = this.off.bind(this, 'change', listener);
 		return text;
 	}),
-	toDOM: d(function (document) {
-		return this.toDOMText(document).dom;
+	toDOM: d(function (document/*, options*/) {
+		return this.toDOMText(document, arguments[1]).dom;
 	})
 });
