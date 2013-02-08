@@ -23,7 +23,7 @@ Text.prototype = Object.create(DOMText.prototype, {
 			this.text.value = value;
 			return;
 		}
-		this.ns[value.valueOf() ? '_trueLabel' : '_assignDOMText']
+		this.ns[value.valueOf() ? '_trueLabel' : '_falseLabel']
 			.assignDOMText(this.text);
 	})
 });
