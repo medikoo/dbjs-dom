@@ -18,7 +18,8 @@ module.exports = Input = function (document, ns) {
 
 ee(Object.defineProperties(Input.prototype, {
 	_value: d(null),
-	knownAttributes: d({ class: true, id: true, name: true, style: true }),
+	knownAttributes: d({ class: true, id: true, name: true, required: true,
+			style: true }),
 	changed: d(false),
 	required: d(false),
 	valid: d(false),
