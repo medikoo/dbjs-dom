@@ -3,7 +3,7 @@
 var copy           = require('es5-ext/lib/Object/copy')
   , d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
-  , el             = require('dom-ext/lib/Document/prototype/make-element')
+  , makeElement    = require('dom-ext/lib/Document/prototype/make-element')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
   , Db             = require('../')
 
@@ -45,7 +45,7 @@ module.exports = Fieldset = function (document, obj/*, options*/) {
 
 Object.defineProperties(Fieldset.prototype, extend({
 	build: d(function () {
-		el = el.bind(this.document);
+		var el = makeElement.bind(this.document);
 		this.dom = el('fieldset', el('table',
 			this.domItems = el('tbody')));
 	}),
