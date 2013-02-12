@@ -35,7 +35,7 @@ module.exports = Fieldset = function (document, obj/*, options*/) {
 		this.items = map.call(this.names, this.renderItem, this);
 	}
 
-	this.build();
+	this.render();
 	this.reload();
 
 	if (this.items._isLiveList_) this.items.on('change', this.reload);
@@ -44,7 +44,7 @@ module.exports = Fieldset = function (document, obj/*, options*/) {
 };
 
 Object.defineProperties(Fieldset.prototype, extend({
-	build: d(function () {
+	render: d(function () {
 		var el = makeElement.bind(this.document);
 		this.dom = el('fieldset', el('table',
 			this.domItems = el('tbody')));
