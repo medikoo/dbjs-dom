@@ -24,12 +24,14 @@ ObjectType.set('chooseLabel',
 Select = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]), list, chooseLabel;
 	DOMSelect.call(this, document, ns, options);
-	if (options.relation && options.relation.__chooseLabel.__value) {
-		chooseLabel = options.relation._chooseLabel;
+	if (options.chooseLabel) {
+		chooseLabel = document.createTextNode(options.chooseLabel);
+	} else if (options.relation && options.relation.__chooseLabel.__value) {
+		chooseLabel = options.relation._chooseLabel.toDOM(document);
 	} else {
-		chooseLabel = ns._chooseLabel;
+		chooseLabel = ns._chooseLabel.toDOM(document);
 	}
-	this.chooseOption = createOption.call(this, '', chooseLabel.toDOM(document));
+	this.chooseOption = createOption.call(this, '', chooseLabel);
 	this.property = options.property;
 	list = (options.compare ? ns.list(options.compare) : ns.listByCreatedAt());
 	this.dbOptions = list.liveMap(this.createOption, this);
