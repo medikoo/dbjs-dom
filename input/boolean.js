@@ -72,6 +72,9 @@ module.exports = Object.defineProperties(BooleanType, {
 	DOMCheckbox: d(Checkbox),
 	toDOMInput: d(function (document/*, options*/) {
 		var options = Object(arguments[1]);
+		if (options.multiple) {
+			return new this.DOMMultipleInput(document, this, options);
+		}
 		if (options.type === 'checkbox') {
 			return new this.DOMCheckbox(document, this, options);
 		} else {

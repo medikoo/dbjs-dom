@@ -63,6 +63,9 @@ module.exports = Object.defineProperties(Enum, {
 	DOMSelect: d(Select),
 	toDOMInput: d(function (document/*, options, relation*/) {
 		var options = Object(arguments[1]);
+		if (options.multiple) {
+			return new this.DOMMultipleInput(document, this, options);
+		}
 		if (options.type === 'radio') {
 			return new this.DOMRadio(document, this, options);
 		} else {

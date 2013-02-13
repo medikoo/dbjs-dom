@@ -11,6 +11,9 @@ require('./_multiple');
 module.exports = Object.defineProperties(Base, {
 	toDOMInput: d(function (document/*, options*/) {
 		var box, options = Object(arguments[1]);
+		if (options.multiple) {
+			return new this.DOMMultipleInput(document, this, options);
+		}
 		box = new this.DOMInput(document, this, options);
 		return box;
 	})
