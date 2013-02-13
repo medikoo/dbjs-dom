@@ -145,7 +145,7 @@ ee(Object.defineProperties(Table.prototype, extend({
 	setSortMethod: d(function (name, data, reverse) {
 		var getList;
 		if (typeof data === 'string') {
-			if (this.obj._type_ !== 'namespace') {
+			if (!this.obj.listByProperty) {
 				throw new CustomError("Property sort not supported",
 					'NO_SET_NAME_SORT_SUPPORT');
 			}
