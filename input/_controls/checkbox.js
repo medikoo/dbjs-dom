@@ -6,7 +6,7 @@ var d      = require('es5-ext/lib/Object/descriptor')
 
   , Input;
 
-module.exports = Input = function (document, ns) {
+module.exports = Input = function (document, ns/*, options*/) {
 	DOMInput.apply(this, arguments);
 	this.dom.setAttribute('type', 'checkbox');
 	this.dom.addEventListener('change', this.onchange.bind(this), false);
