@@ -25,12 +25,14 @@ Enum.set('chooseLabel', StringLine.rel({ required: true, value: 'Choose:' }));
 Select = function (document, ns/*, options*/) {
 	var chooseLabel, options = Object(arguments[2]);
 	DOMSelect.apply(this, arguments);
-	if (options.relation && options.relation.__chooseLabel.__value) {
-		chooseLabel = options.relation._chooseLabel;
+	if (options.chooseLabel) {
+		chooseLabel = document.createTextNode(options.chooseLabel);
+	} else if (options.relation && options.relation.__chooseLabel.__value) {
+		chooseLabel = options.relation._chooseLabel.toDOM(document);
 	} else {
-		chooseLabel = ns._chooseLabel;
+		chooseLabel = ns._chooseLabel.toDOM(document);
 	}
-	this.chooseOption = createOption.call(this, '', chooseLabel.toDOM(document));
+	this.chooseOption = createOption.call(this, '', chooseLabel);
 	this.dbOptions = ns.options.itemsListByOrder()
 		.liveMap(this.createOption, this);
 	this.dbOptions.on('change', this.render);
