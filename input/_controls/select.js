@@ -4,6 +4,7 @@ var d        = require('es5-ext/lib/Object/descriptor')
   , forEach  = require('es5-ext/lib/Object/for-each')
   , Db       = require('dbjs')
   , DOMInput = require('./input')
+  , relation = require('dbjs/lib/_relation')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , Input;
@@ -48,4 +49,5 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	})
 });
 
+relation.set('chooseLabel', Db.String);
 Object.defineProperty(Db.Base, 'DOMSelect', d(Input));

@@ -18,9 +18,14 @@ require('../../');
 Enum.set('chooseLabel', StringLine.rel({ required: true, value: 'Choose:' }));
 
 Select = function (document, ns/*, options*/) {
+	var chooseLabel, options = Object(arguments[2]);
 	DOMSelect.apply(this, arguments);
-	this.chooseOption = createOption.call(this, '',
-		ns._chooseLabel.toDOM(document));
+	if (options.relation && options.relation.__chooseLabel.__value) {
+		chooseLabel = options.relation._chooseLabel;
+	} else {
+		chooseLabel = ns._chooseLabel;
+	}
+	this.chooseOption = createOption.call(this, '', chooseLabel.toDOM(document));
 	this.dbOptions = ns.options.itemsListByOrder()
 		.liveMap(this.createOption, this);
 	this.dbOptions.on('change', this.render);

@@ -22,10 +22,14 @@ ObjectType.set('chooseLabel',
 	StringLine.rel({ required: true, value: 'Choose:' }));
 
 Select = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]), list;
+	var options = Object(arguments[2]), list, chooseLabel;
 	DOMSelect.call(this, document, ns, options);
-	this.chooseOption = createOption.call(this, '',
-		ns._chooseLabel.toDOM(document));
+	if (options.relation && options.relation.__chooseLabel.__value) {
+		chooseLabel = options.relation._chooseLabel;
+	} else {
+		chooseLabel = ns._chooseLabel;
+	}
+	this.chooseOption = createOption.call(this, '', chooseLabel.toDOM(document));
 	this.property = options.property;
 	list = (options.compare ? ns.list(options.compare) : ns.listByCreatedAt());
 	this.dbOptions = list.liveMap(this.createOption, this);
