@@ -13,7 +13,7 @@ var CustomError    = require('es5-ext/lib/Error/custom')
   , validSet       = require('set-collection/lib/valid-set')
   , Db             = require('dbjs')
 
-  , forEach = Array.prototype.forEach
+  , map = Array.prototype.map
   , Base = Db.Base
   , cellName = { td: true, th: true }
   , Table;
@@ -24,14 +24,22 @@ module.exports = Table = function (document, set/*, options*/) {
 	var options = Object(arguments[2]);
 	this.document = validDocument(document);
 	this.obj = validSet(set);
-	this.cellRenderers = [];
 
 	this.render(options);
 
 	// Columns
 	if (options.columns != null) {
-		forEach.call(options.columns, function (options) {
-			var render, name;
+		this.cellRenderers = map.call(options.columns, function (options) {
+			var name;
+			if ((set._type_ === 'namespace') && (typeof options === 'string')) {
+				name = options;
+				if (this.head) {
+					this.head.appendChild(
+						this.headCellRender(set.prototype.get(name)._label)
+					);
+				}
+				return function (item) { return item.get(name); };
+			}
 			if (this.head) {
 				if (options.head) {
 					this.head.appendChild(this.headCellRender(options.head));
@@ -40,24 +48,23 @@ module.exports = Table = function (document, set/*, options*/) {
 				}
 			}
 			if (options.render != null) {
-				render = callable(options.render);
+				return callable(options.render);
 			} else if (options.name != null) {
 				name = String(options.name);
-				render = function (item) { return item.get(name); };
+				return function (item) { return item.get(name); };
 			} else {
-				render = noop;
+				return noop;
 			}
-			this.cellRenderers.push(render);
 		}, this);
 	} else if (set._type_ === 'namespace') {
-		set.prototype.getPropertyNames(options.tag).listByOrder()
-			.forEach(function (name) {
+		this.cellRenderers = set.prototype.getPropertyNames(options.tag)
+			.listByOrder().map(function (name) {
 				if (this.head) {
 					this.head.appendChild(
 						this.headCellRenderer(this.get(name)._label.toDOM(this.document))
 					);
 				}
-				this.cellRenderers.push(function (item) { return item.get(name); });
+				return function (item) { return item.get(name); };
 			});
 	} else {
 		throw new CustomError("Columns layout not provided", 'MISSING_COLUMNS');
