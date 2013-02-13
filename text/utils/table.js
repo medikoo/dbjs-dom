@@ -1,19 +1,24 @@
 'use strict';
 
 var CustomError    = require('es5-ext/lib/Error/custom')
+  , isFunction     = require('es5-ext/lib/Function/is-function')
+  , invoke         = require('es5-ext/lib/Function/invoke')
   , noop           = require('es5-ext/lib/Function/noop')
   , d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
   , callable       = require('es5-ext/lib/Object/valid-callable')
   , memoize        = require('memoizee/lib/regular')
+  , ee             = require('event-emitter/lib/core')
   , isNode         = require('dom-ext/lib/Node/is-node')
   , validDocument  = require('dom-ext/lib/Document/valid-document')
   , makeElement    = require('dom-ext/lib/Document/prototype/make-element')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
   , validSet       = require('set-collection/lib/valid-set')
+  , stringify      = require('querystring').stringify
   , Db             = require('dbjs')
 
-  , map = Array.prototype.map
+  , isArray = Array.isArray, map = Array.prototype.map
+  , forEach = Array.prototype.forEach
   , Base = Db.Base
   , cellName = { td: true, th: true }
   , Table;
@@ -21,15 +26,37 @@ var CustomError    = require('es5-ext/lib/Error/custom')
 require('memoizee/lib/ext/method');
 
 module.exports = Table = function (document, set/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = Object(arguments[2]), getList;
 	this.document = validDocument(document);
-	this.obj = validSet(set);
+	this.el = makeElement.bind(this.document);
+	this.set = this.obj = validSet(set);
+	this.sortMethods = {};
+	this.current = {};
 
 	this.render(options);
 
 	// Columns
 	if (options.columns != null) {
-		this.cellRenderers = map.call(options.columns, function (options) {
+
+		// Sort methods
+		forEach.call(options.columns, function (options, index) {
+			var method, name;
+			if (!options.sort) return;
+			name = options.default ? '' : String(options.name || index);
+			method = this.setSortMethod(name, options.sort, options.reverse);
+			options.sortName = name;
+		}, this);
+
+		// Head
+		if (this.head) {
+			map.call(options.columns, function (options, index) {
+				if (options.head) return this.headCellRender(options.head, options);
+				return this.head.appendChild(document.createElement('th'));
+			}, this).forEach(this.head.appendChild, this.head);
+		}
+
+		// Cells
+		this.cellRenderers = map.call(options.columns, function (options, index) {
 			var name;
 			if ((set._type_ === 'namespace') && (typeof options === 'string')) {
 				name = options;
@@ -39,13 +66,6 @@ module.exports = Table = function (document, set/*, options*/) {
 					);
 				}
 				return function (item) { return item.get(name); };
-			}
-			if (this.head) {
-				if (options.head) {
-					this.head.appendChild(this.headCellRender(options.head));
-				} else {
-					this.head.appendChild(document.createElement('th'));
-				}
 			}
 			if (options.render != null) {
 				return callable(options.render);
@@ -71,38 +91,49 @@ module.exports = Table = function (document, set/*, options*/) {
 	}
 
 	// Rows
-	if (options.list) {
-		if (options.list.obj !== set) {
-			throw new CustomError("List doesn't match set", 'LIST_MISMATCH');
+	if (!this.sortMethods['']) {
+		if (options.sort) {
+			this.setSortMethod('', options.sort, options.reverse);
+		} else {
+			if (set._type_ === 'namespace') getList = invoke('listByCreatedAt');
+			else if (set.listByOrder) getList = invoke('listByOrder');
+			else getList = invoke('list');
+			this.sortMethods[''] = {
+				getList: getList,
+				reverse: false
+			};
 		}
-		this.currentList = options.list;
-		this.currentList.on('change', this.reload);
-	} else if (options.compareFn) {
-		if (!set.list) {
-			throw new CustomError("No dynamic list spport", 'STATIC_SET');
-		}
-		this.currentList = set.list(options.compareFn);
-		this.currentList.on('change', this.reload);
-	} else if (set._type_ === 'namespace') {
-		this.currentList = set.listByCreatedAt();
-		this.currentList.on('change', this.reload);
-	} else {
-		this.currentList = set.values;
 	}
 
-	this.reload();
+	this.reset();
 };
 
-Object.defineProperties(Table.prototype, extend({
+ee(Object.defineProperties(Table.prototype, extend({
+	reverse: d(false),
 	render: d(function (options) {
 		var el = makeElement.bind(this.document);
 		this.dom = el('table',
 			options.head ? el('thead', this.head = el('tr')) : null,
 			this.body = el('tbody'));
 	}),
-	headCellRender: d(function (dom) {
+	headCellRender: d(function (dom, options) {
+		var attr, sortName;
 		if (isNode(dom) && (dom.nodeName.toLowerCase() === 'th')) return dom;
-		return makeElement.call(this.document, 'th', dom);
+		if (options.sortName != null) {
+			sortName = options.sortName;
+			attr = this.document.createAttribute('href');
+			this.on('change', function () {
+				var data = {};
+				if (sortName) data.sort = sortName;
+				if ((this.current.sort === sortName) && !this.current.reverse) {
+					data.reverse = true;
+				}
+				data = stringify(data);
+				attr.value = data ? '?' + data : '.';
+			});
+			dom = this.el('a', attr, dom);
+		}
+		return this.el('th', dom);
 	}),
 	cellRender: d(function (render, item) {
 		var dom = render(item);
@@ -110,6 +141,54 @@ Object.defineProperties(Table.prototype, extend({
 			return dom;
 		}
 		return makeElement.call(this.document, 'td', dom);
+	}),
+	setSortMethod: d(function (name, data, reverse) {
+		var getList;
+		if (typeof data === 'string') {
+			if (this.obj._type_ !== 'namespace') {
+				throw new CustomError("Property sort not supported",
+					'NO_SET_NAME_SORT_SUPPORT');
+			}
+			getList = function (set) { return set.listByProperty(data); };
+		} else if (isFunction(data)) {
+			if (data.length === 1) {
+				getList = memoize(data);
+			} else {
+				getList = memoize(function (set) { return set.list(data); });
+			}
+		}
+		return (this.sortMethods[name] = {
+			getList: getList,
+			reverse: Boolean(reverse)
+		});
+	}),
+	reset: d(function (data) {
+		data = Object(data);
+		this.set = this.obj;
+		this.sortBy(data.sort || '', data.reverse);
+	}),
+	sortBy: d(function (name, reverse) {
+		var method;
+		method = this.sortMethods[name];
+		reverse = Boolean(reverse);
+		this.current.sort = name;
+		this.current.reverse = reverse;
+		if (method.reverse) reverse = !reverse;
+		this.sort(method.getList(this.set), reverse);
+	}),
+	sort: d(function (list, reverse) {
+		if (!isArray(list)) {
+			throw new CustomError("List must be an array", "ARRAY_EXPECTED");
+		}
+		if (list.obj !== this.set) {
+			throw new CustomError("List doesn't match set", 'LIST_MISMATCH');
+		}
+		reverse = Boolean(reverse);
+		if ((this.list === list) && (this.reverse === reverse)) return;
+		this.emit('change');
+		this.list = list;
+		this.reverse = reverse;
+		this.reload();
 	}),
 	toDOM: d(function () { return this.dom; })
 }, memoize(function (item) {
@@ -119,9 +198,11 @@ Object.defineProperties(Table.prototype, extend({
 		}, this));
 }, { method: 'rowRender' }), d.binder({
 	reload: d(function () {
-		replaceContent.call(this.body, this.currentList.map(this.rowRender));
+		var list = this.list.map(this.rowRender);
+		if (this.reverse) list.reverse();
+		replaceContent.call(this.body, list);
 	})
-})));
+}))));
 
 Object.defineProperty(Base, 'DOMTable', d(Table));
 
