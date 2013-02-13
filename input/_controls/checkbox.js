@@ -25,6 +25,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			this.changed = false;
 			changedChanged = true;
 		}
+		this.emit('change');
 		if (changedChanged) this.emit('change:changed', this.changed);
 	}),
 	value: d.gs(function () {

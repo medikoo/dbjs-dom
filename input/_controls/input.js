@@ -40,6 +40,7 @@ ee(Object.defineProperties(Input.prototype, {
 			this.changed = false;
 			changedChanged = true;
 		}
+		this.emit('change');
 		if (changedChanged) this.emit('change:changed', this.changed);
 		if (!this.required || (this.valid === (value != null))) return;
 		this.emit('change:valid', this.valid = !this.valid);
