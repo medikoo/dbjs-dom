@@ -77,7 +77,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 		return this.items.map(function (item) { return item.value; });
 	}, function (value) {
 		var length;
-		if (value._isSet_) value = value.values;
+		value = value.values;
 		value.forEach(function (value, index) {
 			var item = this.items[index];
 			if (!item) item = this.addEmpty();
