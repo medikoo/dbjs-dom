@@ -10,8 +10,8 @@ var isDate   = require('es5-ext/lib/Date/is-date')
 
 require('../');
 
-Input = function (document, ns) {
-	DOMInput.call(this, document, ns);
+Input = function (document, ns/*, options*/) {
+	DOMInput.call(this, document, ns, arguments[2]);
 	this.dom.setAttribute('type', 'date');
 	if (ns.max) this.castAttribute('max', ns.max);
 	if (ns.min) this.castAttribute('min', ns.min);

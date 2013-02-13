@@ -9,13 +9,15 @@ var d             = require('es5-ext/lib/Object/descriptor')
 
   , Input;
 
-module.exports = Input = function (document, ns) {
+module.exports = Input = function (document, ns/*, options*/) {
+	var options = Object(arguments[2]);
 	this.document = document;
 	this.ns = ns;
 	this.dom = document.createElement('ul');
 	this.dom._dbjsInput = this;
 	this.dom.setAttribute('class', 'radio');
 	this.options = {};
+	if (options.name) this._name = options.name;
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
@@ -30,10 +32,17 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		input._dbjsInput = this;
 		input.setAttribute('type', 'radio');
 		input.setAttribute('value', value);
+		if (this._name) input.setAttribute('name', this._name);
 		label.appendChild(this.document.createTextNode(' '));
 		label.appendChild(labelTextDOM);
 		input.addEventListener('change', this.onchange.bind(this), false);
 		return dom;
+	}),
+	name: d.gs(function () { return this._name; }, function (name) {
+		this._name = name;
+		forEach(this.options, function (input) {
+			input.setAttribute('name', name);
+		});
 	}),
 	value: d.gs(function () {
 		var selectedValue;

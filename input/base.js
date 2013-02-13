@@ -6,13 +6,12 @@ var d  = require('es5-ext/lib/Object/descriptor')
   , Base = Db.Base;
 
 require('./_controls/input');
+require('./_multiple');
 
 module.exports = Object.defineProperties(Base, {
 	toDOMInput: d(function (document/*, options*/) {
-		var box = new this.DOMInput(document, this)
-		  , options = arguments[1];
-
-		if (options != null) box.castKnownAttributes(options);
+		var box, options = Object(arguments[1]);
+		box = new this.DOMInput(document, this, options);
 		return box;
 	})
 });

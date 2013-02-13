@@ -17,8 +17,8 @@ require('../../');
 
 Enum.set('chooseLabel', StringLine.rel({ required: true, value: 'Choose:' }));
 
-Select = function (document, ns) {
-	DOMSelect.call(this, document, ns);
+Select = function (document, ns/*, options*/) {
+	DOMSelect.apply(this, arguments);
 	this.chooseOption = createOption.call(this, '',
 		ns._chooseLabel.toDOM(document));
 	this.dbOptions = ns.options.itemsListByOrder()
@@ -38,12 +38,14 @@ Select.prototype = Object.create(DOMSelect.prototype, extend({
 	})
 })));
 
-Radio = function (document, ns) {
-	DOMRadio.call(this, document, ns);
+Radio = function (document, ns/*, options*/) {
+	var options = Object(arguments[2]);
+	DOMRadio.call(this, document, ns, options);
 	this.dom.classList.add('enum');
 	this.dbOptions = ns.options.itemsListByOrder()
 		.liveMap(this.createOption, this);
 	this.dbOptions.on('change', this.render);
+	this.castKnownAttributes(options);
 	this.render();
 };
 Radio.prototype = Object.create(DOMRadio.prototype, extend({
@@ -60,13 +62,11 @@ module.exports = Object.defineProperties(Enum, {
 	DOMRadio: d(Radio),
 	DOMSelect: d(Select),
 	toDOMInput: d(function (document/*, options, relation*/) {
-		var box, options = Object(arguments[1]);
+		var options = Object(arguments[1]);
 		if (options.type === 'radio') {
-			box = new this.DOMRadio(document, this);
+			return new this.DOMRadio(document, this, options);
 		} else {
-			box = new this.DOMSelect(document, this);
+			return new this.DOMSelect(document, this, options);
 		}
-		box.castKnownAttributes(options);
-		return box;
 	})
 });

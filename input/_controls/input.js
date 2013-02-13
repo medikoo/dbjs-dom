@@ -9,20 +9,26 @@ var d             = require('es5-ext/lib/Object/descriptor')
 
   , Input;
 
-module.exports = Input = function (document, ns) {
+module.exports = Input = function (document, ns/*, options*/) {
+	var options = Object(arguments[2]);
 	this.document = document;
 	this.ns = ns;
 	this.dom = document.createElement('input');
+	if (options.name) this.name = options.name;
+	this.castKnownAttributes(options);
 	this.dom._dbjsInput = this;
 };
 
 ee(Object.defineProperties(Input.prototype, {
 	_value: d(null),
-	knownAttributes: d({ class: true, id: true, name: true, required: true,
-			style: true }),
+	knownAttributes: d({ class: true, id: true, required: true, style: true }),
 	changed: d(false),
 	required: d(false),
 	valid: d(false),
+	name: d.gs(function () { return this._name; }, function (name) {
+		this._name = name;
+		this.dom.setAttribute('name', name);
+	}),
 	onchange: d(function () {
 		var value = this.value, changedChanged;
 		if (value !== this._value) {

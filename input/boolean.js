@@ -8,9 +8,9 @@ var d           = require('es5-ext/lib/Object/descriptor')
   , BooleanType = Db.Boolean
   , Radio, Checkbox;
 
-Radio = function (document, ns, options) {
-	var trueText, falseText;
-	DOMRadio.call(this, document, ns);
+Radio = function (document, ns/*, options*/) {
+	var trueText, falseText, options = Object(arguments[2]);
+	DOMRadio.call(this, document, ns, options);
 	this.relation = options && options.relation;
 	trueText = (this.relation && this.relation.__trueLabel.__value) ?
 			this.relation._trueLabel.toDOM(document) : ns._trueLabel.toDOM(document);
@@ -22,6 +22,7 @@ Radio = function (document, ns, options) {
 	this.dom.appendChild(this.createOption('0', falseText));
 	this.trueInput = this.options['1'];
 	this.falseInput = this.options['0'];
+	this.castKnownAttributes(options);
 };
 
 Radio.prototype = Object.create(DOMRadio.prototype, {
@@ -70,13 +71,11 @@ module.exports = Object.defineProperties(BooleanType, {
 	DOMRadio: d(Radio),
 	DOMCheckbox: d(Checkbox),
 	toDOMInput: d(function (document/*, options*/) {
-		var box, options = Object(arguments[1]);
+		var options = Object(arguments[1]);
 		if (options.type === 'checkbox') {
-			box = new this.DOMCheckbox(document, this, options);
+			return new this.DOMCheckbox(document, this, options);
 		} else {
-			box = new this.DOMRadio(document, this, options);
+			return new this.DOMRadio(document, this, options);
 		}
-		box.castKnownAttributes(options);
-		return box;
 	})
 });

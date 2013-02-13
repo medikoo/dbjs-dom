@@ -7,8 +7,8 @@ var d        = require('es5-ext/lib/Object/descriptor')
   , NumberType = Db.Number
   , Input;
 
-Input = function (document, ns) {
-	DOMInput.call(this, document, ns);
+Input = function (document, ns/*, options*/) {
+	DOMInput.call(this, document, ns, arguments[2]);
 	this.dom.setAttribute('type', 'number');
 	if (ns.max < Infinity) this.dom.setAttribute('max', ns.max);
 	if (ns.min > -Infinity) this.dom.setAttribute('min', ns.min);

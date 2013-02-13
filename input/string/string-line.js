@@ -8,7 +8,7 @@ var d        = require('es5-ext/lib/Object/descriptor')
 
 require('../');
 
-Input = function (document, ns) {
+Input = function (document, ns/*, options*/) {
 	DOMInput.apply(this, arguments);
 	this.dom.setAttribute('type', 'text');
 	if (ns.pattern) {

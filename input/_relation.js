@@ -10,9 +10,10 @@ module.exports = Object.defineProperties(relation, {
 		options = Object(arguments[1]);
 		ns = this.__ns.__value;
 		options.relation = this;
+		options.multiple = this.__multiple.__value;
+		if (options.name == null) options.name = this._id_;
 		input = ns.toDOMInput(document, options);
 		input.value = this.objectValue;
-		if (options.name == null) input.castAttribute('name', this._id_);
 		required = this.__required.__value;
 		if (required && ((options.type !== 'checkbox') &&
 				((options.required == null) || options.required))) {
