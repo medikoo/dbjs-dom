@@ -1,8 +1,8 @@
 'use strict';
 
-var compact      = require('es5-ext/lib/Array/prototype/compact')
-  , contains     = require('es5-ext/lib/Array/prototype/contains')
+var contains     = require('es5-ext/lib/Array/prototype/contains')
   , diff         = require('es5-ext/lib/Array/prototype/diff')
+  , isUniq       = require('es5-ext/lib/Array/prototype/is-uniq')
   , remove       = require('es5-ext/lib/Array/prototype/remove')
   , copy         = require('es5-ext/lib/Object/copy')
   , d            = require('es5-ext/lib/Object/descriptor')
@@ -50,7 +50,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 	requried: d(false),
 	valid: d(false),
 	onchange: d(function () {
-		var value = this.value, changedChanged;
+		var value = this.value, changedChanged, isValid;
 		if ((value.length !== this._value.length) ||
 				diff.call(this._value, value).length) {
 			if (!this.changed) {
@@ -61,8 +61,12 @@ ee(Object.defineProperties(Input.prototype, extend({
 			this.changed = false;
 			changedChanged = true;
 		}
+		this.emit('change');
 		if (changedChanged) this.emit('change:changed', this.changed);
-		if (!this.required || (this.valid === Boolean(value.length))) return;
+		if (this.required && !value.length) isValid = false;
+		else if (contains.call(value, null)) isValid = false;
+		else isValid = isUniq.call(value);
+		if (this.valid === isValid) return;
 		this.emit('change:valid', this.valid = !this.valid);
 	}),
 	name: d.gs(function () { return this._name; }, function (name) {
@@ -70,7 +74,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 		this.items.forEach(function (input) { input.name = name; });
 	}),
 	value: d.gs(function () {
-		return compact.call(this.items.map(function (item) { return item.value; }));
+		return this.items.map(function (item) { return item.value; });
 	}, function (value) {
 		var length;
 		if (value._isSet_) value = value.values;
@@ -89,7 +93,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 		this.domList = el('ul');
 		this.dom = el('div', { class: 'dbjs multiple' }, this.domList,
 			el('div', { class: 'controls' },
-				el('input', { type: 'button', value: 'Add', onclick: this.addEmpty })));
+				el('a', { onclick: this.addEmpty }, 'Add')));
 	}),
 	renderItem: d(function (input) {
 		var el = this.make, dom;
@@ -99,13 +103,15 @@ ee(Object.defineProperties(Input.prototype, extend({
 		dom = el('li');
 		extendEl.call(dom, input,
 				el('a', { onclick: this.removeItem.bind(this, input) }, 'x'));
-		input.on('change:changed', this.onchange);
+		input.on('change', this.onchange);
+		this.onchange();
 		return this.domList.appendChild(dom);
 	}),
 	removeItem: d(function (input) {
 		if (!contains.call(this.items, input)) return;
 		removeEl.call(input.dom.parentNode);
 		remove.call(this.items, input);
+		this.onchange();
 	}),
 	toDOM: d(function () { return this.dom; })
 }, propagate('castAttribute', 'castKnownAttributes'), d.binder({
