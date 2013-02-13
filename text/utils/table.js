@@ -186,6 +186,10 @@ ee(Object.defineProperties(Table.prototype, extend({
 		reverse = Boolean(reverse);
 		if ((this.list === list) && (this.reverse === reverse)) return;
 		this.emit('change');
+		if (this.list !== list) {
+			if (this.list) this.list.off('change', this.reload);
+			list.on('change', this.reload);
+		}
 		this.list = list;
 		this.reverse = reverse;
 		this.reload();
