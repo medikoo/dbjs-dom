@@ -1,17 +1,22 @@
 'use strict';
 
-var d              = require('es5-ext/lib/Object/descriptor')
+var compact        = require('es5-ext/lib/Array/prototype/compact')
+  , CustomError    = require('es5-ext/lib/Error/custom')
+  , d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
+  , forEach        = require('es5-ext/lib/Object/for-each')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
   , getObject      = require('dbjs/lib/objects')._get
+  , DOMCheckbox    = require('../../_controls/checkbox')
   , DOMRadio       = require('../../_controls/radio')
   , DOMSelect      = require('../../_controls/select')
+  , DOMMultiple    = require('../../_multiple')
 
   , Enum = getObject('Enum'), StringLine = getObject('StringLine')
   , createOption = DOMSelect.prototype.createOption
   , createRadio = DOMRadio.prototype.createOption
 
-  , Radio, Select;
+  , Radio, Select, MultipleInput, notSupported;
 
 require('../../');
 
@@ -63,9 +68,56 @@ Radio.prototype = Object.create(DOMRadio.prototype, extend({
 	render: d(function () { replaceContent.call(this.dom, this.dbOptions); })
 })));
 
+MultipleInput = function (document, ns/*, options*/) {
+	DOMMultiple.apply(this, arguments);
+	this.itemsByValue = {};
+	this.dbOptions = ns.options.itemsListByOrder()
+		.liveMap(this.renderOption, this);
+	this.dbOptions.on('change', this.reload);
+	this.castKnownAttributes(this.options);
+	this.reload();
+};
+
+MultipleInput.prototype = Object.create(DOMMultiple.prototype, {
+	constructor: d(MultipleInput),
+	renderOption: d(function (item) {
+		var el = this.make, label, input, value = item._subject_;
+		this.itemsByValue[value] = input = new DOMCheckbox(this.document, this.ns);
+		this.items.push(input);
+		if (this._name) input.name = this._name;
+		input.dom.setAttribute('value', value);
+		input.parent = this;
+		label = el('label', input, ' ', item._label);
+		input.on('change', this.onchange.bind(this));
+		return el('li', label);
+	}),
+	value: d.gs(function () {
+		return compact.call(this.items.map(function (item) { return item.value; }));
+	}, function (value) {
+		forEach(this.itemsByValue, function (input, val) {
+			input.value = value.has(val);
+		});
+		this._value = value.values;
+		if (this.changed) this.emit('change:changed', this.changed = false);
+	}),
+	reload: d(function () {
+		replaceContent.call(this.dom, this.dbOptions);
+	}),
+	render: d(function () {
+		this.dom = this.document.createElement('ul');
+		this.dom.className = 'dbjs multiple enum';
+	}),
+	renderItem: d(notSupported = function () {
+		throw new CustomError("Not supported", 'NOT_SUPPORTED');
+	}),
+	removeItem: d(notSupported),
+	addEmpty: d(notSupported)
+});
+
 module.exports = Object.defineProperties(Enum, {
 	DOMRadio: d(Radio),
 	DOMSelect: d(Select),
+	DOMMultipleInput: d(MultipleInput),
 	toDOMInput: d(function (document/*, options, relation*/) {
 		var options = Object(arguments[1]);
 		if (options.multiple) {
