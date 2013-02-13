@@ -211,5 +211,5 @@ ee(Object.defineProperties(Table.prototype, extend({
 Object.defineProperty(Base, 'DOMTable', d(Table));
 
 Object.defineProperty(Db, 'toDOMTable', d(function (document/*, options*/) {
-	return new Base.DOMTable(document, this, arguments[1]);
+	return new this.DOMTable(document, this, arguments[1]);
 }));
