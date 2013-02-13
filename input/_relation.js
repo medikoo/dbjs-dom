@@ -6,11 +6,11 @@ var d        = require('es5-ext/lib/Object/descriptor')
 
 module.exports = Object.defineProperties(relation, {
 	toDOMInput: d(function (document/*, options*/) {
-		var input, options, ns, required;
+		var input, options, ns, required, onChange, multiple;
 		options = Object(arguments[1]);
 		ns = this.__ns.__value;
 		options.relation = this;
-		options.multiple = this.__multiple.__value;
+		multiple = options.multiple = this.__multiple.__value;
 		if (options.name == null) options.name = this._id_;
 		input = ns.toDOMInput(document, options);
 		input.value = this.objectValue;
@@ -24,7 +24,13 @@ module.exports = Object.defineProperties(relation, {
 			input.valid = (input.value != null);
 		}
 		if (options.disabled) input.castAttribute('disabled', true);
-		this.on('change', function () { input.value = this.objectValue; });
+		onChange = function () { input.value = this.objectValue; };
+		if (multiple) {
+			this.on('add', onChange);
+			this.on('delete', onChange);
+		} else {
+			this.on('change', onChange);
+		}
 		return input;
 	}),
 	DOMId: d.gs(function () {
