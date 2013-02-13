@@ -61,13 +61,13 @@ module.exports = Table = function (document, set/*, options*/) {
 	// Rows
 	if (options.list) {
 		if (options.list.obj !== set) {
-			throw new CustomError("List doesn't match set", 'WRONG_LIST');
+			throw new CustomError("List doesn't match set", 'LIST_MISMATCH');
 		}
 		this.currentList = options.list;
 		this.currentList.on('change', this.reload);
 	} else if (options.compareFn) {
 		if (!set.list) {
-			throw new CustomError("No dynamic list spport", 'NOT_DYNAMIC_SET');
+			throw new CustomError("No dynamic list spport", 'STATIC_SET');
 		}
 		this.currentList = set.list(options.compareFn);
 		this.currentList.on('change', this.reload);
