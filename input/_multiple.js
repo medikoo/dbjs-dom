@@ -61,7 +61,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 			this.changed = false;
 			changedChanged = true;
 		}
-		this.emit('change');
+		this.emit('change', value);
 		if (changedChanged) this.emit('change:changed', this.changed);
 		if (this.required && !value.length) isValid = false;
 		else if (contains.call(value, null)) isValid = false;
