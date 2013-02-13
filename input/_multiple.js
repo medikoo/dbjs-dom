@@ -47,7 +47,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 ee(Object.defineProperties(Input.prototype, extend({
 	_value: d(null),
 	changed: d(false),
-	requried: d(false),
+	required: d(false),
 	valid: d(false),
 	onchange: d(function () {
 		var value = this.value, changedChanged, isValid;
