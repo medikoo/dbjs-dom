@@ -52,6 +52,11 @@ module.exports = Table = function (document, set/*, options*/) {
 	} else if (set._type_ === 'namespace') {
 		set.prototype.getPropertyNames(options.tag).listByOrder()
 			.forEach(function (name) {
+				if (this.head) {
+					this.head.appendChild(
+						this.headCellRenderer(this.get(name)._label.toDOM(this.document))
+					);
+				}
 				this.cellRenderers.push(function (item) { return item.get(name); });
 			});
 	} else {
