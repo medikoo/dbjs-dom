@@ -24,6 +24,7 @@ module.exports = Fieldset = function (document, obj/*, options*/) {
 		this.names = options.names;
 	} else {
 		this.names = obj.getPropertyNames(options.tag);
+		if (options.filter) this.names = this.names.filter(options.filter);
 	}
 	if (this.names._isSet_) {
 		if (this.names.listByOrder) {
