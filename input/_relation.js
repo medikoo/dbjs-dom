@@ -11,7 +11,7 @@ module.exports = Object.defineProperties(relation, {
 		ns = this.__ns.__value;
 		options.relation = this;
 		required = this.__required.__value;
-		if (required) options.required = true;
+		if (required && (options.required == null)) options.required = true;
 		multiple = options.multiple = this.__multiple.__value;
 		if (options.name == null) options.name = this._id_;
 		input = ns.toDOMInput(document, options);
