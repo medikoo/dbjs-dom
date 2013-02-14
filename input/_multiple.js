@@ -33,6 +33,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.ns = ns;
 	this._value = [];
 	this.options = copy(Object(arguments[2]));
+	this.required = Boolean(this.options.required);
 	delete this.options.multiple;
 	if (this.options.name) {
 		this._name = this.options.name;
