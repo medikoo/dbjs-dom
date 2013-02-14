@@ -72,6 +72,7 @@ Radio.prototype = Object.create(DOMRadio.prototype, extend({
 
 MultipleInput = function (document, ns/*, options*/) {
 	DOMMultiple.apply(this, arguments);
+	delete this.options.required;
 	this.itemsByValue = {};
 	this.dbOptions = ns.options.itemsListByOrder()
 		.liveMap(this.renderOption, this);
