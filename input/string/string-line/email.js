@@ -3,6 +3,7 @@
 var d        = require('es5-ext/lib/Object/descriptor')
   , DOMInput = require('../../_controls/input')
 
+  , valueSet = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').set
   , Email = require('dbjs/lib/objects')._get('Email')
   , Input;
 
@@ -14,6 +15,12 @@ Input = function (document, ns/*, options*/) {
 	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
 	this.dom.addEventListener('input', this.onchange.bind(this), false);
 };
-Input.prototype = Object.create(DOMInput.prototype, { constructor: d(Input) });
+Input.prototype = Object.create(DOMInput.prototype, {
+	constructor: d(Input),
+	value: d.gs(function () {
+		var value = this.dom.value.trim().toLowerCase();
+		return (value === '') ? null : value;
+	}, valueSet)
+});
 
 module.exports = Object.defineProperty(Email, 'DOMInput', d(Input));
