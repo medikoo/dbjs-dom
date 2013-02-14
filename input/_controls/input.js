@@ -47,7 +47,7 @@ ee(Object.defineProperties(Input.prototype, {
 	}),
 	toDOM: d(function () { return this.dom; }),
 	value: d.gs(function () {
-		var value = this.dom.value;
+		var value = this.dom.value.trim();
 		return (value === '') ? null : value;
 	}, function (value) {
 		if (value == null) {
