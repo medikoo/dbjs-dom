@@ -1,19 +1,23 @@
 'use strict';
 
-var d      = require('es5-ext/lib/Object/descriptor')
-  , Db     = require('dbjs')
+var copy     = require('es5-ext/lib/Object/copy')
+  , d        = require('es5-ext/lib/Object/descriptor')
+  , Db       = require('dbjs')
   , DOMInput = require('./input')
 
-  , Input;
+  , Input, knownAttributes = copy(DOMInput.prototype.knownAttributes);
 
 module.exports = Input = function (document, ns/*, options*/) {
 	DOMInput.apply(this, arguments);
 	this.dom.setAttribute('type', 'checkbox');
 	this.dom.addEventListener('change', this.onchange.bind(this), false);
 };
+
+delete knownAttributes.required;
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	valid: d(true),
+	knownAttributes: d(knownAttributes),
 	onchange: d(function () {
 		var value = this.checked, changedChanged;
 		if (value !== this._value) {
