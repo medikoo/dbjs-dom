@@ -112,7 +112,7 @@ ee(Object.defineProperties(Table.prototype, extend({
 	reverse: d(false),
 	render: d(function (options) {
 		var el = makeElement.bind(this.document);
-		this.dom = el('table',
+		this.dom = el('table', { class: 'dbjs' },
 			options.head ? el('thead', this.head = el('tr')) : null,
 			this.body = el('tbody'));
 	}),
