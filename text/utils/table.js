@@ -26,7 +26,7 @@ var CustomError    = require('es5-ext/lib/Error/custom')
 require('memoizee/lib/ext/method');
 
 module.exports = Table = function (document, set/*, options*/) {
-	var options = Object(arguments[2]), getList;
+	var options = Object(arguments[2]), getList, classes;
 	this.document = validDocument(document);
 	this.el = makeElement.bind(this.document);
 	this.set = this.obj = validSet(set);
@@ -34,6 +34,14 @@ module.exports = Table = function (document, set/*, options*/) {
 	this.current = {};
 
 	this.render(options);
+	if (options.class != null) {
+		classes = String(options.class);
+		if (classes) {
+			classes.split(' ').forEach(function (name) {
+				this.add(name);
+			}, this.dom.classList);
+		}
+	}
 
 	// Columns
 	if (options.columns != null) {
