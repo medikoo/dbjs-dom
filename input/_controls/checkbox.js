@@ -8,9 +8,11 @@ var copy     = require('es5-ext/lib/Object/copy')
   , Input, knownAttributes = copy(DOMInput.prototype.knownAttributes);
 
 module.exports = Input = function (document, ns/*, options*/) {
-	DOMInput.apply(this, arguments);
+	var options = Object(arguments[2]);
+	DOMInput.call(this, document, ns, options);
 	this.dom.setAttribute('type', 'checkbox');
 	this.dom.addEventListener('change', this.onchange.bind(this), false);
+	if (options.forceRequired) this.castAttribute('required', true);
 };
 
 delete knownAttributes.required;
