@@ -14,7 +14,7 @@ var copy           = require('es5-ext/lib/Object/copy')
 require('./fieldset-item');
 
 module.exports = Fieldset = function (document, obj/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = Object(arguments[2]), className;
 
 	this.document = document;
 	this.obj = obj;
@@ -42,6 +42,14 @@ module.exports = Fieldset = function (document, obj/*, options*/) {
 	if (this.items._isLiveList_) this.items.on('change', this.reload);
 
 	this.dom.classList.add('dbjs');
+	if (options.class != null) {
+		className = String(options.class).trim();
+		if (className) {
+			className.split(' ').forEach(function (name) {
+				this.add(name);
+			}, this.dom.classList);
+		}
+	}
 };
 
 Object.defineProperties(Fieldset.prototype, extend({
