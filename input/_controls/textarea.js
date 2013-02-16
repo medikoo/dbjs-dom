@@ -13,10 +13,11 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.ns = ns;
 	this.dom = document.createElement('textarea');
 	if (options.name) this.name = options.name;
-	this.dom._dbjsInput = this;
 	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
 	this.dom.appendChild(document.createTextNode(''));
 	this.dom.addEventListener('input', this.onchange.bind(this), false);
+	this.castKnownAttributes(options);
+	this.dom._dbjsInput = this;
 };
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
