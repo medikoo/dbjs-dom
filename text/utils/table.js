@@ -31,6 +31,7 @@ module.exports = Table = function (document, set/*, options*/) {
 	this.el = makeElement.bind(this.document);
 	this.set = this.obj = validSet(set);
 	this.sortMethods = {};
+	this.filterMethods = {};
 	this.current = {};
 
 	this.render(options);
@@ -170,14 +171,22 @@ ee(Object.defineProperties(Table.prototype, extend({
 			reverse: Boolean(reverse)
 		});
 	}),
+	setFilterMethod: d(function (name, set) {
+		this.filterMethods[name] = set;
+	}),
 	reset: d(function (data) {
 		data = Object(data);
 		this.set = this.obj;
+		if (data.filter && this.filterMethods[data.filter]) {
+			this.set = this.filterMethods[data.filter];
+		} else {
+			this.set = this.obj;
+		}
 		this.sortBy(data.sort || '', data.reverse);
 	}),
 	sortBy: d(function (name, reverse) {
 		var method;
-		method = this.sortMethods[name];
+		method = this.sortMethods[name] || this.sortMethods[''];
 		reverse = Boolean(reverse);
 		this.current.sort = name;
 		this.current.reverse = reverse;
