@@ -19,6 +19,7 @@ var CustomError    = require('es5-ext/lib/Error/custom')
 
   , isArray = Array.isArray, map = Array.prototype.map
   , forEach = Array.prototype.forEach
+  , defineProperty = Object.defineProperty
   , Base = Db.Base
   , cellName = { td: true, th: true }
   , Table;
@@ -211,6 +212,11 @@ ee(Object.defineProperties(Table.prototype, extend({
 		this.reverse = reverse;
 		this.reload();
 	}),
+	emptyRow: d.gs(function () {
+		defineProperty(this, 'emptyRow', d(this.el('tr', this.el('td',
+			{ colspan: this.cellRenderers.length, class: 'empty' }, "No data"))));
+		return this.emptyRow;
+	}),
 	toDOM: d(function () { return this.dom; })
 }, memoize(function (item) {
 	return makeElement.call(this.document, 'tr',
@@ -219,8 +225,13 @@ ee(Object.defineProperties(Table.prototype, extend({
 		}, this));
 }, { method: 'rowRender' }), d.binder({
 	reload: d(function () {
-		var list = this.list.map(this.rowRender);
-		if (this.reverse) list.reverse();
+		var list;
+		if (this.list.length) {
+			list = this.list.map(this.rowRender);
+			if (this.reverse) list.reverse();
+		} else {
+			list = [this.emptyRow];
+		}
 		replaceContent.call(this.body, list);
 	})
 }))));
