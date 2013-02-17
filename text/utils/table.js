@@ -6,6 +6,7 @@ var CustomError    = require('es5-ext/lib/Error/custom')
   , noop           = require('es5-ext/lib/Function/noop')
   , d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
+  , oForEach       = require('es5-ext/lib/Object/for-each')
   , callable       = require('es5-ext/lib/Object/valid-callable')
   , memoize        = require('memoizee/lib/regular')
   , ee             = require('event-emitter/lib/core')
@@ -172,17 +173,22 @@ ee(Object.defineProperties(Table.prototype, extend({
 			reverse: Boolean(reverse)
 		});
 	}),
-	setFilterMethod: d(function (name, set) {
-		this.filterMethods[name] = set;
+	setFilterMethod: d(function (name, cb) {
+		this.filterMethods[name] = cb;
 	}),
 	reset: d(function (data) {
+		var set;
 		data = Object(data);
-		this.set = this.obj;
-		if (data.filter && this.filterMethods[data.filter]) {
-			this.set = this.filterMethods[data.filter];
-		} else {
-			this.set = this.obj;
-		}
+		oForEach(this.filterMethods, function (fn, name) {
+			var filtered;
+			if (!data[name]) return;
+			filtered = fn(data[name]);
+			if (!filtered) return;
+			if (set) set = set.intersection(filtered);
+			else set = filtered;
+		});
+		if (set) this.set = set;
+		else this.set = this.obj;
 		this.sortBy(data.sort || '', data.reverse);
 	}),
 	sortBy: d(function (name, reverse) {
