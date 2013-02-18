@@ -1,7 +1,7 @@
 'use strict';
 
-var d         = require('es5-ext/lib/Object/descriptor')
-  , callable  = require('es5-ext/lib/Object/valid-callable')
+var isFunction = require('es5-ext/lib/Function/is-function')
+  , d         = require('es5-ext/lib/Object/descriptor')
   , validNode = require('dom-ext/lib/Node/valid-node')
   , exclude   = require('dom-ext/lib/Node/prototype/_exclude')
   , include   = require('dom-ext/lib/Node/prototype/_include')
@@ -39,14 +39,26 @@ module.exports = Object.defineProperties(relation, {
 		return this.toDOMAttrBox(document, arguments[1], arguments[2]).dom;
 	}),
 	filterDOM: d(function (dom/*, filter*/) {
-		var filter = arguments[1], onchange;
+		var filter = arguments[1], onchange, value;
 		validNode(dom);
-		if (filter != null) callable(filter);
-		else filter = defaultFilter;
+		if (filter == null) {
+			filter = defaultFilter;
+		} else if (!isFunction(filter)) {
+			value = filter;
+			filter = function (current) {
+				return current === value;
+			};
+		}
 		this.on('change', onchange = function (value) {
 			if (filter(value)) include.call(dom);
 			else exclude.call(dom);
 		});
-		onchange(this.value);
+		if (filter(this.value)) {
+			include.call(dom);
+			return dom;
+		} else {
+			exclude.call(dom);
+			return dom._domExtLocation;
+		}
 	})
 });
