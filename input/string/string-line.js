@@ -17,6 +17,10 @@ Input = function (document, ns/*, options*/) {
 	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
 	this.dom.addEventListener('input', this.onchange.bind(this), false);
 };
-Input.prototype = Object.create(DOMInput.prototype, { constructor: d(Input) });
+Input.prototype = Object.create(DOMInput.prototype, {
+	constructor: d(Input),
+	knownAttributes: d({ class: true, id: true, required: true, style: true,
+		placeholder: true })
+});
 
 module.exports = Object.defineProperty(StringLine, 'DOMInput', d(Input));

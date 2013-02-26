@@ -17,6 +17,8 @@ Input = function (document, ns/*, options*/) {
 };
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
+	knownAttributes: d({ class: true, id: true, required: true, style: true,
+		placeholder: true }),
 	value: d.gs(function () {
 		var value = this.dom.value.trim().toLowerCase();
 		return (value === '') ? null : value;
