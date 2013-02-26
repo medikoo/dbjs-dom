@@ -10,7 +10,7 @@ require('./_multiple');
 
 module.exports = Object.defineProperties(Base, {
 	unserializeDOMInputValue: d(function (value) {
-		return (value == null) ? null : String(value);
+		return (value == null) ? null : String(value).trim();
 	}),
 	toDOMInput: d(function (document/*, options*/) {
 		var box, options = Object(arguments[1]);
