@@ -1,12 +1,14 @@
 'use strict';
 
-var d           = require('es5-ext/lib/Object/descriptor')
+var isCopy      = require('es5-ext/lib/Array/prototype/is-copy')
+  , d           = require('es5-ext/lib/Object/descriptor')
   , Db          = require('dbjs')
   , DOMRadio    = require('./_controls/radio')
   , DOMCheckbox = require('./_controls/checkbox')
 
+  , isArray = Array.isArray
   , BooleanType = Db.Boolean
-  , Radio, Checkbox;
+  , Radio, Checkbox, arrResult = ['0', '1'].sort();
 
 Radio = function (document, ns/*, options*/) {
 	var trueText, falseText, options = Object(arguments[2]);
@@ -68,6 +70,14 @@ Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 });
 
 module.exports = Object.defineProperties(BooleanType, {
+	unserializeDOMInputValue: d(function (value) {
+		if (value === '0') return false;
+		if (value === '1') return true;
+		if (isArray(value) && isCopy.call(value.sort(), arrResult)) {
+			return true;
+		}
+		return null;
+	}),
 	DOMRadio: d(Radio),
 	DOMCheckbox: d(Checkbox),
 	toDOMInput: d(function (document/*, options*/) {

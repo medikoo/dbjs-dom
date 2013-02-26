@@ -45,4 +45,11 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	})
 });
 
-module.exports = Object.defineProperty(DateType, 'DOMInput', d(Input));
+module.exports = Object.defineProperties(DateType, {
+	unserializeDOMInputValue: d(function (value) {
+		if (value == null) return null;
+		value = Date.parse(value);
+		return isNaN(value) ? null : DateType(value);
+	}),
+	DOMInput: d(Input),
+});

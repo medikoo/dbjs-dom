@@ -90,6 +90,12 @@ Radio.prototype = Object.create(DOMRadio.prototype, extend({
 })));
 
 module.exports = Object.defineProperties(ObjectType, {
+	unserializeDOMInputValue: d(function (value) {
+		if (value == null) return null;
+		if (!this.propertyIsEnumerable(value)) return null;
+		if (this[value]._id_ !== value) return null;
+		return this[value];
+	}),
 	DOMRadio: d(Radio),
 	DOMSelect: d(Select),
 	toDOMInput: d(function (document/*, options*/) {

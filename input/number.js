@@ -37,4 +37,10 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	})
 });
 
-module.exports = Object.defineProperty(NumberType, 'DOMInput', d(Input));
+module.exports = Object.defineProperties(NumberType, {
+	unserializeDOMInputValue: d(function (value) {
+		if (value == null) return null;
+		return isNaN(value) ? null : Number(value);
+	}),
+	DOMInput: d(Input)
+});
