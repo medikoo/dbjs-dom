@@ -6,6 +6,7 @@ var copy     = require('es5-ext/lib/Object/copy')
   , Db       = require('../')
   , relation = require('dbjs/lib/_relation')
 
+  , normRe = /[\0-,.-\/:-@\[-`\{-\uffff]/g
   , apply = Function.prototype.apply
   , Base = Db.Base, FieldsetItem;
 
@@ -55,6 +56,8 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 	this.input.castAttribute('id', 'input-' + this.id);
 
 	this.domError.setAttribute('id', 'error-' + this.id);
+	this.domError.classList.add('error-message-' +
+		this.input.name.replace(normRe, '-'));
 
 	this.input.on('change:changed', function (status) {
 		this.dom.classList[status ? 'add' : 'remove']('changed');
