@@ -27,7 +27,9 @@ Input.prototype = Object.create(DOMInput.prototype, {
 
 module.exports = Object.defineProperties(Email, {
 	unserializeDOMInputValue: d(function (value) {
-		return (value == null) ? null : String(value).trim().toLowerCase();
+		if (value == null) return null;
+		value = String(value).trim();
+		return (value === '') ? null : value.toLowerCase();
 	}),
 	DOMInput: d(Input)
 });
