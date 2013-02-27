@@ -72,7 +72,8 @@ Object.defineProperties(Fieldset.prototype, extend({
 	toDOM: d(function () { return this.dom; })
 }, d.binder({
 	reload: d(function () {
-		replaceContent.call(this.domItems, this.items);
+		replaceContent.call(this.domItems, this.options.prepend, this.items,
+			this.options.append);
 	})
 })));
 
