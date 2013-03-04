@@ -33,7 +33,7 @@ module.exports = Object.defineProperties(relation, {
 			}
 			input.value = value;
 		};
-		if (multiple) {
+		if (this.__multiple.__value) {
 			this.on('add', onChange);
 			this.on('delete', onChange);
 		} else {
