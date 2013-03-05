@@ -4,15 +4,30 @@ var d        = require('es5-ext/lib/Object/descriptor')
   , Db       = require('dbjs')
   , DOMInput = require('./_controls/input')
 
+  , isValidNumber = function (n) { return (n != null) && !isNaN(n); }
   , NumberType = Db.Number
-  , Input;
+  , Input, getOption;
+
+getOption = function (name, options, def) {
+	if (isValidNumber(options[name])) {
+		return Number(options[name]);
+	} else if (options.relation &&
+			isValidNumber(options.relation['__' + name].__value)) {
+		return Number(options.relation['__' + name].__value);
+	}
+	return def;
+};
 
 Input = function (document, ns/*, options*/) {
-	DOMInput.call(this, document, ns, arguments[2]);
+	var options = Object(arguments[2]), max, min, step;
+	DOMInput.call(this, document, ns, options);
 	this.dom.setAttribute('type', 'number');
-	if (ns.max < Infinity) this.dom.setAttribute('max', ns.max);
-	if (ns.min > -Infinity) this.dom.setAttribute('min', ns.min);
-	if (ns.step) this.dom.setAttribute('step', ns.step);
+	max = getOption('max', options, ns.max);
+	if ((max != null) && (max < Infinity)) this.dom.setAttribute('max', max);
+	min = getOption('min', options, ns.min);
+	if ((min != null) && (min > -Infinity)) this.dom.setAttribute('min', min);
+	step = getOption('step', options, ns.step);
+	if (step != null) this.dom.setAttribute('step', step);
 	this.dom.addEventListener('input', this.onchange.bind(this), false);
 };
 
