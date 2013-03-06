@@ -5,6 +5,7 @@ var compact        = require('es5-ext/lib/Array/prototype/compact')
   , d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
   , forEach        = require('es5-ext/lib/Object/for-each')
+  , safeTraverse   = require('es5-ext/lib/Object/safe-traverse')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
   , getObject      = require('dbjs/lib/objects')._get
   , DOMCheckbox    = require('../../_controls/checkbox')
@@ -51,7 +52,7 @@ Select.prototype = Object.create(DOMSelect.prototype, extend({
 })));
 
 Radio = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = this.options = Object(arguments[2]);
 	DOMRadio.call(this, document, ns, options);
 	this.dom.classList.add('enum');
 	this.dbOptions = ns.options.itemsListByOrder()
@@ -64,6 +65,7 @@ Radio.prototype = Object.create(DOMRadio.prototype, extend({
 	constructor: d(Radio),
 	createOption: d(function (item) {
 		return createRadio.call(this, item._subject_,
+			safeTraverse(this.options, 'controls', item._subject_, 'label') ||
 			item._label.toDOM(this.document));
 	})
 }, d.binder({
