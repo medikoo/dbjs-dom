@@ -4,6 +4,7 @@ var d             = require('es5-ext/lib/Object/descriptor')
   , forEach       = require('es5-ext/lib/Object/for-each')
   , some          = require('es5-ext/lib/Object/some')
   , castAttribute = require('dom-ext/lib/Element/prototype/cast-attribute')
+  , elExtend      = require('dom-ext/lib/Element/prototype/extend')
   , Db            = require('dbjs')
   , DOMInput      = require('./input')
 
@@ -34,7 +35,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		input.setAttribute('value', value);
 		if (this._name) input.setAttribute('name', this._name);
 		label.appendChild(this.document.createTextNode(' '));
-		label.appendChild(labelTextDOM);
+		elExtend.call(label, labelTextDOM);
 		input.addEventListener('change', this.onchange.bind(this), false);
 		return dom;
 	}),

@@ -2,6 +2,7 @@
 
 var d        = require('es5-ext/lib/Object/descriptor')
   , forEach  = require('es5-ext/lib/Object/for-each')
+  , elExtend = require('dom-ext/lib/Element/prototype/extend')
   , Db       = require('dbjs')
   , DOMInput = require('./input')
   , relation = require('dbjs/lib/_relation')
@@ -26,7 +27,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		var option;
 		option = this.items[value] = this.document.createElement('option');
 		option.setAttribute('value', value);
-		option.appendChild(labelTextDOM);
+		elExtend.call(option, labelTextDOM);
 		return option;
 	}),
 	value: d.gs(getValue, function (nu) {
