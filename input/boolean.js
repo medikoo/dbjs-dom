@@ -22,8 +22,8 @@ Radio = function (document, ns/*, options*/) {
 	this.dom.appendChild(this.createOption('1', trueText));
 	this.dom.appendChild(document.createTextNode(' '));
 	this.dom.appendChild(this.createOption('0', falseText));
-	this.trueInput = this.options['1'];
-	this.falseInput = this.options['0'];
+	this.trueInput = this.items['1'];
+	this.falseInput = this.items['0'];
 	this.castKnownAttributes(options);
 };
 

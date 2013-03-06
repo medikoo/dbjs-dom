@@ -17,14 +17,14 @@ module.exports = Input = function (document, ns/*, options*/) {
 	if (options.name) this.name = options.name;
 	this.castKnownAttributes(options);
 	this.dom._dbjsInput = this;
-	this.options = {};
+	this.items = {};
 	this.dom.addEventListener('change', this.onchange.bind(this), false);
 };
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	createOption: d(function (value, labelTextDOM) {
 		var option;
-		option = this.options[value] = this.document.createElement('option');
+		option = this.items[value] = this.document.createElement('option');
 		option.setAttribute('value', value);
 		option.appendChild(labelTextDOM);
 		return option;
@@ -38,11 +38,11 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		} else {
 			inputValue = '';
 		}
-		forEach(this.options, function (option, value) {
+		forEach(this.items, function (option, value) {
 			if (value === inputValue) return;
 			option.removeAttribute('selected');
 		});
-		this.options[inputValue].setAttribute('selected', 'selected');
+		this.items[inputValue].setAttribute('selected', 'selected');
 		this.dom.value = inputValue;
 		this._value = nu;
 		if (this.changed) this.emit('change:changed', this.changed = false);

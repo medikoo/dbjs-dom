@@ -16,7 +16,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.dom = document.createElement('ul');
 	this.dom._dbjsInput = this;
 	this.dom.setAttribute('class', 'radio');
-	this.options = {};
+	this.items = {};
 	if (options.name) this._name = options.name;
 };
 
@@ -27,7 +27,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		var dom, label, input;
 		dom = this.document.createElement('li');
 		label = dom.appendChild(this.document.createElement('label'));
-		input = this.options[value] =
+		input = this.items[value] =
 			label.appendChild(this.document.createElement('input'));
 		input._dbjsInput = this;
 		input.setAttribute('type', 'radio');
@@ -40,13 +40,13 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	}),
 	name: d.gs(function () { return this._name; }, function (name) {
 		this._name = name;
-		forEach(this.options, function (input) {
+		forEach(this.items, function (input) {
 			input.setAttribute('name', name);
 		});
 	}),
 	value: d.gs(function () {
 		var selectedValue;
-		some(this.options, function (radio) {
+		some(this.items, function (radio) {
 			if (radio.checked) {
 				selectedValue = radio.value;
 				return true;
@@ -59,21 +59,21 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			if (nu.__toString) nu = nu.__toString.__value.call(nu);
 			else nu = String(nu);
 		}
-		forEach(this.options, function (radio, value) {
+		forEach(this.items, function (radio, value) {
 			if (nu === value) return;
 			radio.checked = false;
 			radio.removeAttribute('checked');
 		});
 		if (nu != null) {
-			this.options[nu].setAttribute('checked', 'checked');
-			this.options[nu].checked = true;
+			this.items[nu].setAttribute('checked', 'checked');
+			this.items[nu].checked = true;
 		}
 		this._value = nu;
 		if (this.changed) this.emit('change:changed', this.changed = false);
 	}),
 	castAttribute: d(function (name, value) {
 		if (this.inputAttributes[name]) {
-			forEach(this.options, function (input) {
+			forEach(this.items, function (input) {
 				castAttribute.call(input, name, value);
 			});
 			return;
