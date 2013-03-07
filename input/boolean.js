@@ -20,9 +20,11 @@ Radio = function (document, ns/*, options*/) {
 	falseText = (this.relation && this.relation.__falseLabel.__value) ?
 			this.relation._falseLabel.toDOM(document) :
 			ns._falseLabel.toDOM(document);
-	this.dom.appendChild(this.createOption('1', trueText));
+	this.dom.appendChild(this.createOption('1', trueText))
+		.setAttribute('data-type', 'boolean');
 	this.dom.appendChild(document.createTextNode(' '));
-	this.dom.appendChild(this.createOption('0', falseText));
+	this.dom.appendChild(this.createOption('0', falseText))
+		.setAttribute('data-type', 'boolean');
 	this.trueInput = this.items['1'];
 	this.falseInput = this.items['0'];
 	this.castKnownAttributes(options);
@@ -54,9 +56,10 @@ Checkbox = function (document, ns) {
 	DOMCheckbox.apply(this, arguments);
 	this.dom.setAttribute('value', '1');
 	this.control = this.dom;
+	this.control.setAttribute('data-type', 'boolean');
 	this.dom = makeEl.call(document, 'span', this.dom,
-		makeEl.call(document, 'input',
-			{ type: 'hidden', name: this._name, value: '0' }));
+		makeEl.call(document, 'input', { type: 'hidden', name: this._name,
+			value: '0', 'data-type': 'boolean' }));
 };
 Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 	constructor: d(Checkbox),
