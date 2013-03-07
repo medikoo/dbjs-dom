@@ -21,7 +21,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	valid: d(true),
 	knownAttributes: d(knownAttributes),
 	onchange: d(function () {
-		var value = this.checked, changedChanged;
+		var value = this.control.checked, changedChanged;
 		if (value !== this._value) {
 			if (!this.changed) {
 				this.changed = true;
@@ -35,14 +35,14 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		if (changedChanged) this.emit('change:changed', this.changed);
 	}),
 	value: d.gs(function () {
-		return this.dom.checked ? this.dom.value : null;
+		return this.control.checked ? this.control.value : null;
 	}, function (value) {
 		value = (value == null) ? false : Boolean(value.valueOf());
 		if (value) {
-			this.dom.setAttribute('checked', 'checked');
+			this.control.setAttribute('checked', 'checked');
 			this.checked = true;
 		} else {
-			this.dom.removeAttribute('checked');
+			this.control.removeAttribute('checked');
 			this.checked = false;
 		}
 		this._value = value;

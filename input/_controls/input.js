@@ -13,7 +13,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]);
 	this.document = document;
 	this.ns = ns;
-	this.dom = document.createElement('input');
+	this.control = this.dom = document.createElement('input');
 	if (options.name) this.name = options.name;
 	this.castKnownAttributes(options);
 	this.dom._dbjsInput = this;
@@ -27,7 +27,7 @@ ee(Object.defineProperties(Input.prototype, {
 	valid: d(false),
 	name: d.gs(function () { return this._name; }, function (name) {
 		this._name = name;
-		this.dom.setAttribute('name', name);
+		this.control.setAttribute('name', name);
 	}),
 	onchange: d(function () {
 		var value = this.value, changedChanged;
@@ -47,18 +47,18 @@ ee(Object.defineProperties(Input.prototype, {
 	}),
 	toDOM: d(function () { return this.dom; }),
 	value: d.gs(function () {
-		var value = this.dom.value.trim();
+		var value = this.control.value.trim();
 		return (value === '') ? null : value;
 	}, function (value) {
 		if (value == null) {
 			value = null;
-			this.dom.value = '';
-			this.dom.removeAttribute('value');
+			this.control.value = '';
+			this.control.removeAttribute('value');
 		} else {
 			if (value.__toString) value = value.__toString.__value.call(value);
 			else value = String(value);
-			this.dom.value = value;
-			this.dom.setAttribute('value', value);
+			this.control.value = value;
+			this.control.setAttribute('value', value);
 		}
 		this._value = value;
 		if (this.changed) this.emit('change:changed', this.changed = false);

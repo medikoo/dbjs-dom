@@ -2,6 +2,7 @@
 
 var isCopy      = require('es5-ext/lib/Array/prototype/is-copy')
   , d           = require('es5-ext/lib/Object/descriptor')
+  , makeEl      = require('dom-ext/lib/Document/prototype/make-element')
   , Db          = require('dbjs')
   , DOMRadio    = require('./_controls/radio')
   , DOMCheckbox = require('./_controls/checkbox')
@@ -52,16 +53,20 @@ Radio.prototype = Object.create(DOMRadio.prototype, {
 Checkbox = function (document, ns) {
 	DOMCheckbox.apply(this, arguments);
 	this.dom.setAttribute('value', '1');
+	this.control = this.dom;
+	this.dom = makeEl.call(document, 'span', this.dom,
+		makeEl.call(document, 'input',
+			{ type: 'hidden', name: this._name, value: '0' }));
 };
 Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 	constructor: d(Checkbox),
-	value: d.gs(function () { return this.dom.checked; }, function (value) {
+	value: d.gs(function () { return this.control.checked; }, function (value) {
 		value = (value == null) ? false : Boolean(value.valueOf());
 		if (!value) {
-			this.dom.removeAttribute('checked');
+			this.control.removeAttribute('checked');
 			this.checked = false;
 		} else {
-			this.dom.setAttribute('checked', 'checked');
+			this.control.setAttribute('checked', 'checked');
 			this.checked = true;
 		}
 		this._value = value;

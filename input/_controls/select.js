@@ -14,7 +14,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]);
 	this.document = document;
 	this.ns = ns;
-	this.dom = document.createElement('select');
+	this.control = this.dom = document.createElement('select');
 	if (options.name) this.name = options.name;
 	this.castKnownAttributes(options);
 	this.dom._dbjsInput = this;

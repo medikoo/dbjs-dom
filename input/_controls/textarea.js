@@ -11,7 +11,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]);
 	this.document = document;
 	this.ns = ns;
-	this.dom = document.createElement('textarea');
+	this.control = this.dom = document.createElement('textarea');
 	if (options.name) this.name = options.name;
 	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
 	this.dom.appendChild(document.createTextNode(''));
