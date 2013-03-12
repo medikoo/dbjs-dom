@@ -1,11 +1,13 @@
 'use strict';
 
-var d             = require('es5-ext/lib/Object/descriptor')
+var partial       = require('es5-ext/lib/Function/prototype/partial')
+  , d             = require('es5-ext/lib/Object/descriptor')
   , forEach       = require('es5-ext/lib/Object/for-each')
   , some          = require('es5-ext/lib/Object/some')
   , castAttribute = require('dom-ext/lib/Element/prototype/cast-attribute')
   , elExtend      = require('dom-ext/lib/Element/prototype/extend')
   , Db            = require('dbjs')
+  , nextTick      = require('next-tick')
   , DOMInput      = require('./input')
 
   , Input;
@@ -19,6 +21,8 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.dom.setAttribute('class', 'radio');
 	this.items = {};
 	if (options.name) this._name = options.name;
+	document.addEventListener('reset',
+		partial.call(nextTick, this.onchange.bind(this)), false);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {

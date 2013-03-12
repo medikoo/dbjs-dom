@@ -43,6 +43,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.make = makeElement.bind(document);
 	this.items = [];
 	this.render();
+	document.addEventListener('reset', this.onchange, false);
 };
 
 ee(Object.defineProperties(Input.prototype, extend({

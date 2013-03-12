@@ -1,7 +1,9 @@
 'use strict';
 
-var d        = require('es5-ext/lib/Object/descriptor')
+var partial  = require('es5-ext/lib/Function/prototype/partial')
+  , d        = require('es5-ext/lib/Object/descriptor')
   , Db       = require('dbjs')
+  , nextTick = require('next-tick')
   , DOMInput = require('./input')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
@@ -15,6 +17,8 @@ module.exports = Input = function (document, ns/*, options*/) {
 	if (options.name) this.name = options.name;
 	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
 	this.dom.appendChild(document.createTextNode(''));
+	document.addEventListener('reset',
+		partial.call(nextTick, this.onchange.bind(this)), false);
 	this.dom.addEventListener('input', this.onchange.bind(this), false);
 	this.castKnownAttributes(options);
 	this.dom._dbjsInput = this;
