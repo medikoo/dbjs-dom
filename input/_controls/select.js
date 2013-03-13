@@ -41,6 +41,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			else nu = String(nu);
 			inputValue = nu;
 		} else {
+			nu = null;
 			inputValue = '';
 		}
 		forEach(this.items, function (option, value) {

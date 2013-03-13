@@ -26,6 +26,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		return DateType.normalize(new Date(Date.parse(this.dom.value)));
 	}, function (value) {
 		if (value == null) {
+			value = null;
 			this.dom.value = '';
 			this.dom.removeAttribute('value');
 		} else {

@@ -63,6 +63,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		if (nu != null) {
 			if (nu.__toString) nu = nu.__toString.__value.call(nu);
 			else nu = String(nu);
+		} else {
+			nu = null;
 		}
 		forEach(this.items, function (radio, value) {
 			if (nu === value) return;

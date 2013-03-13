@@ -38,6 +38,7 @@ Radio.prototype = Object.create(DOMRadio.prototype, {
 		else return null;
 	}, function (value) {
 		if (value != null) value = Boolean(value.valueOf());
+		else value = null;
 
 		this.trueInput.checked = (value === true);
 		if (value === true) this.trueInput.setAttribute('checked', 'checked');

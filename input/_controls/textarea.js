@@ -27,6 +27,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	value: d.gs(getValue, function (value) {
 		if (value == null) {
+			value = null;
 			this.dom.value = '';
 			this.dom.firstChild.data = '';
 		} else {
