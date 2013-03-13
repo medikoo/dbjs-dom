@@ -82,6 +82,7 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 	this.input.on('change:valid', function (status) {
 		this.dom.classList[status ? 'remove' : 'add']('invalid');
 	}.bind(this));
+	if (!this.valid) this.dom.classList.add('invalid');
 };
 
 Object.defineProperties(FieldsetItem.prototype, {
