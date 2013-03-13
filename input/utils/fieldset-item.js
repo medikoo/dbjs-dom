@@ -67,6 +67,7 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 			if (((nu != null) && (old != null)) || (nu == old)) return; //jslint: skip
 			this.dom.classList[(nu == null) ? 'add' : 'remove']('dbjs-invalid');
 		}.bind(this));
+		if (relation.value == null) this.dom.classList.add('dbjs-invalid');
 	}
 	if (!relation.hasOwnProperty('_value')) {
 		this.dom.classList.add('dbjs-undefined');
