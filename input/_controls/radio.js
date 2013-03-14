@@ -20,6 +20,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.dom._dbjsInput = this;
 	this.dom.setAttribute('class', 'radio');
 	this.items = {};
+	this.listItems = {};
 	if (options.name) this._name = options.name;
 	document.addEventListener('reset',
 		partial.call(nextTick, this.onchange.bind(this)), false);
@@ -30,7 +31,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	inputAttributes: d({ name: true, required: true, disabled: true }),
 	createOption: d(function (value, labelTextDOM) {
 		var dom, label, input;
-		dom = this.document.createElement('li');
+		dom = this.listItems[value] = this.document.createElement('li');
 		label = dom.appendChild(this.document.createElement('label'));
 		input = this.items[value] =
 			label.appendChild(this.document.createElement('input'));
