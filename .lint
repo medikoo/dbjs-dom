@@ -28,3 +28,7 @@ jshint.global module, require, exports
 jshint.smarttabs
 jshint.eqnull
 jshint.expr
+
+./input/components
+jslint_medikoo.predef+ setTimeout
+jshint.global+ setTimeout
