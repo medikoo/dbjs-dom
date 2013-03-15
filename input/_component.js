@@ -13,7 +13,7 @@ module.exports = Input = function (rel, inputs, rels, dom) {
 	this.inputs = inputs;
 	this.relations = rels;
 	this.fnValue = rel._value;
-	this._name = rel.name;
+	this._name = rel._id_;
 	this.required = rel.__required.__value;
 	this.dom = dom;
 	this.onchange = this.onchange.bind(this);
