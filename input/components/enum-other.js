@@ -42,6 +42,9 @@ toDOMInput = function (document/*, options*/) {
 	otherItem.appendChild(otherInput =
 		otherField.toDOMInput(document, options).toDOM());
 
+	dom.on('change', function () {
+		otherInput.disabled = (dom.value !== 'other');
+	});
 	return dom;
 };
 
