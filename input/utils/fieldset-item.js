@@ -2,12 +2,13 @@
 
 var copy     = require('es5-ext/lib/Object/copy')
   , d        = require('es5-ext/lib/Object/descriptor')
+  , forEach  = require('es5-ext/lib/Object/for-each')
   , el       = require('dom-ext/lib/Document/prototype/make-element')
   , Db       = require('../')
   , relation = require('dbjs/lib/_relation')
 
+  , apply = Function.prototype.apply, keys = Object.keys
   , normRe = /[\0-,.-\/:-@\[-`\{-\uffff]/g
-  , apply = Function.prototype.apply
   , Base = Db.Base, FieldsetItem;
 
 module.exports = FieldsetItem = function (document, relation/*, options*/) {
@@ -69,16 +70,22 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 		}.bind(this));
 		if (relation.value == null) this.dom.classList.add('dbjs-invalid');
 	}
-	if (!relation.hasOwnProperty('_value')) {
-		this.dom.classList.add('dbjs-undefined');
-	}
-	relation.on('selfupdate', function (nu, old) {
-		if (nu && old && (nu.value !== undefined) && (old.value !== undefined)) {
-			return;
+
+	if (this.input.relations) {
+		this._trackUndefinedStatus(this.input.relations);
+	} else {
+		if (!relation.hasOwnProperty('_value')) {
+			this.dom.classList.add('dbjs-undefined');
 		}
-		this.dom.classList[(!nu || (nu.value === undefined)) ? 'add' :
-				'remove']('dbjs-undefined');
-	}.bind(this));
+		relation.on('selfupdate', function (nu, old) {
+			if (nu && old && (nu.value !== undefined) && (old.value !== undefined)) {
+				return;
+			}
+			this.dom.classList[(!nu || (nu.value === undefined)) ? 'add' :
+					'remove']('dbjs-undefined');
+		}.bind(this));
+	}
+
 	this.input.on('change:valid', function (status) {
 		this.dom.classList[status ? 'remove' : 'add']('invalid');
 	}.bind(this));
@@ -86,6 +93,28 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 };
 
 Object.defineProperties(FieldsetItem.prototype, {
+	_trackUndefinedStatus: d(function (relations) {
+		var defined = {}, onUpdate;
+
+		onUpdate = function () {
+			this.dom.classList[!keys(defined).length ? 'add' :
+					'remove']('dbjs-undefined');
+		}.bind(this);
+
+		forEach(relations, function (rel) {
+			if (rel.hasOwnProperty('_value')) defined[rel.name] = true;
+			rel.on('selfupdate', function (nu, old) {
+				if (nu && old && (nu.value !== undefined) &&
+						(old.value !== undefined)) {
+					return;
+				}
+				if (!nu || (nu.value === undefined)) delete defined[rel.name];
+				else defined[rel.name] = true;
+				onUpdate();
+			}.bind(this));
+		});
+		onUpdate();
+	}),
 	build: d(function () {
 		el = el.bind(this.document);
 		this.dom = el('tr',
