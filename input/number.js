@@ -37,7 +37,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		placeholder: true }),
 	value: d.gs(function () {
 		var value = this.control.value;
-		return isNaN(value) ? null : Number(value);
+		return ((value === '') || isNaN(value)) ? null : Number(value);
 	}, function (value) {
 		value = isNaN(value) ? null : Number(value);
 		if (value == null) {
