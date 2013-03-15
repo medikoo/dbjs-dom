@@ -21,14 +21,14 @@ getOption = function (name, options, def) {
 Input = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]), max, min, step;
 	DOMInput.call(this, document, ns, options);
-	this.dom.setAttribute('type', 'number');
+	this.control.setAttribute('type', 'number');
 	max = getOption('max', options, ns.max);
-	if ((max != null) && (max < Infinity)) this.dom.setAttribute('max', max);
+	if ((max != null) && (max < Infinity)) this.control.setAttribute('max', max);
 	min = getOption('min', options, ns.min);
-	if ((min != null) && (min > -Infinity)) this.dom.setAttribute('min', min);
+	if ((min != null) && (min > -Infinity)) this.control.setAttribute('min', min);
 	step = getOption('step', options, ns.step);
-	if (step != null) this.dom.setAttribute('step', step);
-	this.dom.addEventListener('input', this.onchange.bind(this), false);
+	if (step != null) this.control.setAttribute('step', step);
+	this.control.addEventListener('input', this.onchange.bind(this), false);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
@@ -36,16 +36,16 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	knownAttributes: d({ class: true, id: true, required: true, style: true,
 		placeholder: true }),
 	value: d.gs(function () {
-		var value = this.dom.value;
+		var value = this.control.value;
 		return isNaN(value) ? null : Number(value);
 	}, function (value) {
 		value = isNaN(value) ? null : Number(value);
 		if (value == null) {
-			this.dom.value = '';
-			this.dom.removeAttribute('value');
+			this.control.value = '';
+			this.control.removeAttribute('value');
 		} else {
-			this.dom.value = value;
-			this.dom.setAttribute('value', value);
+			this.control.value = value;
+			this.control.setAttribute('value', value);
 		}
 		this._value = value;
 		if (this.changed) this.emit('change:changed', this.changed = false);
