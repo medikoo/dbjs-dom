@@ -53,7 +53,7 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 	this.dom.classList.add('dbjs');
 
 	this.domLabel.setAttribute('for', 'input-' + this.id);
-	this.input.castAttribute('id', 'input-' + this.id);
+	(this.input.control || this.input.dom).setAttribute('id', 'input-' + this.id);
 
 	this.domError.setAttribute('id', 'error-' + this.id);
 	this.domError.classList.add('error-message-' +
