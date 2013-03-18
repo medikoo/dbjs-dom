@@ -15,7 +15,7 @@ var CustomError    = require('es5-ext/lib/Error/custom')
   , makeElement    = require('dom-ext/lib/Document/prototype/make-element')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
   , validSet       = require('set-collection/lib/valid-set')
-  , stringify      = require('querystring').stringify
+  , stringify      = require('querystring-x/encode')
   , Db             = require('dbjs')
 
   , isArray = Array.isArray, map = Array.prototype.map
