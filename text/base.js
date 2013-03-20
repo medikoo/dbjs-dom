@@ -21,7 +21,7 @@ Object.defineProperties(Base, {
 
 Object.defineProperties(Base.prototype, {
 	toDOMText: d(function (document/*, options*/) {
-		var text = new this.ns.toDOMText(document, arguments[1]);
+		var text = this.ns.toDOMText(document, arguments[1]);
 		text.value = this;
 		return text;
 	}),
