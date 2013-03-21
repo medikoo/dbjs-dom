@@ -16,9 +16,8 @@ module.exports = Input = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]);
 	this.document = document;
 	this.ns = ns;
-	this.dom = document.createElement('ul');
+	this.createContainer();
 	this.dom._dbjsInput = this;
-	this.dom.setAttribute('class', 'radio');
 	this.items = {};
 	this.listItems = {};
 	if (options.name) this._name = options.name;
@@ -29,6 +28,10 @@ module.exports = Input = function (document, ns/*, options*/) {
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	inputAttributes: d({ name: true, required: true, disabled: true }),
+	createContainer: d(function () {
+		this.dom = this.document.createElement('ul');
+		this.dom.setAttribute('class', 'radio');
+	}),
 	createOption: d(function (value, labelTextDOM) {
 		var dom, label, input;
 		dom = this.listItems[value] = this.document.createElement('li');
