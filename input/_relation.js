@@ -15,7 +15,9 @@ module.exports = Object.defineProperties(relation, {
 		if (options.multiple == null) options.multiple = this.__multiple.__value;
 		multiple = options.multiple;
 		if (options.name == null) options.name = this._id_;
-		input = ns.toDOMInput(document, options);
+		if (options.DOMInput) input = new options.DOMInput(document, ns, options);
+		else if (this.DOMInput) input = new this.DOMInput(document, ns, options);
+		else input = ns.toDOMInput(document, options);
 		value = this.objectValue;
 		if (value && !multiple && this.__multiple.__value) {
 			value = value.values[0] || null;
