@@ -54,6 +54,7 @@ ee(Object.defineProperties(Input.prototype, {
 		var value = this.control.value.trim();
 		return (value === '') ? null : value;
 	}, function (value) {
+		var previous = this.value;
 		if (value == null) {
 			value = null;
 			this.control.value = '';
@@ -65,7 +66,7 @@ ee(Object.defineProperties(Input.prototype, {
 			this.control.setAttribute('value', value);
 		}
 		this._value = value;
-		if (this.changed) this.emit('change:changed', this.changed = false);
+		if (previous !== value) this.onchange();
 	}),
 	castAttribute: d(function (name, value) {
 		castAttribute.call(this.dom, name, value);
