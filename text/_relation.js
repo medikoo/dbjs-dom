@@ -39,6 +39,16 @@ module.exports = Object.defineProperties(relation, {
 	toDOMAttr: d(function (document/*, name, options*/) {
 		return this.toDOMAttrBox(document, arguments[1], arguments[2]).dom;
 	}),
+	lastModifiedDOM: d(function (document) {
+		var dom = document.createTextNode(''), onUpdate;
+		onUpdate = function () {
+			var value = this._lastModifiedDate_;
+			dom.data = (value == null) ? '' : value.toLocaleString();
+		};
+		this.on('change', onUpdate);
+		onUpdate.call(this);
+		return dom;
+	}),
 	filterDOM: d(function (dom/*, filter*/) {
 		var filter = arguments[1], onchange, value;
 		validNode(dom);
