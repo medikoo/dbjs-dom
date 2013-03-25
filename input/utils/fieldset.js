@@ -122,7 +122,7 @@ Object.defineProperty(Db.prototype, 'toDOMFieldset',
 
 		if (data.list) {
 			list = data.list(byOrder);
-			list.forEach(function setup(rel) {
+			list.forEach(setup = function (rel) {
 				var opts = controlOpts[rel._id_];
 				if (opts && !isNaN(opts.order)) return;
 				rel._order.on('change', list._sort);
