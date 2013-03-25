@@ -7,7 +7,8 @@ var isFunction = require('es5-ext/lib/Function/is-function')
   , include   = require('dom-ext/lib/Node/prototype/_include')
   , relation  = require('dbjs/lib/_relation')
 
-  , defaultFilter = function (value) { return value != null; };
+  , filterNull = function (value) { return value != null; }
+  , filterValue = function (value) { return value == null; };
 
 module.exports = Object.defineProperties(relation, {
 	toDOMText: d(function (document/*, options*/) {
@@ -41,8 +42,10 @@ module.exports = Object.defineProperties(relation, {
 	filterDOM: d(function (dom/*, filter*/) {
 		var filter = arguments[1], onchange, value;
 		validNode(dom);
-		if (filter == null) {
-			filter = defaultFilter;
+		if (filter === undefined) {
+			filter = filterNull;
+		} else if (filter === null) {
+			filter = filterValue;
 		} else if (!isFunction(filter)) {
 			value = filter;
 			filter = function (current) {
