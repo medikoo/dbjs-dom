@@ -12,7 +12,7 @@ var isCopy      = require('es5-ext/lib/Array/prototype/is-copy')
   , Radio, Checkbox, arrResult = ['0', '1'].sort();
 
 Radio = function (document, ns/*, options*/) {
-	var trueText, falseText, options = Object(arguments[2]);
+	var trueText, falseText, tOption, fOption, options = Object(arguments[2]);
 	DOMRadio.call(this, document, ns, options);
 	this.relation = options && options.relation;
 	trueText = (this.relation && this.relation.__trueLabel.__value) ?
@@ -20,11 +20,20 @@ Radio = function (document, ns/*, options*/) {
 	falseText = (this.relation && this.relation.__falseLabel.__value) ?
 			this.relation._falseLabel.toDOM(document) :
 			ns._falseLabel.toDOM(document);
-	this.dom.appendChild(this.createOption('1', trueText))
-		.setAttribute('data-type', 'boolean');
-	this.dom.appendChild(document.createTextNode(' '));
-	this.dom.appendChild(this.createOption('0', falseText))
-		.setAttribute('data-type', 'boolean');
+	tOption = this.createOption('1', trueText);
+	tOption.setAttribute('data-type', 'boolean');
+	fOption = this.createOption('0', falseText);
+	fOption.setAttribute('data-type', 'boolean');
+
+	if (Number(options.order) < 0) {
+		this.dom.appendChild(fOption);
+		this.dom.appendChild(document.createTextNode(' '));
+		this.dom.appendChild(tOption);
+	} else {
+		this.dom.appendChild(tOption);
+		this.dom.appendChild(document.createTextNode(' '));
+		this.dom.appendChild(fOption);
+	}
 	this.trueInput = this.items['1'];
 	this.falseInput = this.items['0'];
 	this.castKnownAttributes(options);
