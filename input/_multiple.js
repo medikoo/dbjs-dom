@@ -14,7 +14,7 @@ var contains     = require('es5-ext/lib/Array/prototype/contains')
   , nextTickOnce = require('next-tick/lib/once')
   , Base         = require('dbjs').Base
 
-  , forEach = Array.prototype.forEach
+  , indexOf = Array.prototype.indexOf, forEach = Array.prototype.forEach
   , Input, propagate;
 
 propagate = function (name) {
@@ -34,6 +34,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this._value = [];
 	this.options = copy(Object(arguments[2]));
 	this.required = Boolean(this.options.required);
+	this.min = this.options.min >>> 0;
 	delete this.options.multiple;
 	if (this.options.name) {
 		this._name = this.options.name;
@@ -87,6 +88,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 		}, this);
 		length = value.length;
 		while (this.items[length]) this.removeItem(this.items[length]);
+		while (length++ < this.min) this.addEmpty();
 		this._value = value;
 		if (this.changed) this.emit('change:changed', this.changed = false);
 	}),
@@ -121,6 +123,10 @@ ee(Object.defineProperties(Input.prototype, extend({
 	}),
 	removeItem: d(function (input) {
 		if (!contains.call(this.items, input)) return;
+		if (this.min &&
+				(indexOf.call(this.domList.childNodes, input.dom.parentNode) < 1)) {
+			return;
+		}
 		removeEl.call(input.dom.parentNode);
 		remove.call(this.items, input);
 		this.onchange();
