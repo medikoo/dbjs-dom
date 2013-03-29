@@ -116,14 +116,17 @@ ee(Object.defineProperties(Input.prototype, extend({
 		if (this._name) input.name = this._name;
 		dom = el('li');
 		extendEl.call(dom, input,
-				el('a', { onclick: this.removeItem.bind(this, input) }, 'x'));
+				el('a', { onclick: this.safeRemoveItem.bind(this, input) }, 'x'));
 		input.on('change', this.onchange);
 		this.onchange();
 		return this.domList.appendChild(dom);
 	}),
+	safeRemoveItem: d(function (input) {
+		if (this.domList.childNodes.length <= this.min) return;
+		this.removeItem(input);
+	}),
 	removeItem: d(function (input) {
 		if (!contains.call(this.items, input)) return;
-		if (this.domList.childNodes.length <= this.min) return;
 		removeEl.call(input.dom.parentNode);
 		remove.call(this.items, input);
 		this.onchange();
