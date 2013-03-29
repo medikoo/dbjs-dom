@@ -91,11 +91,21 @@ ee(Object.defineProperties(Input.prototype, extend({
 		if (this.changed) this.emit('change:changed', this.changed = false);
 	}),
 	render: d(function () {
-		var el = this.make;
+		var el = this.make, addLabel;
+		if (this.options.addLabel) {
+			addLabel = this.options.addLabel;
+		} else if (this.options.relation &&
+				this.options.relation.__addLabel.__value) {
+			addLabel = this.options.relation._addLabel;
+		} else if (this.ns.__addLabel.__value) {
+			addLabel = this.ns._addLabel;
+		} else {
+			addLabel = 'Add';
+		}
 		this.domList = el('ul');
 		this.dom = el('div', { class: 'dbjs multiple' }, this.domList,
 			el('div', { class: 'controls' },
-				el('a', { onclick: this.addEmpty }, 'Add')));
+				el('a', { onclick: this.addEmpty }, addLabel)));
 	}),
 	renderItem: d(function (input) {
 		var el = this.make, dom;
