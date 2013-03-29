@@ -6,18 +6,26 @@ var d        = require('es5-ext/lib/Object/descriptor')
 
 module.exports = Object.defineProperties(relation, {
 	toDOMInput: d(function (document/*, options*/) {
-		var input, options, ns, required, onChange, multiple, value;
+		var input, options, ns, required;
 		options = Object(arguments[1]);
 		ns = this.__ns.__value;
 		options.relation = this;
 		required = this.__required.__value;
 		if (required && (options.required == null)) options.required = true;
 		if (options.multiple == null) options.multiple = this.__multiple.__value;
-		multiple = options.multiple;
 		if (options.name == null) options.name = this._id_;
 		if (options.DOMInput) input = new options.DOMInput(document, ns, options);
 		else if (this.DOMInput) input = new this.DOMInput(document, ns, options);
 		else input = ns.toDOMInput(document, options);
+		return this.assignDOMInput(input, options);
+	}),
+	assignDOMInput: d(function (input/*, options*/) {
+		var required, onChange, multiple, value, options;
+		options = Object(arguments[1]);
+		if (options.multiple == null) options.multiple = this.__multiple.__value;
+		multiple = options.multiple;
+		required = this.__required.__value;
+		if (input.dismiss) input.dismiss();
 		value = this.objectValue;
 		if (value && !multiple && this.__multiple.__value) {
 			value = value.values[0] || null;
@@ -41,6 +49,11 @@ module.exports = Object.defineProperties(relation, {
 		} else {
 			this.on('change', onChange);
 		}
+		input.dismiss = function () {
+			this.off('add', onChange);
+			this.off('delete', onChange);
+			this.off('change', onChange);
+		}.bind(this);
 		return input;
 	}),
 	DOMId: d.gs(function () {
