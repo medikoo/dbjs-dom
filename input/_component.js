@@ -4,9 +4,10 @@ var noop     = require('es5-ext/lib/Function/noop')
   , d        = require('es5-ext/lib/Object/descriptor')
   , forEach  = require('es5-ext/lib/Object/for-each')
   , map      = require('es5-ext/lib/Object/map')
-  , Base     = require('dbjs').Base
+  , Db       = require('dbjs')
   , DOMInput = require('./_controls/input')
 
+  , Base = Db.Base
   , Input;
 
 module.exports = Input = function (rel, inputs, rels, dom) {
@@ -26,8 +27,9 @@ module.exports = Input = function (rel, inputs, rels, dom) {
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	value: d.gs(function () {
-		return this.fnValue.call(map(this.inputs,
-			function (input) { return input.value; }));
+		var state = map(this.inputs, function (input) { return input.value; });
+		state.Db = Db;
+		return this.fnValue.call(state);
 	}, noop)
 });
 
