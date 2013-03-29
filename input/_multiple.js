@@ -13,6 +13,7 @@ var contains     = require('es5-ext/lib/Array/prototype/contains')
   , removeEl     = require('dom-ext/lib/Element/prototype/remove')
   , nextTickOnce = require('next-tick/lib/once')
   , Base         = require('dbjs').Base
+  , serialize    = require('dbjs/lib/utils/serialize')
 
   , forEach = Array.prototype.forEach
   , Input, propagate;
@@ -80,7 +81,9 @@ ee(Object.defineProperties(Input.prototype, extend({
 		return this.items.map(function (item) { return item.value; });
 	}, function (value) {
 		var length;
-		value = value.values;
+		value = value.values.map(serialize).sort(function (a, b) {
+			return value[a].order - value[b].order;
+		}).map(function (key) { return value[key]._subject_; });
 		value.forEach(function (value, index) {
 			var item = this.items[index];
 			if (!item) item = this.addEmpty();
