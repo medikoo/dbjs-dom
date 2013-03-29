@@ -80,18 +80,22 @@ ee(Object.defineProperties(Input.prototype, extend({
 	value: d.gs(function () {
 		return this.items.map(function (item) { return item.value; });
 	}, function (value) {
-		var length;
+		var length, item;
 		value = value.values.map(serialize).sort(function (a, b) {
 			return value[a].order - value[b].order;
 		}).map(function (key) { return value[key]._subject_; });
 		value.forEach(function (value, index) {
 			var item = this.items[index];
 			if (!item) item = this.addEmpty();
+			item.index = index;
 			item.value = value;
 		}, this);
 		length = value.length;
 		while (this.items[length]) this.removeItem(this.items[length]);
-		while (length++ < this.min) this.addEmpty();
+		while (length < this.min) {
+			item = this.addEmpty();
+			item.index = length++;
+		}
 		this._value = value;
 		if (this.changed) this.emit('change:changed', this.changed = false);
 	}),
@@ -132,6 +136,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 		if (!contains.call(this.items, input)) return;
 		removeEl.call(input.dom.parentNode);
 		remove.call(this.items, input);
+		this.items.forEach(function (item, index) { item.index = index; });
 		this.onchange();
 	}),
 	toDOM: d(function () { return this.dom; })
@@ -139,6 +144,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 	addEmpty: d(function () {
 		var item = this.ns.toDOMInput(this.document, this.options);
 		this.renderItem(item);
+		item.index = this.items.length - 1;
 		return item;
 	})
 }))));

@@ -29,9 +29,20 @@ ee(Object.defineProperties(Input.prototype, {
 	changed: d(false),
 	required: d(false),
 	valid: d(false),
-	name: d.gs(function () { return this._name; }, function (name) {
-		this._name = name;
-		this.control.setAttribute('name', name);
+	name: d.gs(function () { return this._name + this._indexString; },
+		function (name) {
+			this._name = name;
+			this.control.setAttribute('name', name + this._indexString);
+		}),
+	_index: d(null),
+	_indexString: d.gs(function () {
+		return (this._index == null) ? '' : '[' + this._index + ']';
+	}),
+	index: d.gs(function () { return this._index; }, function (index) {
+		index = (index == null) ? null : (index >>> 0);
+		if (index === this._index) return;
+		this._index = index;
+		this.control.setAttribute('name', this._name + this._indexString);
 	}),
 	onchange: d(function () {
 		var value = this.value, changedChanged;

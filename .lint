@@ -33,5 +33,6 @@ jshint.expr
 jslint_medikoo.predef+ setTimeout
 jshint.global+ setTimeout
 
+./input/_controls/input.js
 ./input/_multiple.js
 jslint_medikoo.bitwise
