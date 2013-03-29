@@ -14,7 +14,7 @@ var contains     = require('es5-ext/lib/Array/prototype/contains')
   , nextTickOnce = require('next-tick/lib/once')
   , Base         = require('dbjs').Base
 
-  , indexOf = Array.prototype.indexOf, forEach = Array.prototype.forEach
+  , forEach = Array.prototype.forEach
   , Input, propagate;
 
 propagate = function (name) {
@@ -123,10 +123,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 	}),
 	removeItem: d(function (input) {
 		if (!contains.call(this.items, input)) return;
-		if (this.min &&
-				(indexOf.call(this.domList.childNodes, input.dom.parentNode) < 1)) {
-			return;
-		}
+		if (this.domList.childNodes.length <= this.min) return;
 		removeEl.call(input.dom.parentNode);
 		remove.call(this.items, input);
 		this.onchange();
