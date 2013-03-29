@@ -2,6 +2,8 @@
 
 var d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
+  , every          = require('es5-ext/lib/Object/every')
+  , isPlainObject  = require('es5-ext/lib/Object/is-plain-object')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
   , ObjectType     = require('dbjs').Object
   , getObject      = require('dbjs/lib/objects')._get
@@ -91,7 +93,19 @@ Radio.prototype = Object.create(DOMRadio.prototype, extend({
 
 module.exports = Object.defineProperties(ObjectType, {
 	unserializeDOMInputValue: d(function (value) {
+		var proto;
 		if (value == null) return null;
+		if (isPlainObject(value)) {
+			proto = this.prototype;
+			if (every(value, function (subValue, name) {
+					subValue = proto.get(name).ns.unserializeDOMInputValue(subValue);
+					value[name] = subValue;
+					return (subValue == null);
+				})) {
+				return null;
+			}
+			return value;
+		}
 		if (!this.propertyIsEnumerable(value)) return null;
 		if (this[value]._id_ !== value) return null;
 		return this[value];
