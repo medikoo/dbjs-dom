@@ -5,6 +5,7 @@ var isFunction = require('es5-ext/lib/Function/is-function')
   , validNode  = require('dom-ext/lib/Node/valid-node')
   , exclude    = require('dom-ext/lib/Node/prototype/_exclude')
   , include    = require('dom-ext/lib/Node/prototype/_include')
+  , Base       = require('dbjs').Base
   , relation   = require('dbjs/lib/_relation')
   , DOMValue   = require('./utils/rel-value')
 
@@ -27,9 +28,9 @@ module.exports = Object.defineProperties(relation, {
 	assignDOMText: d(function (text) {
 		var listener;
 		text.dismiss();
-		text.value = this.objectValue;
+		text.value = this.ns === Base ? this.value : this.objectValue;
 		this.on('change', listener = function () {
-			text.value = this.objectValue;
+			text.value = this.ns === Base ? this.value : this.objectValue;
 		});
 		text.dismiss = this.off.bind(this, 'change', listener);
 		return text;
