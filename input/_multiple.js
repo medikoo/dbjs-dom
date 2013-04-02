@@ -7,6 +7,7 @@ var contains     = require('es5-ext/lib/Array/prototype/contains')
   , copy         = require('es5-ext/lib/Object/copy')
   , d            = require('es5-ext/lib/Object/descriptor')
   , extend       = require('es5-ext/lib/Object/extend')
+  , isCallable   = require('es5-ext/lib/Object/is-callable')
   , ee           = require('event-emitter/lib/core')
   , makeElement  = require('dom-ext/lib/Document/prototype/make-element')
   , extendEl     = require('dom-ext/lib/Element/prototype/extend')
@@ -40,6 +41,9 @@ module.exports = Input = function (document, ns/*, options*/) {
 	if (this.options.name) {
 		this._name = this.options.name;
 		delete this.options.name;
+	}
+	if (isCallable(this.options.deleteLabel)) {
+		this.deleteLabel = this.options.deleteLabel;
 	}
 	this.onchange = nextTickOnce(this.onchange.bind(this));
 	this.make = makeElement.bind(document);
@@ -99,6 +103,9 @@ ee(Object.defineProperties(Input.prototype, extend({
 		this._value = value;
 		if (this.changed) this.emit('change:changed', this.changed = false);
 	}),
+	deleteLabel: d(function () {
+		return 'x';
+	}),
 	render: d(function () {
 		var el = this.make, addLabel;
 		if (this.options.addLabel) {
@@ -123,7 +130,8 @@ ee(Object.defineProperties(Input.prototype, extend({
 		if (this._name) input.name = this._name;
 		dom = el('li');
 		extendEl.call(dom, input,
-				el('a', { onclick: this.safeRemoveItem.bind(this, input) }, 'x'));
+				el('a', { onclick: this.safeRemoveItem.bind(this, input) },
+					this.deleteLabel()));
 		input.on('change', this.onchange);
 		this.onchange();
 		return this.domList.appendChild(dom);
