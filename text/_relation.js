@@ -9,6 +9,7 @@ var isFunction = require('es5-ext/lib/Function/is-function')
   , relation   = require('dbjs/lib/_relation')
   , DOMValue   = require('./utils/rel-value')
 
+  , defineProperty = Object.defineProperty
   , filterNull = function (value) { return value != null; }
   , filterValue = function (value) { return value == null; };
 
@@ -71,10 +72,14 @@ module.exports = Object.defineProperties(relation, {
 			else exclude.call(dom);
 		});
 		if (filter(this.value)) {
-			include.call(dom);
+			if (dom._domExtLocation) include.call(dom);
 			return dom;
 		} else {
 			exclude.call(dom);
+			if (!dom._domExtLocation) {
+				defineProperty(dom, '_domExtLocation',
+					d(dom.ownerDocument.createTextNode('')));
+			}
 			return dom._domExtLocation;
 		}
 	})
