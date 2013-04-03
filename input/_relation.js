@@ -1,28 +1,36 @@
 'use strict';
 
 var d        = require('es5-ext/lib/Object/descriptor')
+  , copy     = require('es5-ext/lib/Object/copy')
   , Db       = require('dbjs')
-  , relation = require('dbjs/lib/_relation');
+  , relation = require('dbjs/lib/_relation')
+
+  , prepareOptions;
+
+prepareOptions = function (rel, options) {
+	var required;
+	options = copy(Object(options));
+	options.relation = rel;
+	required = rel.__required.__value;
+	if (required && (options.required == null)) options.required = true;
+	if (options.multiple == null) options.multiple = rel.__multiple.__value;
+	if (options.name == null) options.name = rel._id_;
+	return options;
+};
 
 module.exports = Object.defineProperties(relation, {
 	toDOMInput: d(function (document/*, options*/) {
-		var input, options, ns, required;
-		options = Object(arguments[1]);
+		var input, options, ns;
+		options = prepareOptions(this, arguments[1]);
 		ns = this.__ns.__value;
-		options.relation = this;
-		required = this.__required.__value;
-		if (required && (options.required == null)) options.required = true;
-		if (options.multiple == null) options.multiple = this.__multiple.__value;
-		if (options.name == null) options.name = this._id_;
 		if (options.DOMInput) input = new options.DOMInput(document, ns, options);
 		else if (this.DOMInput) input = new this.DOMInput(document, ns, options);
 		else input = ns.toDOMInput(document, options);
-		return this.assignDOMInput(input, options);
+		return this.assignDOMInput(input, arguments[1]);
 	}),
 	assignDOMInput: d(function (input/*, options*/) {
 		var required, onChange, multiple, value, options;
-		options = Object(arguments[1]);
-		if (options.multiple == null) options.multiple = this.__multiple.__value;
+		options = prepareOptions(this, arguments[1]);
 		multiple = options.multiple;
 		required = this.__required.__value;
 		if (input.dismiss) input.dismiss();
