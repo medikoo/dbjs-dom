@@ -2,6 +2,7 @@
 
 var d        = require('es5-ext/lib/Object/descriptor')
   , copy     = require('es5-ext/lib/Object/copy')
+  , replace  = require('dom-ext/lib/Element/prototype/replace')
   , Db       = require('dbjs')
   , relation = require('dbjs/lib/_relation')
 
@@ -29,7 +30,8 @@ module.exports = Object.defineProperties(relation, {
 		return this.assignDOMInput(input, arguments[1]);
 	}),
 	assignDOMInput: d(function (input/*, options*/) {
-		var required, onChange, multiple, value, options;
+		var required, onChange, onNsUpdate, multiple, value, baseOptions, options;
+		baseOptions = arguments[1];
 		options = prepareOptions(this, arguments[1]);
 		multiple = options.multiple;
 		required = this.__required.__value;
@@ -57,10 +59,15 @@ module.exports = Object.defineProperties(relation, {
 		} else {
 			this.on('change', onChange);
 		}
+		this._ns.on('change', onNsUpdate = function () {
+			input.dismiss();
+			replace.call(input.dom, this.toDOMInput(input.document, baseOptions).dom);
+		}.bind(this));
 		input.dismiss = function () {
 			this.off('add', onChange);
 			this.off('delete', onChange);
 			this.off('change', onChange);
+			this._ns.off('change', onNsUpdate);
 		}.bind(this);
 		return input;
 	}),
