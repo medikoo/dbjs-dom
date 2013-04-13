@@ -25,7 +25,7 @@ module.exports = Fieldset = function (document, list/*, options*/) {
 	this.list = list;
 	this.options = options;
 
-	if (list._isLiveList) {
+	if (list.liveMap) {
 		this.items = list.liveMap(this.renderItem, this);
 		this.items.on('change', this.reload);
 	} else {
