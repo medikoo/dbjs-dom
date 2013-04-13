@@ -44,6 +44,8 @@ module.exports = Object.defineProperties(relation, {
 		if (required) {
 			input.required = required;
 			input.valid = (input.value != null);
+		} else {
+			input.valid = true;
 		}
 		if (options.disabled) input.castAttribute('disabled', true);
 		onChange = function () {
