@@ -2,6 +2,7 @@
 
 var partial  = require('es5-ext/lib/Function/prototype/partial')
   , d        = require('es5-ext/lib/Object/descriptor')
+  , extend   = require('es5-ext/lib/Object/extend')
   , Db       = require('dbjs')
   , nextTick = require('next-tick')
   , DOMInput = require('./input')
@@ -25,6 +26,8 @@ module.exports = Input = function (document, ns/*, options*/) {
 };
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
+	knownAttributes: d(extend({ rows: true, cols: true },
+		Input.prototype.knownAttributes)),
 	value: d.gs(getValue, function (value) {
 		if (value == null) {
 			value = null;
