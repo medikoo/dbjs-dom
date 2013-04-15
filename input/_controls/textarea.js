@@ -27,7 +27,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	knownAttributes: d(extend({ rows: true, cols: true },
-		Input.prototype.knownAttributes)),
+		DOMInput.prototype.knownAttributes)),
 	value: d.gs(getValue, function (value) {
 		if (value == null) {
 			value = null;
