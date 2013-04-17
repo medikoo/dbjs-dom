@@ -21,9 +21,7 @@ Radio = function (document, ns/*, options*/) {
 			this.relation._falseLabel.toDOM(document) :
 			ns._falseLabel.toDOM(document);
 	tOption = this.createOption('1', trueText);
-	tOption.setAttribute('data-type', 'boolean');
 	fOption = this.createOption('0', falseText);
-	fOption.setAttribute('data-type', 'boolean');
 
 	if (Number(options.order) < 0) {
 		this.dom.appendChild(fOption);
@@ -35,7 +33,9 @@ Radio = function (document, ns/*, options*/) {
 		this.dom.appendChild(fOption);
 	}
 	this.trueInput = this.items['1'];
+	this.trueInput.setAttribute('data-type', 'boolean');
 	this.falseInput = this.items['0'];
+	this.falseInput.setAttribute('data-type', 'boolean');
 	this.castKnownAttributes(options);
 };
 
