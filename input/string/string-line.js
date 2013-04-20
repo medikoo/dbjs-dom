@@ -29,6 +29,7 @@ Input = function (document, ns/*, options*/) {
 
 	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
 	this.dom.addEventListener('input', this.onchange.bind(this), false);
+	this.dom.addEventListener('keyup', this.onchange.bind(this), false);
 };
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
