@@ -103,9 +103,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 		this._value = value;
 		if (this.changed) this.emit('change:changed', this.changed = false);
 	}),
-	deleteLabel: d(function () {
-		return 'x';
-	}),
+	deleteLabel: d(function () { return 'x'; }),
 	render: d(function () {
 		var el = this.make, addLabel;
 		if (this.options.addLabel) {
