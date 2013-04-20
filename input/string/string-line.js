@@ -10,14 +10,23 @@ var d        = require('es5-ext/lib/Object/descriptor')
 require('../');
 
 Input = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]), pattern;
+	var options = Object(arguments[2]), pattern, mask;
 	DOMInput.call(this, document, ns, options);
 	this.dom.setAttribute('type', 'text');
+
 	if (options.relation && options.relation.__pattern.__value) {
 		pattern = Db.RegExp(options.relation.__pattern.__value);
 	}
 	if (!pattern) pattern = ns.pattern;
 	this.dom.setAttribute('pattern', pattern.source.slice(1, -1));
+
+	if (options.relation && options.relation.__mask &&
+			options.relation.__mask.__value) {
+		mask = StringLine(options.relation.__mask.__value);
+	}
+	if (!mask) mask = ns.mask;
+	if (mask) this.dom.setAttribute('data-mask', mask);
+
 	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
 	this.dom.addEventListener('input', this.onchange.bind(this), false);
 };
