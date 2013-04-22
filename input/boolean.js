@@ -15,11 +15,20 @@ Radio = function (document, ns/*, options*/) {
 	var trueText, falseText, tOption, fOption, options = Object(arguments[2]);
 	DOMRadio.call(this, document, ns, options);
 	this.relation = options && options.relation;
-	trueText = (this.relation && this.relation.__trueLabel.__value) ?
-			this.relation._trueLabel.toDOM(document) : ns._trueLabel.toDOM(document);
-	falseText = (this.relation && this.relation.__falseLabel.__value) ?
-			this.relation._falseLabel.toDOM(document) :
-			ns._falseLabel.toDOM(document);
+	if (options.trueLabel) {
+		trueText = options.trueLabel;
+	} else if (this.relation && this.relation.__trueLabel.__value) {
+		trueText = this.relation._trueLabel.toDOM(document);
+	} else {
+		trueText = ns._trueLabel.toDOM(document);
+	}
+	if (options.falseLabel) {
+		falseText = options.falseLabel;
+	} else if (this.relation && this.relation.__falseLabel.__value) {
+		falseText = this.relation._falseLabel.toDOM(document);
+	} else {
+		falseText = ns._falseLabel.toDOM(document);
+	}
 	tOption = this.createOption('1', trueText);
 	fOption = this.createOption('0', falseText);
 
