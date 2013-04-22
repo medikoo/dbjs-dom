@@ -26,10 +26,10 @@ module.exports = Fieldset = function (document, list/*, options*/) {
 	this.options = options;
 
 	if (list.liveMap) {
-		this.items = list.liveMap(this.renderItem, this);
-		this.items.on('change', this.reload);
+		this.list = list.liveMap(this.renderItem, this);
+		this.list.on('change', this.reload);
 	} else {
-		this.items = list.map(this.renderItem, this);
+		this.list = list.map(this.renderItem, this);
 	}
 
 	this.render();
@@ -67,7 +67,7 @@ Object.defineProperties(Fieldset.prototype, extend({
 	toDOM: d(function () { return this.dom; })
 }, d.binder({
 	reload: d(function () {
-		replaceContent.call(this.domItems, this.options.prepend, this.items,
+		replaceContent.call(this.domItems, this.options.prepend, this.list,
 			this.options.append);
 	})
 })));
