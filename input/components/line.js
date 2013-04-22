@@ -2,6 +2,7 @@
 
 var sepItems    = require('es5-ext/lib/Array/prototype/sep-items')
   , copy        = require('es5-ext/lib/Object/copy')
+  , extend      = require('es5-ext/lib/Object/extend')
   , d           = require('es5-ext/lib/Object/descriptor')
   , makeElement = require('dom-ext/lib/Document/prototype/make-element')
   , Input       = require('../_component')
@@ -19,7 +20,11 @@ toDOMInput = function (document/*, options*/) {
 	}, this.obj).sort(function (a, b) {
 		return a.__order.__value - b.__order.__value;
 	}).map(function (rel) {
-		return (inputs[rel.name] = rel.toDOMInput(document, controlOpts));
+		var opts = controlOpts;
+		if (rel.__label.__value) {
+			opts = extend({ placeholder: rel.__label.__value }, opts);
+		}
+		return (inputs[rel.name] = rel.toDOMInput(document, opts));
 	}), (options.sep != null) ? options.sep : ' '));
 
 	return new Input(this, inputs, rels, dom);
