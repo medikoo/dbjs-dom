@@ -23,6 +23,7 @@ module.exports = Fieldset = function (document, list/*, options*/) {
 
 	this.document = document;
 	this.list = list;
+	this.items = {};
 	this.options = options;
 
 	if (list.liveMap) {
@@ -62,7 +63,8 @@ Object.defineProperties(Fieldset.prototype, extend({
 		if (this.options.idPostfix != null) {
 			controlOpts.id = rel.DOMId + this.options.idPostfix;
 		}
-		return rel.toDOMFieldsetItem(this.document, controlOpts);
+		return (this.items[rel._id_] =
+			rel.toDOMFieldsetItem(this.document, controlOpts));
 	}),
 	toDOM: d(function () { return this.dom; })
 }, d.binder({
