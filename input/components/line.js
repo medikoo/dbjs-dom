@@ -14,10 +14,13 @@ toDOMInput = function (document/*, options*/) {
 	  , el = makeElement.bind(document), dom;
 
 	controlOpts = copy(options);
-	dom = el('div', sepItems.call(this.fields.listByOrder().map(function (name) {
-		var rel = rels[name] = this.get(name);
-		return (inputs[name] = rel.toDOMInput(document, controlOpts));
-	}, this.obj), (options.sep != null) ? options.sep : ' '));
+	dom = el('div', sepItems.call(this.triggers.values.map(function (name) {
+		rels[name] = this.get(name);
+	}, this.obj).sort(function (a, b) {
+		return a.__order.__value - b.__order.__value;
+	}).map(function (rel) {
+		return (inputs[rel.name] = rel.toDOMInput(document, controlOpts));
+	}), (options.sep != null) ? options.sep : ' '));
 
 	return new Input(this, inputs, rels, dom);
 };
