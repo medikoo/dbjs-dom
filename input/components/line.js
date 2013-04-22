@@ -15,7 +15,7 @@ toDOMInput = function (document/*, options*/) {
 
 	controlOpts = copy(options);
 	dom = el('div', sepItems.call(this.triggers.values.map(function (name) {
-		rels[name] = this.get(name);
+		return (rels[name] = this.get(name));
 	}, this.obj).sort(function (a, b) {
 		return a.__order.__value - b.__order.__value;
 	}).map(function (rel) {
