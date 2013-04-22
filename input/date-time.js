@@ -23,16 +23,23 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	dateAttributes: d({ min: true, max: true }),
 	value: d.gs(function () {
-		return DateTime.normalize(new Date(Date.parse(this.dom.value)));
+		var value = this.dom.value;
+		if (!value) return null;
+		value = DateTime.normalize(new Date(Date.parse(value)));
+		if (this._value && (value.valueOf() === this._value.valueOf())) {
+			return this._value;
+		}
+		return value;
 	}, function (value) {
+		var strValue;
 		if (value == null) {
 			value = null;
 			this.dom.value = '';
 			this.dom.removeAttribute('value');
 		} else {
-			value = value.toISOString().slice(0, 16);
-			this.dom.value = value;
-			this.dom.setAttribute('value', value);
+			strValue = value.toISOString().slice(0, 16);
+			this.dom.value = strValue;
+			this.dom.setAttribute('value', strValue);
 		}
 		this._value = value;
 		if (this.changed) this.emit('change:changed', this.changed = false);
