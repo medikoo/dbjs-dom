@@ -1,11 +1,9 @@
 'use strict';
 
-var isDate   = require('es5-ext/lib/Date/is-date')
-  , d        = require('es5-ext/lib/Object/descriptor')
-  , DOMInput = require('../_controls/input')
+var d        = require('es5-ext/lib/Object/descriptor')
+  , DOMInput = require('../date-time').DOMInput
 
   , DateType = require('dbjs/lib/objects')._get('Date')
-  , castAttribute = DOMInput.prototype.castAttribute
   , Input;
 
 require('../');
@@ -21,43 +19,11 @@ Input = function (document, ns/*, options*/) {
 
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
-	dateAttributes: d({ min: true, max: true }),
-	value: d.gs(function () {
-		var value = this.dom.value;
-		if (!value) return null;
-		value = DateType.normalize(new Date(Date.parse(value)));
-		if (this._value && (value.valueOf() === this._value.valueOf())) {
-			return this._value;
-		}
-		return value;
-	}, function (value) {
-		var strValue;
-		if (value == null) {
-			value = null;
-			this.dom.value = '';
-			this.dom.removeAttribute('value');
-		} else {
-			strValue = value.toISOString().slice(0, 10);
-			this.dom.value = strValue;
-			this.dom.setAttribute('value', strValue);
-		}
-		this._value = value;
-		if (this.changed) this.emit('change:changed', this.changed = false);
-	}),
-	castAttribute: d(function (name, value) {
-		if (this.dateAttributes[name] && isDate(value)) {
-			this.dom.setAttribute(name, value.toISOString().slice(0, 10));
-		} else {
-			castAttribute.call(this, name, value);
-		}
+	_dateToInputValue: d(function (date) {
+		return date.toISOString().slice(0, 10);
 	})
 });
 
 module.exports = Object.defineProperties(DateType, {
-	unserializeDOMInputValue: d(function (value) {
-		if (value == null) return null;
-		value = Date.parse(value);
-		return isNaN(value) ? null : DateType(value);
-	}),
 	DOMInput: d(Input),
 });
