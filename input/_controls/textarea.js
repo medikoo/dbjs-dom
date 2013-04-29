@@ -29,18 +29,12 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	knownAttributes: d(extend({ rows: true, cols: true },
 		DOMInput.prototype.knownAttributes)),
 	value: d.gs(getValue, function (value) {
-		if (value == null) {
-			value = null;
-			this.dom.value = '';
-			this.dom.firstChild.data = '';
-		} else {
-			if (value.__toString) value = value.__toString.__value.call(value);
-			else value = String(value);
-			this.dom.value = value;
-			this.dom.firstChild.data = value;
+		var old = this.inputValue, nu = this.ns.toInputValue(value);
+		if (this._value !== nu) this.control.firstChild.data = this._value = nu;
+		if (nu !== old) {
+			this.control.value = nu;
+			this.onchange();
 		}
-		this._value = value;
-		if (this.changed) this.emit('change:changed', this.changed = false);
 	})
 });
 

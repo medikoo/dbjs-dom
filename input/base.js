@@ -9,10 +9,11 @@ require('./_controls/input');
 require('./_multiple');
 
 module.exports = Object.defineProperties(Base, {
-	unserializeDOMInputValue: d(function (value) {
-		if (value == null) return null;
-		value = String(value).trim();
-		return (value === '') ? null : value;
+	fromInputValue: d(function (value) { return value.trim() || null; }),
+	toInputValue: d(function (value) {
+		if (value == null) return '';
+		if (value.__toString) return value.__toString.__value.call(value);
+		return String(value);
 	}),
 	toDOMInput: d(function (document/*, options*/) {
 		var box, options = Object(arguments[1]);

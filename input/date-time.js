@@ -5,6 +5,7 @@ var isDate   = require('es5-ext/lib/Date/is-date')
   , DOMInput = require('./_controls/input')
 
   , DateTime = require('dbjs').DateTime
+  , re = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/
   , castAttribute = DOMInput.prototype.castAttribute
   , Input;
 
@@ -20,34 +21,9 @@ Input = function (document, ns/*, options*/) {
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	dateAttributes: d({ min: true, max: true }),
-	_dateToInputValue: d(function (date) {
-		return date.toISOString().slice(0, 16);
-	}),
-	value: d.gs(function () {
-		var value = this.dom.value;
-		if (!value) return null;
-		value = this.ns.normalize(new Date(Date.parse(value)));
-		if (this._value && (value.valueOf() === this._value.valueOf())) {
-			return this._value;
-		}
-		return value;
-	}, function (value) {
-		var strValue;
-		if (value == null) {
-			value = null;
-			this.dom.value = '';
-			this.dom.removeAttribute('value');
-		} else {
-			strValue = this._dateToInputValue(value);
-			this.dom.value = strValue;
-			this.dom.setAttribute('value', strValue);
-		}
-		this._value = value;
-		if (this.changed) this.emit('change:changed', this.changed = false);
-	}),
 	castAttribute: d(function (name, value) {
 		if (this.dateAttributes[name] && isDate(value)) {
-			this.dom.setAttribute(name, this._dateToInputValue(value));
+			this.dom.setAttribute(name, this.ns.toInputValue(value));
 		} else {
 			castAttribute.call(this, name, value);
 		}
@@ -55,10 +31,21 @@ Input.prototype = Object.create(DOMInput.prototype, {
 });
 
 module.exports = Object.defineProperties(DateTime, {
-	unserializeDOMInputValue: d(function (value) {
-		if (value == null) return null;
-		value = Date.parse(value);
-		return isNaN(value) ? null : this(value);
+	fromInputValue: d(function (value) {
+		var match, args;
+		value = value.trim();
+		if (!value) return null;
+		match = value.match(re);
+		if (!match) return null;
+		args = [Number(match[1]), Number(match[2]) - 1, Number(match[3]),
+			match[4] ? Number(match[4]) : 0, match[5] ? Number(match[5]) : 0];
+		if (this.prototype.validateCreate.apply(this.prototype, args)) {
+			return null;
+		}
+		return this.prototype.create.apply(this.prototype, args);
+	}),
+	toInputValue: d(function (value) {
+		return (value == null) ? '' : value.toISOString().slice(0, 16);
 	}),
 	DOMInput: d(Input),
 });

@@ -82,7 +82,8 @@ ee(Object.defineProperties(Input.prototype, extend({
 		this.items.forEach(function (input) { input.name = name; });
 	}),
 	value: d.gs(function () {
-		return this.items.map(function (item) { return item.value; });
+		return this.items.map(function (item) { return item.value; })
+			.filter(function (value) { return value != null; });
 	}, function (value) {
 		var length, item;
 		value = value.values.map(serialize).sort(function (a, b) {

@@ -2,7 +2,6 @@
 
 var partial  = require('es5-ext/lib/Function/prototype/partial')
   , d        = require('es5-ext/lib/Object/descriptor')
-  , forEach  = require('es5-ext/lib/Object/for-each')
   , elExtend = require('dom-ext/lib/Element/prototype/extend')
   , Db       = require('dbjs')
   , nextTick = require('next-tick')
@@ -34,24 +33,21 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		elExtend.call(option, labelTextDOM);
 		return option;
 	}),
-	value: d.gs(getValue, function (nu) {
-		var inputValue;
-		if (nu != null) {
-			if (nu.__toString) nu = nu.__toString.__value.call(nu);
-			else nu = String(nu);
-			inputValue = nu;
-		} else {
-			nu = null;
-			inputValue = '';
+	value: d.gs(getValue, function (value) {
+		var old = this.inputValue, nu = this.ns.toInputValue(value);
+		if (this._value !== nu) {
+			if (this.items.hasOwnProperty(this._value)) {
+				this.items[this._value].removeAttribute('selected');
+			}
+			if (this.items.hasOwnProperty(nu)) {
+				this.items[nu].setAttribute('selected', 'selected');
+			}
+			this._value = nu;
 		}
-		forEach(this.items, function (option, value) {
-			if (value === inputValue) return;
-			option.removeAttribute('selected');
-		});
-		this.items[inputValue].setAttribute('selected', 'selected');
-		this.dom.value = inputValue;
-		this._value = nu;
-		if (this.changed) this.emit('change:changed', this.changed = false);
+		if (nu !== old) {
+			this.control.value = nu;
+			this.onchange();
+		}
 	})
 });
 

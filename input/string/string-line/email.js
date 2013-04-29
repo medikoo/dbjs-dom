@@ -3,7 +3,6 @@
 var d        = require('es5-ext/lib/Object/descriptor')
   , DOMInput = require('../../_controls/input')
 
-  , valueSet = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').set
   , Email = require('dbjs/lib/objects')._get('Email')
   , Input;
 
@@ -18,18 +17,13 @@ Input = function (document, ns/*, options*/) {
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	knownAttributes: d({ class: true, id: true, required: true, style: true,
-		placeholder: true }),
-	value: d.gs(function () {
-		var value = this.dom.value.trim().toLowerCase();
-		return (value === '') ? null : value;
-	}, valueSet)
+		placeholder: true })
 });
 
 module.exports = Object.defineProperties(Email, {
-	unserializeDOMInputValue: d(function (value) {
-		if (value == null) return null;
-		value = String(value).trim();
-		return (value === '') ? null : value.toLowerCase();
+	fromInputValue: d(function (value) {
+		value = value.trim();
+		return value ? value.toLowerCase() : null;
 	}),
 	DOMInput: d(Input)
 });

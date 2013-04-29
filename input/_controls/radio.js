@@ -10,6 +10,7 @@ var partial       = require('es5-ext/lib/Function/prototype/partial')
   , nextTick      = require('next-tick')
   , DOMInput      = require('./input')
 
+  , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , Input;
 
 module.exports = Input = function (document, ns/*, options*/) {
@@ -53,8 +54,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			input.setAttribute('name', name);
 		});
 	}),
-	value: d.gs(function () {
-		var selectedValue;
+	inputValue: d.gs(function () {
+		var selectedValue = '';
 		some(this.items, function (radio) {
 			if (radio.checked) {
 				selectedValue = radio.value;
@@ -62,25 +63,24 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			}
 			return false;
 		});
-		return (selectedValue == null) ? null : selectedValue;
-	}, function (nu) {
-		if (nu != null) {
-			if (nu.__toString) nu = nu.__toString.__value.call(nu);
-			else nu = String(nu);
-		} else {
-			nu = null;
+		return selectedValue;
+	}),
+	value: d.gs(getValue, function (value) {
+		var old = this.inputValue, nu = this.ns.toInputValue(value);
+		if (this._value !== nu) {
+			if (this.items.hasOwnProperty(this._value)) {
+				this.items[this._value].removeAttribute('checked');
+			}
+			if (this.items.hasOwnProperty(nu)) {
+				this.items[nu].setAttribute('checked', 'checked');
+			}
+			this._value = nu;
 		}
-		forEach(this.items, function (radio, value) {
-			if (nu === value) return;
-			radio.checked = false;
-			radio.removeAttribute('checked');
-		});
-		if (nu != null) {
-			this.items[nu].setAttribute('checked', 'checked');
-			this.items[nu].checked = true;
+		if (nu !== old) {
+			if (this.items.hasOwnProperty(nu)) this.items[nu].checked = true;
+			else if (this.items.hasOwnProperty(old)) this.items[old].checked = false;
+			this.onchange();
 		}
-		this._value = nu;
-		if (this.changed) this.emit('change:changed', this.changed = false);
 	}),
 	castAttribute: d(function (name, value) {
 		if (this.inputAttributes[name]) {

@@ -26,11 +26,12 @@ module.exports = Input = function (rel, inputs, rels, dom) {
 
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
-	value: d.gs(function () {
+	inputValue: d.gs(function () {
 		var state = map(this.inputs, function (input) { return input.value; });
 		state.Db = Db;
 		return this.fnValue.call(state);
-	}, noop)
+	}),
+	value: d.gs(function () { return this.inputValue; }, noop)
 });
 
 Object.defineProperty(Base, 'DOMInputComponent', d(Input));

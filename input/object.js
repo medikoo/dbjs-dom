@@ -2,7 +2,7 @@
 
 var d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
-  , every          = require('es5-ext/lib/Object/every')
+  , forEach        = require('es5-ext/lib/Object/for-each')
   , isPlainObject  = require('es5-ext/lib/Object/is-plain-object')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
   , ObjectType     = require('dbjs').Object
@@ -11,10 +11,6 @@ var d              = require('es5-ext/lib/Object/descriptor')
   , DOMSelect      = require('./_controls/select')
 
   , StringLine = getObject('StringLine')
-  , selectGetSet = Object.getOwnPropertyDescriptor(DOMSelect.prototype, 'value')
-  , selectGet = selectGetSet.get, selectSet = selectGetSet.set
-  , radioGetSet = Object.getOwnPropertyDescriptor(DOMRadio.prototype, 'value')
-  , radioGet = radioGetSet.get, radioSet = radioGetSet.set
   , createOption = DOMSelect.prototype.createOption
   , createRadio = DOMRadio.prototype.createOption
 
@@ -42,14 +38,6 @@ Select = function (document, ns/*, options*/) {
 };
 Select.prototype = Object.create(DOMSelect.prototype, extend({
 	constructor: d(Select),
-	value: d.gs(function () {
-		var value = selectGet.call(this);
-		return value && this.ns[value];
-	}, function (value) {
-		value = (value == null) ? null : value._id_;
-		selectSet.call(this, value);
-		this._value = value;
-	}),
 	createOption: d(function (obj) {
 		return createOption.call(this, obj._id_,
 			this.property ? obj.get(this.property).toDOM(this.document) :
@@ -74,14 +62,6 @@ Radio = function (document, ns/*, options*/) {
 };
 Radio.prototype = Object.create(DOMRadio.prototype, extend({
 	constructor: d(Radio),
-	value: d.gs(function () {
-		var value = radioGet.call(this);
-		return value && this.ns[value];
-	}, function (value) {
-		value = (value == null) ? null : value._id_;
-		radioSet.call(this, value);
-		this._value = value;
-	}),
 	createOption: d(function (obj) {
 		return createRadio.call(this, obj._id_,
 			this.property ? obj.get(this.property).toDOM(this.document) :
@@ -92,23 +72,25 @@ Radio.prototype = Object.create(DOMRadio.prototype, extend({
 })));
 
 module.exports = Object.defineProperties(ObjectType, {
-	unserializeDOMInputValue: d(function (value) {
-		var proto;
-		if (value == null) return null;
+	fromInputValue: d(function (value) {
+		var empty;
 		if (isPlainObject(value)) {
-			proto = this.prototype;
-			if (every(value, function (subValue, name) {
-					subValue = proto.get(name).ns.unserializeDOMInputValue(subValue);
-					value[name] = subValue;
-					return (subValue == null);
-				})) {
-				return null;
-			}
-			return value;
+			empty = true;
+			forEach(value, function (subValue, name) {
+				subValue = this.get(name).ns.fromInputValue(subValue);
+				value[name] = subValue;
+				if (subValue != null) empty = false;
+			}, this.prototype);
+			return empty ? null : value;
 		}
+		value = value.trim();
+		if (!value) return null;
 		if (!this.propertyIsEnumerable(value)) return null;
 		if (this[value]._id_ !== value) return null;
 		return this[value];
+	}),
+	toInputValue: d(function (value) {
+		return (value == null) ? '' : value._id_;
 	}),
 	DOMRadio: d(Radio),
 	DOMSelect: d(Select),

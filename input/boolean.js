@@ -47,33 +47,10 @@ Radio = function (document, ns/*, options*/) {
 	this.falseInput.setAttribute('data-type', 'boolean');
 	this.castKnownAttributes(options);
 };
-
-Radio.prototype = Object.create(DOMRadio.prototype, {
-	constructor: d(Radio),
-	value: d.gs(function () {
-		if (this.trueInput.checked) return true;
-		else if (this.falseInput.checked) return false;
-		else return null;
-	}, function (value) {
-		if (value != null) value = Boolean(value.valueOf());
-		else value = null;
-
-		this.trueInput.checked = (value === true);
-		if (value === true) this.trueInput.setAttribute('checked', 'checked');
-		else this.trueInput.removeAttribute('checked');
-
-		this.falseInput.checked = (value === false);
-		if (value === false) this.falseInput.setAttribute('checked', 'checked');
-		else this.falseInput.removeAttribute('checked');
-
-		this._value = value;
-		if (this.changed) this.emit('change:changed', this.changed = false);
-	})
-});
+Radio.prototype = Object.create(DOMRadio.prototype, { constructor: d(Radio) });
 
 Checkbox = function (document, ns) {
 	DOMCheckbox.apply(this, arguments);
-	this.dom.setAttribute('value', '1');
 	this.control = this.dom;
 	this.control.setAttribute('data-type', 'boolean');
 	this.dom = makeEl.call(document, 'span', this.dom,
@@ -82,28 +59,22 @@ Checkbox = function (document, ns) {
 };
 Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 	constructor: d(Checkbox),
-	value: d.gs(function () { return this.control.checked; }, function (value) {
-		value = (value == null) ? false : Boolean(value.valueOf());
-		if (!value) {
-			this.control.removeAttribute('checked');
-			this.checked = false;
-		} else {
-			this.control.setAttribute('checked', 'checked');
-			this.checked = true;
-		}
-		this._value = value;
-		if (this.changed) this.emit('change:changed', this.changed = false);
-	})
+	inputValue: d.gs(function () { return this.control.checked ? '1' : '0'; })
 });
 
 module.exports = Object.defineProperties(BooleanType, {
-	unserializeDOMInputValue: d(function (value) {
+	fromInputValue: d(function (value) {
+		if (value === '') return null;
 		if (value === '0') return false;
 		if (value === '1') return true;
 		if (isArray(value) && isCopy.call(value.sort(), arrResult)) {
 			return true;
 		}
 		return null;
+	}),
+	toInputValue: d(function (value) {
+		if (value == null) return '';
+		else return value.valueOf() ? '1' : '0';
 	}),
 	DOMRadio: d(Radio),
 	DOMCheckbox: d(Checkbox),

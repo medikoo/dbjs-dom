@@ -24,7 +24,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 };
 
 ee(Object.defineProperties(Input.prototype, {
-	_value: d(null),
+	_value: d(''),
 	knownAttributes: d({ class: true, id: true, required: true, style: true }),
 	changed: d(false),
 	required: d(false),
@@ -45,7 +45,7 @@ ee(Object.defineProperties(Input.prototype, {
 		this.control.setAttribute('name', this._name + this._indexString);
 	}),
 	onchange: d(function () {
-		var value = this.value, changedChanged;
+		var value = this.inputValue, changedChanged;
 		if (value !== this._value) {
 			if (!this.changed) {
 				this.changed = true;
@@ -61,23 +61,18 @@ ee(Object.defineProperties(Input.prototype, {
 		this.emit('change:valid', this.valid = !this.valid);
 	}),
 	toDOM: d(function () { return this.dom; }),
+	inputValue: d.gs(function () { return this.control.value; }),
 	value: d.gs(function () {
-		var value = this.control.value.trim();
-		return (value === '') ? null : value;
+		return this.ns.fromInputValue(this.inputValue);
 	}, function (value) {
-		var previous = this.value;
-		if (value == null) {
-			value = null;
-			this.control.value = '';
-			this.control.removeAttribute('value');
-		} else {
-			if (value.__toString) value = value.__toString.__value.call(value);
-			else value = String(value);
-			this.control.value = value;
-			this.control.setAttribute('value', value);
+		var old = this.inputValue, nu = this.ns.toInputValue(value);
+		if (this._value !== nu) {
+			this.control.setAttribute('value', this._value = nu);
 		}
-		this._value = value;
-		if (previous !== value) this.onchange();
+		if (nu !== old) {
+			this.control.value = nu;
+			this.onchange();
+		}
 	}),
 	castAttribute: d(function (name, value) {
 		castAttribute.call(this.dom, name, value);

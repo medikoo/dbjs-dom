@@ -34,28 +34,13 @@ Input = function (document, ns/*, options*/) {
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	knownAttributes: d({ class: true, id: true, required: true, style: true,
-		placeholder: true }),
-	value: d.gs(function () {
-		var value = this.control.value;
-		return ((value === '') || isNaN(value)) ? null : Number(value);
-	}, function (value) {
-		value = isNaN(value) ? null : Number(value);
-		if (value == null) {
-			this.control.value = '';
-			this.control.removeAttribute('value');
-		} else {
-			this.control.value = value;
-			this.control.setAttribute('value', value);
-		}
-		this._value = value;
-		if (this.changed) this.emit('change:changed', this.changed = false);
-	})
+		placeholder: true })
 });
 
 module.exports = Object.defineProperties(NumberType, {
-	unserializeDOMInputValue: d(function (value) {
-		if ((value === '') || (value == null)) return null;
-		return isNaN(value) ? null : Number(value);
+	fromInputValue: d(function (value) {
+		value = value.trim();
+		return (!value || isNaN(value)) ? null : Number(value);
 	}),
 	DOMInput: d(Input)
 });

@@ -5,12 +5,14 @@ var copy     = require('es5-ext/lib/Object/copy')
   , Db       = require('dbjs')
   , DOMInput = require('./input')
 
+  , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , Input, knownAttributes = copy(DOMInput.prototype.knownAttributes);
 
 module.exports = Input = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]);
 	DOMInput.call(this, document, ns, options);
 	this.dom.setAttribute('type', 'checkbox');
+	this.dom.setAttribute('value', '1');
 	this.dom.addEventListener('change', this.onchange.bind(this), false);
 	if (options.forceRequired) this.castAttribute('required', true);
 };
@@ -20,33 +22,18 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	valid: d(true),
 	knownAttributes: d(knownAttributes),
-	onchange: d(function () {
-		var value = this.control.checked, changedChanged;
-		if (value !== this._value) {
-			if (!this.changed) {
-				this.changed = true;
-				changedChanged = true;
-			}
-		} else if (this.changed) {
-			this.changed = false;
-			changedChanged = true;
+	inputValue: d.gs(function () { return this.control.checked ? '1' : ''; }),
+	value: d.gs(getValue, function (value) {
+		var old = this.inputValue, nu = this.ns.toInputValue(value);
+		if (this._value !== nu) {
+			if (nu === '1') this.control.setAttribute('checked', 'checked');
+			else this.control.removeAttribute('checked');
+			this._value = nu;
 		}
-		this.emit('change', value);
-		if (changedChanged) this.emit('change:changed', this.changed);
-	}),
-	value: d.gs(function () {
-		return this.control.checked ? this.control.value : null;
-	}, function (value) {
-		value = (value == null) ? false : Boolean(value.valueOf());
-		if (value) {
-			this.control.setAttribute('checked', 'checked');
-			this.checked = true;
-		} else {
-			this.control.removeAttribute('checked');
-			this.checked = false;
+		if (nu !== old) {
+			this.control.checked = (nu === '1');
+			this.onchange();
 		}
-		this._value = value;
-		if (this.changed) this.emit('change:changed', this.changed = false);
 	})
 });
 
