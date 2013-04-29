@@ -32,7 +32,9 @@ module.exports = FieldsetItem = function (document, relation/*, options*/) {
 	} else if (relation.__fieldHint.__value) {
 		this.hint = relation._fieldHint.toDOM(document);
 	}
-	this.build();
+
+	if (options.render) options.render.call(this);
+	else this.build();
 
 	this.dom.setAttribute('id', 'tr-' + this.id);
 	this.dom.setAttribute('data-name', relation.name);
