@@ -36,8 +36,8 @@ module.exports = Object.defineProperties(relation, {
 		multiple = options.multiple;
 		required = this.__required.__value;
 		if (input.dismiss) input.dismiss();
-		value = this.objectValue;
-		if (value && !multiple && this.__multiple.__value) {
+		value = this.value;
+		if ((value != null) && !multiple && this.__multiple.__value) {
 			value = value.values[0] || null;
 		}
 		input.value = value;
@@ -49,8 +49,8 @@ module.exports = Object.defineProperties(relation, {
 		}
 		if (options.disabled) input.castAttribute('disabled', true);
 		onChange = function () {
-			var value = this.objectValue;
-			if (value && !multiple && this.__multiple.__value) {
+			var value = this.value;
+			if ((value != null) && !multiple && this.__multiple.__value) {
 				value = value.values[0] || null;
 			}
 			input.value = value;
