@@ -45,7 +45,7 @@ Radio = function (document, ns/*, options*/) {
 	this.trueInput.setAttribute('data-type', 'boolean');
 	this.falseInput = this.items['0'];
 	this.falseInput.setAttribute('data-type', 'boolean');
-	this.castKnownAttributes(options);
+	this.castHtmlAttributes(options);
 };
 Radio.prototype = Object.create(DOMRadio.prototype, { constructor: d(Radio) });
 

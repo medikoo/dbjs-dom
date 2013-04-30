@@ -21,13 +21,13 @@ module.exports = Input = function (document, ns/*, options*/) {
 	document.addEventListener('reset',
 		partial.call(nextTick, this.onchange.bind(this)), false);
 	this.dom.addEventListener('input', this.onchange.bind(this), false);
-	this.castKnownAttributes(options);
+	this.castHtmlAttributes(options);
 	this.dom._dbjsInput = this;
 };
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
-	knownAttributes: d(extend({ rows: true, cols: true },
-		DOMInput.prototype.knownAttributes)),
+	htmlAttributes: d(extend({ rows: true, cols: true },
+		DOMInput.prototype.htmlAttributes)),
 	value: d.gs(getValue, function (value) {
 		var old = this.inputValue, nu = this.ns.toInputValue(value);
 		if (this._value !== nu) this.control.firstChild.data = this._value = nu;

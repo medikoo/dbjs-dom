@@ -57,7 +57,7 @@ Radio = function (document, ns/*, options*/) {
 	list = (options.compare ? ns.list(options.compare) : ns.listByCreatedAt());
 	this.dbOptions = list.liveMap(this.createOption, this);
 	this.dbOptions.on('change', this.render);
-	this.castKnownAttributes(options);
+	this.castHtmlAttributes(options);
 	this.render();
 };
 Radio.prototype = Object.create(DOMRadio.prototype, extend({

@@ -17,7 +17,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.ns = ns;
 	this.control = this.dom = document.createElement('input');
 	if (options.name) this.name = options.name;
-	this.castKnownAttributes(options);
+	this.castHtmlAttributes(options);
 	this.dom._dbjsInput = this;
 	document.addEventListener('reset',
 		partial.call(nextTick, this.onchange.bind(this)), false);
@@ -25,7 +25,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 
 ee(Object.defineProperties(Input.prototype, {
 	_value: d(''),
-	knownAttributes: d({ class: true, id: true, required: true, style: true }),
+	htmlAttributes: d({ class: true, id: true, required: true, style: true }),
 	changed: d(false),
 	required: d(false),
 	valid: d(false),
@@ -77,9 +77,9 @@ ee(Object.defineProperties(Input.prototype, {
 	castAttribute: d(function (name, value) {
 		castAttribute.call(this.dom, name, value);
 	}),
-	castKnownAttributes: d(function (attrs) {
+	castHtmlAttributes: d(function (attrs) {
 		forEach(attrs, function (value, name) {
-			if (this.knownAttributes[name] ||
+			if (this.htmlAttributes[name] ||
 					(startsWith.call(name, 'data-'))) {
 				this.castAttribute(name, value);
 			}

@@ -58,7 +58,7 @@ Radio = function (document, ns/*, options*/) {
 	this.dbOptions = ns.options.itemsListByOrder()
 		.liveMap(this.createOption, this);
 	this.dbOptions.on('change', this.render);
-	this.castKnownAttributes(options);
+	this.castHtmlAttributes(options);
 	this.render();
 };
 Radio.prototype = Object.create(DOMRadio.prototype, extend({
@@ -79,7 +79,7 @@ MultipleInput = function (document, ns/*, options*/) {
 	this.dbOptions = ns.options.itemsListByOrder()
 		.liveMap(this.renderOption, this);
 	this.dbOptions.on('change', this.reload);
-	this.castKnownAttributes(this.options);
+	this.castHtmlAttributes(this.options);
 	this.reload();
 };
 

@@ -147,7 +147,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 		this.onchange();
 	}),
 	toDOM: d(function () { return this.dom; })
-}, propagate('castAttribute', 'castKnownAttributes'), d.binder({
+}, propagate('castAttribute', 'castHtmlAttributes'), d.binder({
 	addEmpty: d(function () {
 		var item = this.ns.toDOMInput(this.document, this.options);
 		this.renderItem(item);

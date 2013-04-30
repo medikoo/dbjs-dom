@@ -6,7 +6,7 @@ var copy     = require('es5-ext/lib/Object/copy')
   , DOMInput = require('./input')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
-  , Input, knownAttributes = copy(DOMInput.prototype.knownAttributes);
+  , Input, htmlAttributes = copy(DOMInput.prototype.htmlAttributes);
 
 module.exports = Input = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]);
@@ -17,11 +17,11 @@ module.exports = Input = function (document, ns/*, options*/) {
 	if (options.forceRequired) this.castAttribute('required', true);
 };
 
-delete knownAttributes.required;
+delete htmlAttributes.required;
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	valid: d(true),
-	knownAttributes: d(knownAttributes),
+	htmlAttributes: d(htmlAttributes),
 	inputValue: d.gs(function () { return this.control.checked ? '1' : ''; }),
 	value: d.gs(getValue, function (value) {
 		var old = this.inputValue, nu = this.ns.toInputValue(value);

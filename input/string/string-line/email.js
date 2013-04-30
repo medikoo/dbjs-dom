@@ -16,7 +16,7 @@ Input = function (document, ns/*, options*/) {
 };
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
-	knownAttributes: d({ class: true, id: true, required: true, style: true,
+	htmlAttributes: d({ class: true, id: true, required: true, style: true,
 		placeholder: true })
 });
 
