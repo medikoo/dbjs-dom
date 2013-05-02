@@ -1,12 +1,10 @@
 'use strict';
 
 var sepItems       = require('es5-ext/lib/Array/prototype/sep-items')
-  , copy           = require('es5-ext/lib/Object/copy')
   , d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
   , forEach        = require('es5-ext/lib/Object/for-each')
   , isPlainObject  = require('es5-ext/lib/Object/is-plain-object')
-  , map            = require('es5-ext/lib/Object/map')
   , exclude        = require('dom-ext/lib/Element/prototype/exclude')
   , include        = require('dom-ext/lib/Element/prototype/include')
   , replace        = require('dom-ext/lib/Element/prototype/replace')
@@ -19,7 +17,6 @@ var sepItems       = require('es5-ext/lib/Array/prototype/sep-items')
   , DOMComposite   = require('./_composite')
 
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
-  , indexGs = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'index')
   , StringLine = getObject('StringLine')
   , createOption = DOMSelect.prototype.createOption
   , createRadio = DOMRadio.prototype.createOption
