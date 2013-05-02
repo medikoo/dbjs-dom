@@ -1,30 +1,53 @@
 'use strict';
 
 var CustomError    = require('es5-ext/lib/Error/custom')
-  , copy           = require('es5-ext/lib/Object/copy')
   , d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
   , forEach        = require('es5-ext/lib/Object/for-each')
-  , contains       = require('es5-ext/lib/String/prototype/contains')
+  , startsWith     = require('es5-ext/lib/String/prototype/starts-with')
   , makeElement    = require('dom-ext/lib/Document/prototype/make-element')
+  , castAttribute  = require('dom-ext/lib/Element/prototype/cast-attribute')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
+  , getId          = require('dom-ext/lib/HTMLElement/prototype/get-id')
   , SetCollection  = require('set-collection')
   , Db             = require('../')
+  , DOMComposite   = require('../_composite')
+  , htmlAttributes = require('../_html-attributes')
 
   , map = Array.prototype.map
   , getRel = function (name) { return this.get(name); }
   , Base = Db.Base
-  , Fieldset;
+  , Fieldset, renderRow;
 
-require('./fieldset-item');
+renderRow = function (input, options) {
+	var el = makeElement.bind(input.document)
+	  , id = getId.call(input.dom);
+	return el('tr',
+		// label
+		el('th', el('label', { for: id }, options.label, ':')),
+		// input
+		el('td', input,
+			// required mark
+			el('span', { class: 'required-status' }, '*'),
+			// validation status mark
+			el('span', { class: 'validation-status' }, '✓'),
+			// error message
+			el('span', { class: 'error-message error-message-' +
+				input._name.replace(':', '-') }),
+			// hint
+			options.hint && el('p', { 'class': 'hint' }, this.hint)));
+};
 
 module.exports = Fieldset = function (document, list/*, options*/) {
-	var options = Object(arguments[2]), className;
+	var options = Object(arguments[2]);
 
 	this.document = document;
 	this.list = list;
 	this.items = {};
-	this.options = options;
+	this.options = Object(options.control);
+	this.customOptions = Object(options.controls);
+	this.prepend = options.prepend;
+	this.append = options.append;
 
 	if (list.liveMap) {
 		this.list = list.liveMap(this.renderItem, this);
@@ -34,17 +57,13 @@ module.exports = Fieldset = function (document, list/*, options*/) {
 	}
 
 	this.render();
-	this.reload();
-
+	forEach(options, function (value, name) {
+		if (!htmlAttributes[name] && !startsWith.call(name, 'data-')) return;
+		castAttribute.call(this.dom, name, value);
+	}, this);
 	this.dom.classList.add('dbjs');
-	if (options.class != null) {
-		className = String(options.class).trim();
-		if (className) {
-			className.split(' ').forEach(function (name) {
-				this.add(name);
-			}, this.dom.classList);
-		}
-	}
+
+	this.reload();
 };
 
 Object.defineProperties(Fieldset.prototype, extend({
@@ -54,23 +73,16 @@ Object.defineProperties(Fieldset.prototype, extend({
 			this.domItems = el('tbody')));
 	}),
 	renderItem: d(function (rel) {
-		var controlOpts;
-		if (this.options.control) controlOpts = copy(this.options.control);
-		if (this.options.controls && this.options.controls[rel._id_]) {
-			controlOpts = extend(Object(controlOpts),
-				this.options.controls[rel._id_]);
-		}
-		if (this.options.idPostfix != null) {
-			controlOpts.id = rel.DOMId + this.options.idPostfix;
-		}
+		var options = this.getOptions(rel);
+		options.render = renderRow;
 		return (this.items[rel._id_] =
-			rel.toDOMFieldsetItem(this.document, controlOpts));
+			rel.toDOMInputComponent(this.document, options));
 	}),
-	toDOM: d(function () { return this.dom; })
+	toDOM: d(function () { return this.dom; }),
+	getOptions: d(DOMComposite.prototype.getOptions)
 }, d.binder({
 	reload: d(function () {
-		replaceContent.call(this.domItems, this.options.prepend, this.list,
-			this.options.append);
+		replaceContent.call(this.domItems, this.prepend, this.list, this.append);
 	})
 })));
 
@@ -106,17 +118,11 @@ Object.defineProperty(Db.prototype, 'toDOMFieldset',
 			data = data.union(include);
 		}
 
-		if (options.controls) {
-			forEach(options.controls, function (value, name, options) {
-				if (contains.call(name, ':')) return;
-				options[this._id_ + ':' + name] = value;
-				delete options[name];
-			}, this);
-		}
 		controlOpts = Object(options.controls);
 
 		byOrder = function (a, b) {
-			var aOpts = controlOpts[a._id_], bOpts = controlOpts[b._id_];
+			var aOpts = controlOpts[a._id_] || controlOpts[a.name]
+			  , bOpts = controlOpts[b._id_] || controlOpts[b.name];
 			a = (aOpts && !isNaN(aOpts.order)) ? aOpts.order : a.order;
 			b = (bOpts && !isNaN(bOpts.order)) ? bOpts.order : b.order;
 			return a - b;
@@ -125,7 +131,7 @@ Object.defineProperty(Db.prototype, 'toDOMFieldset',
 		if (data.list) {
 			list = data.list(byOrder);
 			list.forEach(setup = function (rel) {
-				var opts = controlOpts[rel._id_];
+				var opts = controlOpts[rel._id_] || controlOpts[rel.name];
 				if (opts && !isNaN(opts.order)) return;
 				rel._order.on('change', list._sort);
 			});
@@ -134,7 +140,7 @@ Object.defineProperty(Db.prototype, 'toDOMFieldset',
 				list._sort();
 			});
 			data.on('delete', function (rel) {
-				var opts = controlOpts[rel._id_];
+				var opts = controlOpts[rel._id_] || controlOpts[rel.name];
 				if (opts && !isNaN(opts.order)) return;
 				rel._order.off('change', list._sort);
 			});

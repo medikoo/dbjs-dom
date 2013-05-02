@@ -1,7 +1,8 @@
 'use strict';
 
-var d        = require('es5-ext/lib/Object/descriptor')
-  , Db       = require('dbjs')
+var copy     = require('es5-ext/lib/Object/copy')
+  , extend   = require('es5-ext/lib/Object/extend')
+  , d        = require('es5-ext/lib/Object/descriptor')
   , DOMInput = require('../_controls/input')
 
   , StringLine = require('dbjs/lib/objects')._get('StringLine')
@@ -10,31 +11,24 @@ var d        = require('es5-ext/lib/Object/descriptor')
 require('../');
 
 Input = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]), pattern, mask;
-	DOMInput.call(this, document, ns, options);
-	this.dom.setAttribute('type', 'text');
-
-	if (options.relation && options.relation.__pattern.__value) {
-		pattern = Db.RegExp(options.relation.__pattern.__value);
-	}
-	if (!pattern) pattern = ns.pattern;
-	this.dom.setAttribute('pattern', pattern.source.slice(1, -1));
-
-	if (options.relation && options.relation.__mask &&
-			options.relation.__mask.__value) {
-		mask = StringLine(options.relation.__mask.__value);
-	}
-	if (!mask) mask = ns.mask;
-	if (mask) this.dom.setAttribute('data-mask', mask);
-
-	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
-	this.dom.addEventListener('input', this.onchange.bind(this), false);
-	this.dom.addEventListener('keyup', this.onchange.bind(this), false);
+	DOMInput.apply(this, arguments);
+	this.dom.addEventListener('input', this.onChange, false);
+	this.dom.addEventListener('keyup', this.onChange, false);
 };
+
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
-	htmlAttributes: d({ class: true, id: true, required: true, style: true,
-		placeholder: true })
+	controlAttributes: d(extend(copy(DOMInput.prototype.controlAttributes),
+		{ autocomplete: true, dirname: true, inputmode: true, list: true,
+			maxlength: true, pattern: true, placeholder: true, readonly: true,
+			required: true, size: true })),
+	dbAttributes: d(extend(copy(DOMInput.prototype.dbAttributes),
+		{ max: 'maxlength', pattern: true, inputPlaceholder: 'placeholder',
+			required: true })),
+	_render: d(function () {
+		var input = this.control = this.dom = this.document.createElement('input');
+		input.setAttribute('type', 'text');
+	}),
 });
 
 module.exports = Object.defineProperty(StringLine, 'DOMInput', d(Input));

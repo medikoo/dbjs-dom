@@ -1,37 +1,47 @@
 'use strict';
 
-var partial       = require('es5-ext/lib/Function/prototype/partial')
-  , d             = require('es5-ext/lib/Object/descriptor')
-  , forEach       = require('es5-ext/lib/Object/for-each')
-  , some          = require('es5-ext/lib/Object/some')
-  , castAttribute = require('dom-ext/lib/Element/prototype/cast-attribute')
-  , elExtend      = require('dom-ext/lib/Element/prototype/extend')
-  , Db            = require('dbjs')
-  , nextTick      = require('next-tick')
-  , DOMInput      = require('./input')
+var copy           = require('es5-ext/lib/Object/copy')
+  , d              = require('es5-ext/lib/Object/descriptor')
+  , extend         = require('es5-ext/lib/Object/extend')
+  , forEach        = require('es5-ext/lib/Object/for-each')
+  , some           = require('es5-ext/lib/Object/some')
+  , isRegExp       = require('es5-ext/lib/RegExp/is-reg-exp')
+  , startsWith     = require('es5-ext/lib/String/prototype/starts-with')
+  , castAttribute  = require('dom-ext/lib/Element/prototype/cast-attribute')
+  , elExtend       = require('dom-ext/lib/Element/prototype/extend')
+  , Db             = require('dbjs')
+  , DOMInput       = require('./input')
+  , htmlAttributes = require('../_html-attributes')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
+  , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , Input;
 
 module.exports = Input = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]);
-	this.document = document;
-	this.ns = ns;
-	this.createContainer();
-	this.dom._dbjsInput = this;
-	this.items = {};
+	this.controls = this.items = {};
 	this.listItems = {};
-	if (options.name) this._name = options.name;
-	document.addEventListener('reset',
-		partial.call(nextTick, this.onchange.bind(this)), false);
+	this.attributes = {};
+	DOMInput.apply(this, arguments);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
+	_value: d(null),
 	constructor: d(Input),
-	inputAttributes: d({ name: true, required: true, disabled: true }),
-	createContainer: d(function () {
+	controlAttributes: d(extend(copy(DOMInput.prototype.controlAttributes),
+		{ required: true })),
+	dbAttributes: d(extend(copy(DOMInput.prototype.dbAttributes),
+		{ required: true })),
+	_render: d(function () {
 		this.dom = this.document.createElement('ul');
 		this.dom.setAttribute('class', 'radio');
+	}),
+	name: d.gs(getName, function (name) {
+		this._name = name;
+		name = this.name;
+		forEach(this.controls, function (input) {
+			if (name) input.setAttribute('name', name);
+			else input.removeAttribute('name');
+		});
 	}),
 	createOption: d(function (value, labelTextDOM) {
 		var dom, label, input;
@@ -42,20 +52,28 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		input._dbjsInput = this;
 		input.setAttribute('type', 'radio');
 		input.setAttribute('value', value);
-		if (this._name) input.setAttribute('name', this._name);
+		if (this.name) input.setAttribute('name', this.name);
+		forEach(this.attributes, function (value, name) {
+			castAttribute.call(input, name, value);
+		}, this);
 		label.appendChild(this.document.createTextNode(' '));
 		elExtend.call(label, labelTextDOM);
-		input.addEventListener('change', this.onchange.bind(this), false);
+		input.addEventListener('change', this.onChange, false);
 		return dom;
 	}),
-	name: d.gs(function () { return this._name; }, function (name) {
-		this._name = name;
-		forEach(this.items, function (input) {
-			input.setAttribute('name', name);
+	castControlAttribute: d(function (name, value) {
+		if (!this.controlAttributes[name] && !htmlAttributes[name] &&
+				!startsWith.call(name, 'data-')) {
+			return;
+		}
+		if (isRegExp(value)) value = value.source.slice(1, -1);
+		this.attributes[name] = value;
+		forEach(this.controls, function (input) {
+			castAttribute.call(input, name, value);
 		});
 	}),
 	inputValue: d.gs(function () {
-		var selectedValue = '';
+		var selectedValue = null;
 		some(this.items, function (radio) {
 			if (radio.checked) {
 				selectedValue = radio.value;
@@ -68,28 +86,22 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	value: d.gs(getValue, function (value) {
 		var old = this.inputValue, nu = this.ns.toInputValue(value);
 		if (this._value !== nu) {
-			if (this.items.hasOwnProperty(this._value)) {
+			if ((this._value != null) && this.items.hasOwnProperty(this._value)) {
 				this.items[this._value].removeAttribute('checked');
 			}
-			if (this.items.hasOwnProperty(nu)) {
+			if ((nu != null) && this.items.hasOwnProperty(nu)) {
 				this.items[nu].setAttribute('checked', 'checked');
 			}
 			this._value = nu;
 		}
 		if (nu !== old) {
-			if (this.items.hasOwnProperty(nu)) this.items[nu].checked = true;
-			else if (this.items.hasOwnProperty(old)) this.items[old].checked = false;
-			this.onchange();
+			if ((nu != null) && this.items.hasOwnProperty(nu)) {
+				this.items[nu].checked = true;
+			} else if ((old != null) && this.items.hasOwnProperty(old)) {
+				this.items[old].checked = false;
+			}
 		}
-	}),
-	castAttribute: d(function (name, value) {
-		if (this.inputAttributes[name]) {
-			forEach(this.items, function (input) {
-				castAttribute.call(input, name, value);
-			});
-			return;
-		}
-		castAttribute.call(this.dom, name, value);
+		this.onChange();
 	})
 });
 

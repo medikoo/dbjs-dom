@@ -1,40 +1,36 @@
 'use strict';
 
-var partial  = require('es5-ext/lib/Function/prototype/partial')
+var copy     = require('es5-ext/lib/Object/copy')
   , d        = require('es5-ext/lib/Object/descriptor')
   , extend   = require('es5-ext/lib/Object/extend')
   , Db       = require('dbjs')
-  , nextTick = require('next-tick')
   , DOMInput = require('./input')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , Input;
 
 module.exports = Input = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]);
-	this.document = document;
-	this.ns = ns;
-	this.control = this.dom = document.createElement('textarea');
-	if (options.name) this.name = options.name;
-	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
-	this.dom.appendChild(document.createTextNode(''));
-	document.addEventListener('reset',
-		partial.call(nextTick, this.onchange.bind(this)), false);
-	this.dom.addEventListener('input', this.onchange.bind(this), false);
-	this.castHtmlAttributes(options);
-	this.dom._dbjsInput = this;
+	DOMInput.apply(this, arguments);
+	this.dom.addEventListener('input', this.onChange, false);
 };
+
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
-	htmlAttributes: d(extend({ rows: true, cols: true },
-		DOMInput.prototype.htmlAttributes)),
+	controlAttributes: d(extend(copy(DOMInput.prototype.controlAttributes),
+		{ cols: true, inputmode: true, maxlength: true, placeholder: true,
+			readonly: true, required: true, rows: true, wrap: true })),
+	dbAttributes: d(extend(copy(DOMInput.prototype.dbAttributes),
+		{ max: 'maxlength', inputPlaceholder: 'placeholder', required: true })),
+	_render: d(function () {
+		this.control = this.dom = this.document.createElement('textarea');
+		this.dom.appendChild(this.document.createTextNode(''));
+	}),
 	value: d.gs(getValue, function (value) {
 		var old = this.inputValue, nu = this.ns.toInputValue(value);
+		if (nu == null) nu = '';
 		if (this._value !== nu) this.control.firstChild.data = this._value = nu;
-		if (nu !== old) {
-			this.control.value = nu;
-			this.onchange();
-		}
+		if (nu !== old) this.control.value = nu;
+		this.onChange();
 	})
 });
 

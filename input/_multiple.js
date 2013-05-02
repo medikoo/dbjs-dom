@@ -1,89 +1,79 @@
 'use strict';
 
-var contains     = require('es5-ext/lib/Array/prototype/contains')
-  , diff         = require('es5-ext/lib/Array/prototype/diff')
-  , isUniq       = require('es5-ext/lib/Array/prototype/is-uniq')
-  , remove       = require('es5-ext/lib/Array/prototype/remove')
-  , copy         = require('es5-ext/lib/Object/copy')
-  , d            = require('es5-ext/lib/Object/descriptor')
-  , extend       = require('es5-ext/lib/Object/extend')
-  , isCallable   = require('es5-ext/lib/Object/is-callable')
-  , ee           = require('event-emitter/lib/core')
-  , makeElement  = require('dom-ext/lib/Document/prototype/make-element')
-  , extendEl     = require('dom-ext/lib/Element/prototype/extend')
-  , removeEl     = require('dom-ext/lib/Element/prototype/remove')
-  , nextTickOnce = require('next-tick/lib/once')
-  , Base         = require('dbjs').Base
-  , serialize    = require('dbjs/lib/utils/serialize')
+var contains      = require('es5-ext/lib/Array/prototype/contains')
+  , uniq          = require('es5-ext/lib/Array/prototype/uniq')
+  , remove        = require('es5-ext/lib/Array/prototype/remove')
+  , k             = require('es5-ext/lib/Function/k')
+  , copy          = require('es5-ext/lib/Object/copy')
+  , d             = require('es5-ext/lib/Object/descriptor')
+  , extend        = require('es5-ext/lib/Object/extend')
+  , makeElement   = require('dom-ext/lib/Document/prototype/make-element')
+  , extendEl      = require('dom-ext/lib/Element/prototype/extend')
+  , removeEl      = require('dom-ext/lib/Element/prototype/remove')
+  , nextTickOnce  = require('next-tick/lib/once')
+  , Base          = require('dbjs').Base
+  , serialize     = require('dbjs/lib/utils/serialize')
+  , DOMInput      = require('./_controls/input')
 
-  , forEach = Array.prototype.forEach
-  , Input, propagate;
-
-propagate = function (name) {
-	var props = {};
-	forEach.call(arguments, function (name) {
-		props[name] = d(function () {
-			var args = arguments;
-			this.items.forEach(function (input) { input[name].apply(input, args); });
-		});
-	});
-	return props;
-};
+  , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
+  , Input;
 
 module.exports = Input = function (document, ns/*, options*/) {
-	this.document = document;
-	this.ns = ns;
-	this._value = [];
-	this.options = copy(Object(arguments[2]));
-	this.required = Boolean(this.options.required);
-	this.min = this.options.min >>> 0;
-	delete this.options.multiple;
-	if (this.options.name) {
-		this._name = this.options.name;
-		delete this.options.name;
-	}
-	if (isCallable(this.options.deleteLabel)) {
-		this.deleteLabel = this.options.deleteLabel;
-	}
-	this.onchange = nextTickOnce(this.onchange.bind(this));
-	this.make = makeElement.bind(document);
+	var options = copy(Object(arguments[2]));
 	this.items = [];
-	this.render();
-	document.addEventListener('reset', this.onchange, false);
+	this.make = makeElement.bind(document);
+	this.onChange = nextTickOnce(this.onChange.bind(this));
+	delete options.multiple;
+	if (options.minInputsCount) {
+		this.minInputsCount = options.minInputsCount >>> 0;
+		delete options.minInputsCount;
+	}
+	if (options.addLabel) {
+		this.addLabel = options.addLabel;
+		delete options.addLabel;
+	}
+	if (options.deleteLabel) {
+		this.deleteLabel = (typeof options.deleteLabel === 'function') ?
+				options.deleteLabel : k(options.deleteLabel);
+		delete options.deleteLabel;
+	}
+
+	this.options = {};
+	DOMInput.call(this, document, ns, options);
 };
 
-ee(Object.defineProperties(Input.prototype, extend({
+Input.prototype = Object.create(DOMInput.prototype, extend({
 	_value: d(null),
-	changed: d(false),
-	required: d(false),
-	valid: d(false),
-	onchange: d(function () {
-		var value = this.value, changedChanged, isValid;
-		if ((value.length !== this._value.length) ||
-				diff.call(this._value, value).length) {
-			if (!this.changed) {
-				this.changed = true;
-				changedChanged = true;
-			}
-		} else if (this.changed) {
-			this.changed = false;
-			changedChanged = true;
+	controlAttributes: d({}),
+	minInputsCount: d(0),
+	onChange: d(function () {
+		var value, changed, valid, emitChanged, emitValid;
+		value = this.value;
+		changed = this.items.some(function (item) { return item.changed; });
+		valid = this.items.every(function (item) { return item.valid;  });
+		if (valid && this.required) valid = Boolean(value.length);
+
+		if (this.changed !== changed) {
+			this.changed = changed;
+			emitChanged = true;
 		}
+		if (this.valid !== valid) {
+			this.valid = valid;
+			emitValid = true;
+		}
+
 		this.emit('change', value);
-		if (changedChanged) this.emit('change:changed', this.changed);
-		if (this.required && !value.length) isValid = false;
-		else if (contains.call(value, null)) isValid = false;
-		else isValid = isUniq.call(value);
-		if (this.valid === isValid) return;
-		this.emit('change:valid', this.valid = !this.valid);
+		if (emitChanged) this.emit('change:changed', this.changed);
+		if (emitValid) this.emit('change:valid', this.valid);
 	}),
-	name: d.gs(function () { return this._name; }, function (name) {
+	name: d.gs(getName, function (name) {
 		this._name = name;
+		name = this.name;
 		this.items.forEach(function (input) { input.name = name; });
 	}),
 	value: d.gs(function () {
-		return this.items.map(function (item) { return item.value; })
-			.filter(function (value) { return value != null; });
+		return uniq.call(this.items.map(function (item) { return item.value; })
+			.filter(function (value) { return value != null; }));
 	}, function (value) {
 		var length, item;
 		value = value.values.map(serialize).sort(function (a, b) {
@@ -91,69 +81,67 @@ ee(Object.defineProperties(Input.prototype, extend({
 		}).map(function (key) { return value[key]._subject_; });
 		value.forEach(function (value, index) {
 			var item = this.items[index];
-			if (!item) item = this.addEmpty();
+			if (!item) item = this.addItem();
 			item.index = index;
 			item.value = value;
 		}, this);
 		length = value.length;
 		while (this.items[length]) this.removeItem(this.items[length]);
-		while (length < this.min) {
-			item = this.addEmpty();
+		while (length < this.minInputsCount) {
+			item = this.addItem();
 			item.index = length++;
 		}
-		this._value = value;
-		if (this.changed) this.emit('change:changed', this.changed = false);
+		this.onChange();
 	}),
-	deleteLabel: d(function () { return 'x'; }),
-	render: d(function () {
-		var el = this.make, addLabel;
-		if (this.options.addLabel) {
-			addLabel = this.options.addLabel;
-		} else if (this.options.relation &&
-				this.options.relation.__addLabel.__value) {
-			addLabel = this.options.relation._addLabel;
-		} else if (this.ns.__addLabel.__value) {
-			addLabel = this.ns._addLabel;
-		} else {
-			addLabel = 'Add';
-		}
+	castControlAttribute: d(function (name, value) {
+		this.options[name] = value;
+		this.items.forEach(function (input) {
+			input.castControlAttribute(name, value);
+		});
+	}),
+	addLabel: d('Add'),
+	deleteLabel: d(k('x')),
+	_render: d(function () {
+		var el = this.make;
 		this.domList = el('ul');
 		this.dom = el('div', { class: 'dbjs multiple' }, this.domList,
 			el('div', { class: 'controls' },
-				el('a', { onclick: this.addEmpty }, addLabel)));
-	}),
-	renderItem: d(function (input) {
-		var el = this.make, dom;
-		this.items.push(input);
-		input.parent = this;
-		if (this._name) input.name = this._name;
-		dom = el('li');
-		extendEl.call(dom, input,
-				el('a', { onclick: this.safeRemoveItem.bind(this, input) },
-					this.deleteLabel()));
-		input.on('change', this.onchange);
-		this.onchange();
-		return this.domList.appendChild(dom);
+				el('a', { onclick: this.addItem }, this.addLabel)));
 	}),
 	safeRemoveItem: d(function (input) {
-		if (this.domList.childNodes.length <= this.min) return;
+		if (this.domList.childNodes.length <= this.minInputsCount) return;
 		this.removeItem(input);
 	}),
 	removeItem: d(function (input) {
 		if (!contains.call(this.items, input)) return;
-		removeEl.call(input.dom.parentNode);
+		removeEl.call(input.listItem);
 		remove.call(this.items, input);
+		input.destroy();
 		this.items.forEach(function (item, index) { item.index = index; });
-		this.onchange();
+		this.onChange();
 	}),
-	toDOM: d(function () { return this.dom; })
-}, propagate('castAttribute', 'castHtmlAttributes'), d.binder({
-	addEmpty: d(function () {
-		var item = this.ns.toDOMInput(this.document, this.options);
-		this.renderItem(item);
-		item.index = this.items.length - 1;
-		return item;
+	renderItem: d(function () {
+		var el = this.make, dom, input;
+		input = this.ns.toDOMInput(this.document, this.options);
+		dom = el('li');
+		extendEl.call(dom, input,
+			el('a', { onclick: this.safeRemoveItem.bind(this, input) },
+				this.deleteLabel()));
+		return { dom: dom, input: input };
+	}),
+}, d.binder({
+	addItem: d(function () {
+		var data = this.renderItem(), input = data.input, dom = data.dom;
+		if (this.name) input.name = this.name;
+		input.index = this.items.length;
+		input.parent = this;
+		this.items.push(input);
+		input.listItem = dom;
+		input.on('change', this.onChange);
+		this.domList.appendChild(dom);
+		this.onChange();
+		return input;
 	})
-}))));
+})));
 
 Object.defineProperty(Base, 'DOMMultipleInput', d(Input));

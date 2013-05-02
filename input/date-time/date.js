@@ -9,19 +9,20 @@ var d        = require('es5-ext/lib/Object/descriptor')
 require('../');
 
 Input = function (document, ns/*, options*/) {
-	DOMInput.call(this, document, ns, arguments[2]);
-	this.dom.setAttribute('type', 'date');
-	if (ns.max) this.castAttribute('max', ns.max);
-	if (ns.min) this.castAttribute('min', ns.min);
-	if (ns.step) this.dom.setAttribute('step', ns.step);
-	this.dom.addEventListener('input', this.onchange.bind(this), false);
+	DOMInput.apply(this, arguments);
 };
 
-Input.prototype = Object.create(DOMInput.prototype, { constructor: d(Input) });
+Input.prototype = Object.create(DOMInput.prototype, {
+	constructor: d(Input),
+	_render: d(function () {
+		var input = this.control = this.dom = this.document.createElement('input');
+		input.setAttribute('type', 'date');
+	}),
+});
 
 module.exports = Object.defineProperties(DateType, {
 	toInputValue: d(function (value) {
-		return (value == null) ? '' : value.toISOString().slice(0, 10);
+		return (value == null) ? null : value.toISOString().slice(0, 10);
 	}),
 	DOMInput: d(Input),
 });

@@ -1,44 +1,42 @@
 'use strict';
 
-var d        = require('es5-ext/lib/Object/descriptor')
+var copy     = require('es5-ext/lib/Object/copy')
+  , extend   = require('es5-ext/lib/Object/extend')
+  , d        = require('es5-ext/lib/Object/descriptor')
   , Db       = require('dbjs')
   , DOMInput = require('./_controls/input')
 
-  , isValidNumber = function (n) { return (n != null) && !isNaN(n); }
+  , castControlAttribute = DOMInput.prototype.castControlAttribute
   , NumberType = Db.Number
-  , Input, getOption;
-
-getOption = function (name, options, def) {
-	if (isValidNumber(options[name])) {
-		return Number(options[name]);
-	} else if (options.relation &&
-			isValidNumber(options.relation['__' + name].__value)) {
-		return Number(options.relation['__' + name].__value);
-	}
-	return def;
-};
+  , Input;
 
 Input = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]), max, min, step;
-	DOMInput.call(this, document, ns, options);
-	this.control.setAttribute('type', 'number');
-	max = getOption('max', options, ns.max);
-	if ((max != null) && (max < Infinity)) this.control.setAttribute('max', max);
-	min = getOption('min', options, ns.min);
-	if ((min != null) && (min > -Infinity)) this.control.setAttribute('min', min);
-	step = getOption('step', options, ns.step);
-	if (step != null) this.control.setAttribute('step', step);
-	this.control.addEventListener('input', this.onchange.bind(this), false);
+	DOMInput.apply(this, arguments);
+	this.control.addEventListener('input', this.onChange, false);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
-	htmlAttributes: d({ class: true, id: true, required: true, style: true,
-		placeholder: true })
+	controlAttributes: d(extend(copy(DOMInput.prototype.controlAttributes),
+		{ autocomplete: true, list: true, max: true, min: true, placeholder: true,
+			readonly: true, required: true, step: true })),
+	dbAttributes: d(extend(copy(DOMInput.prototype.dbAttributes),
+		{ max: true, min: true, inputPlaceholder: 'placeholder', required: true,
+			step: true })),
+	numberAttributes: d({ min: true, max: true }),
+	_render: d(function () {
+		var input = this.control = this.dom = this.document.createElement('input');
+		input.setAttribute('type', 'number');
+	}),
+	castAttribute: d(function (name, value) {
+		if (this.numberAttributes[name] && !isFinite(value)) value = null;
+		castControlAttribute.call(this, name, value);
+	})
 });
 
 module.exports = Object.defineProperties(NumberType, {
 	fromInputValue: d(function (value) {
+		if (value == null) return null;
 		value = value.trim();
 		return (!value || isNaN(value)) ? null : Number(value);
 	}),

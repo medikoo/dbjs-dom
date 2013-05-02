@@ -26,7 +26,7 @@ Object.defineProperties(Base.prototype, {
 		return text;
 	}),
 	toDOMAttrBox: d(function (document, name/*, options*/) {
-		var text = new this.ns.toDOMAttrBox(document, name, arguments[2]);
+		var text = this.ns.toDOMAttrBox(document, name, arguments[2]);
 		text.value = this;
 		return text;
 	}),

@@ -1,7 +1,9 @@
 'use strict';
 
-var d        = require('es5-ext/lib/Object/descriptor')
-  , DOMInput = require('../../_controls/input')
+var copy     = require('es5-ext/lib/Object/copy')
+  , extend   = require('es5-ext/lib/Object/extend')
+  , d        = require('es5-ext/lib/Object/descriptor')
+  , DOMInput = require('../string-line').DOMInput
 
   , Password = require('dbjs/lib/objects')._get('Password')
   , Input;
@@ -10,17 +12,16 @@ require('../../');
 
 Input = function (document, ns/*, options*/) {
 	DOMInput.apply(this, arguments);
-	this.dom.setAttribute('type', 'password');
-	if (ns.pattern) {
-		this.dom.setAttribute('pattern', ns.pattern.source.slice(1, -1));
-	}
-	if (ns.max) this.dom.setAttribute('maxlength', ns.max);
-	this.dom.addEventListener('input', this.onchange.bind(this), false);
 };
+
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
-	htmlAttributes: d({ class: true, id: true, required: true, style: true,
-		placeholder: true })
+	controlAttributes: d(extend(copy(DOMInput.prototype.controlAttributes),
+		{ dirname: false, inputmode: false, list: false })),
+	_render: d(function () {
+		var input = this.control = this.dom = this.document.createElement('input');
+		input.setAttribute('type', 'password');
+	}),
 });
 
 module.exports = Object.defineProperty(Password, 'DOMInput', d(Input));

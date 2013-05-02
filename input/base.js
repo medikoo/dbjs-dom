@@ -9,9 +9,12 @@ require('./_controls/input');
 require('./_multiple');
 
 module.exports = Object.defineProperties(Base, {
-	fromInputValue: d(function (value) { return value.trim() || null; }),
+	fromInputValue: d(function (value) {
+		if (value == null) return undefined;
+		return value.trim() || null;
+	}),
 	toInputValue: d(function (value) {
-		if (value == null) return '';
+		if (value == null) return null;
 		if (value.__toString) return value.__toString.__value.call(value);
 		return String(value);
 	}),
@@ -26,7 +29,7 @@ module.exports = Object.defineProperties(Base, {
 });
 Object.defineProperty(Base.prototype, 'toDOMInput',
 	d(function (document/*, options*/) {
-		var box = this.ns.toDOMInput(document, arguments[1]);
+		var box = this.ns.toDOMInput.apply(this.ns, arguments);
 		box.value = this;
 		return box;
 	}));

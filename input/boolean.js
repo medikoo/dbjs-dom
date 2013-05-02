@@ -4,67 +4,71 @@ var isCopy      = require('es5-ext/lib/Array/prototype/is-copy')
   , d           = require('es5-ext/lib/Object/descriptor')
   , makeEl      = require('dom-ext/lib/Document/prototype/make-element')
   , Db          = require('dbjs')
+  , DOMInput    = require('./_controls/input')
   , DOMRadio    = require('./_controls/radio')
   , DOMCheckbox = require('./_controls/checkbox')
 
   , isArray = Array.isArray
   , BooleanType = Db.Boolean
+  , getValue =
+	Object.getOwnPropertyDescriptor(DOMCheckbox.prototype, 'value').get
+  , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , Radio, Checkbox, arrResult = ['0', '1'].sort();
 
 Radio = function (document, ns/*, options*/) {
-	var trueText, falseText, tOption, fOption, options = Object(arguments[2]);
+	var tOption, fOption, options = Object(arguments[2]), reverse;
 	DOMRadio.call(this, document, ns, options);
-	this.relation = options && options.relation;
-	if (options.trueLabel) {
-		trueText = options.trueLabel;
-	} else if (this.relation && this.relation.__trueLabel.__value) {
-		trueText = this.relation._trueLabel.toDOM(document);
-	} else {
-		trueText = ns._trueLabel.toDOM(document);
-	}
-	if (options.falseLabel) {
-		falseText = options.falseLabel;
-	} else if (this.relation && this.relation.__falseLabel.__value) {
-		falseText = this.relation._falseLabel.toDOM(document);
-	} else {
-		falseText = ns._falseLabel.toDOM(document);
-	}
-	tOption = this.createOption('1', trueText);
-	fOption = this.createOption('0', falseText);
+	tOption = this.createOption('1', options.trueLabel || ns._trueLabel);
+	fOption = this.createOption('0', options.falseLabel || ns._falseLabel);
 
-	if (Number(options.order) < 0) {
-		this.dom.appendChild(fOption);
-		this.dom.appendChild(document.createTextNode(' '));
-		this.dom.appendChild(tOption);
-	} else {
-		this.dom.appendChild(tOption);
-		this.dom.appendChild(document.createTextNode(' '));
-		this.dom.appendChild(fOption);
-	}
-	this.trueInput = this.items['1'];
-	this.trueInput.setAttribute('data-type', 'boolean');
-	this.falseInput = this.items['0'];
-	this.falseInput.setAttribute('data-type', 'boolean');
-	this.castHtmlAttributes(options);
+	reverse = Number(options.order) < 0;
+	this.dom.appendChild(reverse ? fOption : tOption);
+	this.dom.appendChild(document.createTextNode(' '));
+	this.dom.appendChild(reverse ? tOption : fOption);
 };
 Radio.prototype = Object.create(DOMRadio.prototype, { constructor: d(Radio) });
 
-Checkbox = function (document, ns) {
+Checkbox = function (document, ns/*, options*/) {
 	DOMCheckbox.apply(this, arguments);
-	this.control = this.dom;
-	this.control.setAttribute('data-type', 'boolean');
-	this.dom = makeEl.call(document, 'span', this.dom,
-		makeEl.call(document, 'input', { type: 'hidden', name: this._name,
-			value: '0', 'data-type': 'boolean' }));
 };
 Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 	constructor: d(Checkbox),
-	inputValue: d.gs(function () { return this.control.checked ? '1' : '0'; })
+	inputValue: d.gs(function () { return this.control.checked ? '1' : '0'; }),
+	_render: d(function () {
+		var el = makeEl.bind(this.document);
+		this.controls = {};
+		this.dom = el('span', this.control = el('input',
+			{ type: 'checkbox', value: '1' }), this.hidden = el('input',
+				{ type: 'hidden', value: '0' }));
+	}),
+	name: d.gs(getName, function (name) {
+		this._name = name;
+		name = this.name;
+		if (name) {
+			this.control.setAttribute('name', name);
+			this.hidden.setAttribute('name', name);
+		} else {
+			this.control.removeAttribute('name');
+			this.hidden.removeAttribute('name');
+		}
+	}),
+	value: d.gs(getValue, function (value) {
+		var old = this.inputValue, nu = this.ns.toInputValue(value);
+		if (nu == null) nu = '0';
+		if (nu !== this._value) {
+			if (nu !== '1') this.control.removeAttribute('checked');
+			else this.control.setAttribute('checked', 'checked');
+		}
+
+		if (nu !== old) this.control.checked = (nu === '1');
+		this.onChange();
+	}),
+	setCheckedValue: d(function () { throw new Error("Not supported"); })
 });
 
 module.exports = Object.defineProperties(BooleanType, {
 	fromInputValue: d(function (value) {
-		if (value === '') return null;
+		if (value == null) return undefined;
 		if (value === '0') return false;
 		if (value === '1') return true;
 		if (isArray(value) && isCopy.call(value.sort(), arrResult)) {
@@ -73,7 +77,7 @@ module.exports = Object.defineProperties(BooleanType, {
 		return null;
 	}),
 	toInputValue: d(function (value) {
-		if (value == null) return '';
+		if (value == null) return null;
 		else return value.valueOf() ? '1' : '0';
 	}),
 	DOMRadio: d(Radio),
