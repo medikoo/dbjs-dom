@@ -65,6 +65,7 @@ module.exports = Fieldset = function (document, list/*, options*/) {
 
 	this.reload();
 };
+Object.defineProperty(Fieldset, 'renderRow', d(renderRow));
 
 Object.defineProperties(Fieldset.prototype, extend({
 	render: d(function () {
