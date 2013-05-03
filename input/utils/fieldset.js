@@ -33,7 +33,7 @@ renderRow = function (input, options) {
 			el('span', { class: 'validation-status' }, '✓'),
 			// error message
 			el('span', { class: 'error-message error-message-' +
-				input._name.replace(':', '-') }),
+				input._name.replace(/[:#]/g, '-') }),
 			// hint
 			options.hint && el('p', { 'class': 'hint' }, options.hint)));
 };
