@@ -35,7 +35,7 @@ renderRow = function (input, options) {
 			el('span', { class: 'error-message error-message-' +
 				input._name.replace(':', '-') }),
 			// hint
-			options.hint && el('p', { 'class': 'hint' }, this.hint)));
+			options.hint && el('p', { 'class': 'hint' }, options.hint)));
 };
 
 module.exports = Fieldset = function (document, list/*, options*/) {
