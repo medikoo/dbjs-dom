@@ -8,6 +8,7 @@ var partial        = require('es5-ext/lib/Function/prototype/partial')
   , startsWith     = require('es5-ext/lib/String/prototype/starts-with')
   , ee             = require('event-emitter/lib/core')
   , castAttribute  = require('dom-ext/lib/Element/prototype/cast-attribute')
+  , mergeClass     = require('dom-ext/lib/HTMLElement/prototype/merge-class')
   , nextTick       = require('next-tick')
   , Db             = require('dbjs')
   , htmlAttributes = require('../_html-attributes')
@@ -34,7 +35,9 @@ module.exports = Input = function (document, ns/*, options*/) {
 		this.castControlAttribute(name, value);
 	}, this);
 	forEach(options, function (value, name) {
-		if (htmlAttributes[name] || startsWith.call(name, 'data-')) {
+		if (name === 'class') {
+			mergeClass.call(this.dom, value);
+		} else if (htmlAttributes[name] || startsWith.call(name, 'data-')) {
 			castAttribute.call(this.dom, name, value);
 		} else if (name === 'control') {
 			forEach(value, function (value, name) {
@@ -101,7 +104,9 @@ ee(Object.defineProperties(Input.prototype, extend({
 		this.onChange();
 	}),
 	castControlAttribute: d(function (name, value) {
-		if (!this.controlAttributes[name] && !htmlAttributes[name] &&
+		if (name === 'class') {
+			mergeClass.call(this.control, value);
+		} else if (!this.controlAttributes[name] && !htmlAttributes[name] &&
 				!startsWith.call(name, 'data-')) {
 			return;
 		}

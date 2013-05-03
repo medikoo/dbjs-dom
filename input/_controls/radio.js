@@ -8,6 +8,7 @@ var copy           = require('es5-ext/lib/Object/copy')
   , isRegExp       = require('es5-ext/lib/RegExp/is-reg-exp')
   , startsWith     = require('es5-ext/lib/String/prototype/starts-with')
   , castAttribute  = require('dom-ext/lib/Element/prototype/cast-attribute')
+  , mergeClass     = require('dom-ext/lib/HTMLElement/prototype/merge-class')
   , elExtend       = require('dom-ext/lib/Element/prototype/extend')
   , Db             = require('dbjs')
   , DOMInput       = require('./input')
@@ -69,7 +70,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		if (isRegExp(value)) value = value.source.slice(1, -1);
 		this.attributes[name] = value;
 		forEach(this.controls, function (input) {
-			castAttribute.call(input, name, value);
+			if (name === 'class') mergeClass.call(input, value);
+			else castAttribute.call(input, name, value);
 		});
 	}),
 	inputValue: d.gs(function () {
