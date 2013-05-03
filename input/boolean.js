@@ -13,13 +13,21 @@ var isCopy      = require('es5-ext/lib/Array/prototype/is-copy')
   , getValue =
 	Object.getOwnPropertyDescriptor(DOMCheckbox.prototype, 'value').get
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
-  , Radio, Checkbox, arrResult = ['0', '1'].sort();
+  , Radio, Checkbox, arrResult = ['0', '1'].sort(), getLabel;
+
+getLabel = function (name, options, ns) {
+	name += 'Label';
+	if (options[name]) return options[name];
+	options = options.dbOptions;
+	if (options[name]) return options['_' + name];
+	return ns['_' + name];
+};
 
 Radio = function (document, ns/*, options*/) {
 	var tOption, fOption, options = Object(arguments[2]), reverse;
 	DOMRadio.call(this, document, ns, options);
-	tOption = this.createOption('1', options.trueLabel || ns._trueLabel);
-	fOption = this.createOption('0', options.falseLabel || ns._falseLabel);
+	tOption = this.createOption('1', getLabel('true', options, ns));
+	fOption = this.createOption('0', getLabel('false', options, ns));
 
 	reverse = Number(options.order) < 0;
 	this.dom.appendChild(reverse ? fOption : tOption);
