@@ -41,6 +41,7 @@ Checkbox = function (document, ns/*, options*/) {
 };
 Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 	constructor: d(Checkbox),
+	_value: d('0'),
 	inputValue: d.gs(function () { return this.control.checked ? '1' : '0'; }),
 	_render: d(function () {
 		var el = makeEl.bind(this.document);
