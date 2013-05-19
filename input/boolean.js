@@ -64,10 +64,9 @@ Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 	value: d.gs(getValue, function (value) {
 		var old = this.inputValue, nu = this.ns.toInputValue(value);
 		if (nu == null) nu = '0';
-		if (nu !== this._value) {
-			if (nu !== '1') this.control.removeAttribute('checked');
-			else this.control.setAttribute('checked', 'checked');
-		}
+
+		if (nu !== '1') this.control.removeAttribute('checked');
+		else this.control.setAttribute('checked', 'checked');
 
 		if (nu !== old) this.control.checked = (nu === '1');
 		this.onChange();
