@@ -22,7 +22,7 @@ var CustomError    = require('es5-ext/lib/Error/custom')
 
 renderRow = function (input, options) {
 	var el = makeElement.bind(input.document)
-	  , id = getId.call(input.dom);
+	  , id = getId.call(input.control || input.dom);
 	return el('tr',
 		// label
 		el('th', el('label', { for: id }, options.label, ':')),
