@@ -10,6 +10,7 @@ var CustomError    = require('es5-ext/lib/Error/custom')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
   , getId          = require('dom-ext/lib/HTMLElement/prototype/get-id')
   , SetCollection  = require('set-collection')
+  , dbProto        = require('dbjs/lib/_proto')
   , Db             = require('../')
   , DOMComposite   = require('../_composite')
   , htmlAttributes = require('../_html-attributes')
@@ -89,7 +90,7 @@ Object.defineProperties(Fieldset.prototype, extend({
 
 Object.defineProperty(Base, 'DOMFieldset', d(Fieldset));
 
-Object.defineProperty(Db.prototype, 'toDOMFieldset',
+Object.defineProperty(dbProto, 'toDOMFieldset',
 	d(function (document/*, options*/) {
 		var options = Object(arguments[1]), data, list, include, controlOpts
 		  , setup, byOrder;
