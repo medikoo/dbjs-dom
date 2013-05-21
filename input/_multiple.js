@@ -40,7 +40,8 @@ module.exports = Input = function (document, ns/*, options*/) {
 		delete options.deleteLabel;
 	}
 
-	this.options = {};
+	this.options = Object(options.item);
+	this.options.control = Object(this.options.control);
 	DOMInput.call(this, document, ns, options);
 };
 
@@ -100,7 +101,7 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		this.onChange();
 	}),
 	castControlAttribute: d(function (name, value) {
-		this.options[name] = value;
+		this.options.control[name] = value;
 		this.items.forEach(function (input) {
 			input.castControlAttribute(name, value);
 		});
