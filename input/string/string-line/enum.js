@@ -115,7 +115,7 @@ MultipleInput.prototype = Object.create(DOMInput.prototype, {
 		}, this);
 	}, function (value) {
 		forEach(this.items, function (input, val) {
-			input.value = value.has(val);
+			input.value = value.has(val) || null;
 		});
 		this.onChange();
 	}),
