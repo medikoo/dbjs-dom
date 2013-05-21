@@ -38,7 +38,8 @@ Select.prototype = Object.create(DOMSelect.prototype, extend({
 	constructor: d(Select),
 	createOption: d(function (item) {
 		return createOption.call(this, item._subject_,
-			this.customLabels[item._subject_] || item._label);
+			this.customLabels[item._subject_] || (item.label && item._label) ||
+			item._subject_);
 	})
 }, d.binder({
 	reload: d(function () {
@@ -60,7 +61,8 @@ Radio.prototype = Object.create(DOMRadio.prototype, extend({
 	constructor: d(Radio),
 	createOption: d(function (item) {
 		return createRadio.call(this, item._subject_,
-			this.customLabels[item._subject_] || item._label);
+			this.customLabels[item._subject_] || (item.label && item._label) ||
+			item._subject_);
 	})
 }, d.binder({
 	reload: d(function () { replaceContent.call(this.dom, this.dbOptions); })
