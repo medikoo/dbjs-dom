@@ -5,6 +5,7 @@ var noop           = require('es5-ext/lib/Function/noop')
   , extend         = require('es5-ext/lib/Object/extend')
   , forEach        = require('es5-ext/lib/Object/for-each')
   , some           = require('es5-ext/lib/Object/some')
+  , memoize        = require('memoizee/lib/primitive')
   , makeElement    = require('dom-ext/lib/Document/prototype/make-element')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
   , nextTickOnce   = require('next-tick/lib/once')
@@ -30,21 +31,20 @@ Select = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]);
 	DOMSelect.call(this, document, ns, options);
 	this.customLabels = Object(options.labels);
-	this.dbOptions = ns.options.itemsListByOrder()
-		.liveMap(this.createOption, this);
-	this.dbOptions.on('change', this.reload);
+	this.dbOptions = ns.options;
+	this.dbOptions.listByOrder().on('change', this.reload);
 	this.reload();
 };
 Select.prototype = Object.create(DOMSelect.prototype, extend({
-	constructor: d(Select),
-	createOption: d(function (item) {
-		return createOption.call(this, item._subject_,
-			this.customLabels[item._subject_] || (item.label && item._label) ||
-			item._subject_);
-	})
-}, d.binder({
+	constructor: d(Select)
+}, memoize(function (name) {
+	var item = this.dbOptions.getItem(name);
+	return createOption.call(this, name,
+		this.customLabels[name] || (item.label && item._label) || name);
+}, { method: 'createOption' }), d.binder({
 	reload: d(function () {
-		replaceContent.call(this.dom, this.chooseOption, this.dbOptions);
+		replaceContent.call(this.dom, this.chooseOption,
+			this.dbOptions.listByOrder().map(this.createOption));
 	})
 })));
 
