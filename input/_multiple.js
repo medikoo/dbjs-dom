@@ -10,6 +10,7 @@ var contains      = require('es5-ext/lib/Array/prototype/contains')
   , makeElement   = require('dom-ext/lib/Document/prototype/make-element')
   , extendEl      = require('dom-ext/lib/Element/prototype/extend')
   , removeEl      = require('dom-ext/lib/Element/prototype/remove')
+  , setPresenceEl = require('dom-ext/lib/Element/prototype/set-presence')
   , nextTickOnce  = require('next-tick/lib/once')
   , Base          = require('dbjs').Base
   , serialize     = require('dbjs/lib/utils/serialize')
@@ -21,6 +22,7 @@ var contains      = require('es5-ext/lib/Array/prototype/contains')
 module.exports = Input = function (document, ns/*, options*/) {
 	var options = copy(Object(arguments[2]));
 	this.items = [];
+	this.removeButtons = [];
 	this.make = makeElement.bind(document);
 	this.onChange = nextTickOnce(this.onChange.bind(this));
 	delete options.multiple;
@@ -98,6 +100,12 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		this.items.forEach(function (input) {
 			input.castControlAttribute(name, value);
 		});
+		if (name === 'disabled') {
+			if (this.addButton) setPresenceEl.call(this.addButton, !value);
+			this.removeButtons.forEach(function (btn) {
+				setPresenceEl.call(btn, !value);
+			});
+		}
 	}),
 	addLabel: d('Add'),
 	deleteLabel: d(k('x')),
@@ -106,7 +114,7 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		this.domList = el('ul');
 		this.dom = el('div', { class: 'dbjs multiple' }, this.domList,
 			el('div', { class: 'controls' },
-				el('a', { onclick: this.addItem }, this.addLabel)));
+				this.addButton = el('a', { onclick: this.addItem }, this.addLabel)));
 	}),
 	safeRemoveItem: d(function (input) {
 		if (this.domList.childNodes.length <= this.minInputsCount) return;
@@ -121,12 +129,14 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		this.onChange();
 	}),
 	renderItem: d(function () {
-		var el = this.make, dom, input;
+		var el = this.make, dom, input, removeButton;
 		input = this.ns.toDOMInput(this.document, this.options);
 		dom = el('li');
 		extendEl.call(dom, input,
-			el('a', { onclick: this.safeRemoveItem.bind(this, input) },
+			removeButton = el('a', { onclick: this.safeRemoveItem.bind(this, input) },
 				this.deleteLabel()));
+		this.removeButtons.push(removeButton);
+		if (this.options.disabled) setPresenceEl.call(removeButton, false);
 		return { dom: dom, input: input };
 	}),
 }, d.binder({
