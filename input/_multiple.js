@@ -41,6 +41,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	}
 
 	this.options = Object(options.item);
+	this.options.dbOptions = options.dbOptions;
 	this.options.control = Object(this.options.control);
 	DOMInput.call(this, document, ns, options);
 };
