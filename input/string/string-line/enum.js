@@ -106,7 +106,7 @@ MultipleInput.prototype = Object.create(DOMInput.prototype, {
 	name: d.gs(getName, function (name) {
 		this._name = name;
 		name = this.name;
-		this.items.forEach(function (input) { input.name = name; });
+		forEach(this.items, function (input) { input.name = name; });
 	}),
 	value: d.gs(function () {
 		return this.ns.options.listByOrder().filter(function (value) {
