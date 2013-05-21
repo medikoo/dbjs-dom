@@ -33,6 +33,13 @@ Select = function (document, ns/*, options*/) {
 	this.customLabels = Object(options.labels);
 	this.dbOptions = ns.options;
 	this.dbOptions.listByOrder().on('change', this.reload);
+	if (options.only) {
+		this.onlyFilter = options.only;
+		if (this.onlyFilter.on) {
+			this.onlyFilter.on('add', this.reload);
+			this.onlyFilter.on('delete', this.reload);
+		}
+	}
 	this.reload();
 };
 Select.prototype = Object.create(DOMSelect.prototype, extend({
@@ -43,8 +50,12 @@ Select.prototype = Object.create(DOMSelect.prototype, extend({
 		this.customLabels[name] || (item.label && item._label) || name);
 }, { method: 'createOption' }), d.binder({
 	reload: d(function () {
+		var options = this.dbOptions.listByOrder();
+		if (this.onlyFilter) {
+			options = options.filter(this.onlyFilter.has, this.onlyFilter);
+		}
 		replaceContent.call(this.dom, this.chooseOption,
-			this.dbOptions.listByOrder().map(this.createOption));
+			options.map(this.createOption));
 	})
 })));
 
