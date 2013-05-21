@@ -78,9 +78,13 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 			.filter(function (value) { return value != null; }));
 	}, function (value) {
 		var length, item;
-		value = value.values.map(serialize).sort(function (a, b) {
-			return value[a].order - value[b].order;
-		}).map(function (key) { return value[key]._subject_; });
+		if (value._type_ === 'relation') {
+			value = value.values.map(serialize).sort(function (a, b) {
+				return value[a].order - value[b].order;
+			}).map(function (key) { return value[key]._subject_; });
+		} else {
+			value = value.values;
+		}
 		value.forEach(function (value, index) {
 			var item = this.items[index];
 			if (!item) item = this.addItem();
