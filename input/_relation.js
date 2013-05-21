@@ -32,7 +32,7 @@ module.exports = Object.defineProperties(relation, {
 	DOMInput: d(null),
 	toDOMInput: d(function (document/*, options*/) {
 		var input, initOptions = Object(arguments[1]), options = copy(initOptions)
-		  , ns, value, onChange, onMetaChange, onRequiredChange;
+		  , ns, value, onChange, onMetaChange, onRequiredChange, rel = this;
 
 		// Setup input options
 		if (options.multiple == null) options.multiple = this.multiple;
@@ -53,15 +53,15 @@ module.exports = Object.defineProperties(relation, {
 
 		// Attach listeners
 		onChange = function (value) {
-			if (this.multiple) {
-				value = this.value;
+			if (rel.multiple) {
+				value = rel.value;
 				if (!options.multiple) value = value.values[0] || null;
 			}
 			input.value = value;
 		};
 		if (this.multiple) {
-			this.on('add', onChange);
-			this.on('delete', onChange);
+			value.on('add', onChange);
+			value.on('delete', onChange);
 		} else {
 			this.on('change', onChange);
 		}
@@ -84,8 +84,10 @@ module.exports = Object.defineProperties(relation, {
 
 		input.once('destroy', function () {
 			delete input.relation;
-			this.off('add', onChange);
-			this.off('delete', onChange);
+			if (value && value.off) {
+				value.off('add', onChange);
+				value.off('delete', onChange);
+			}
 			this.off('change', onChange);
 			this._required.off('change', onRequiredChange);
 			this._ns.off('change', onMetaChange);
