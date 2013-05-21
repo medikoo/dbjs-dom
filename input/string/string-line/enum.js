@@ -13,6 +13,7 @@ var noop           = require('es5-ext/lib/Function/noop')
   , DOMRadio       = require('../../_controls/radio')
   , DOMSelect      = require('../../_controls/select')
   , DOMInput       = require('../../_controls/input')
+  , DOMMultiple    = require('../../_multiple')
 
   , Enum = getObject('Enum'), StringLine = getObject('StringLine')
   , createOption = DOMSelect.prototype.createOption
@@ -144,6 +145,9 @@ module.exports = Object.defineProperties(Enum, {
 	toDOMInput: d(function (document/*, options*/) {
 		var options = Object(arguments[1]);
 		if (options.multiple) {
+			if (options.multiType === 'base') {
+				return new DOMMultiple(document, this, options);
+			}
 			return new this.DOMMultipleInput(document, this, options);
 		}
 		if (options.type === 'radio') {
