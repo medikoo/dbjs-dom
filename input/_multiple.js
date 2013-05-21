@@ -141,7 +141,9 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 			removeButton = el('a', { onclick: this.safeRemoveItem.bind(this, input) },
 				this.deleteLabel()));
 		this.removeButtons.push(removeButton);
-		if (this.options.disabled) setPresenceEl.call(removeButton, false);
+		if (this.options.control.disabled) {
+			setPresenceEl.call(removeButton, false);
+		}
 		return { dom: dom, input: input };
 	}),
 }, d.binder({
