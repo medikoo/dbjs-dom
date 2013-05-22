@@ -5,8 +5,10 @@ var noop           = require('es5-ext/lib/Function/noop')
   , extend         = require('es5-ext/lib/Object/extend')
   , forEach        = require('es5-ext/lib/Object/for-each')
   , some           = require('es5-ext/lib/Object/some')
+  , validValue     = require('es5-ext/lib/Object/valid-value')
   , memoize        = require('memoizee/lib/primitive')
   , makeElement    = require('dom-ext/lib/Document/prototype/make-element')
+  , clear          = require('dom-ext/lib/Element/prototype/clear')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
   , nextTickOnce   = require('next-tick/lib/once')
   , getObject      = require('dbjs/lib/objects')._get
@@ -31,6 +33,13 @@ Select = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]);
 	DOMSelect.call(this, document, ns, options);
 	this.customLabels = Object(options.labels);
+	if (options.group) {
+		this.group = options.group;
+		validValue(this.group.name);
+		if (!this.group.set || (this.group.set._type_ !== 'relation')) {
+			throw new TypeError("Group set must be relation set");
+		}
+	}
 	this.dbOptions = ns.options;
 	this.dbOptions.listByOrder().on('change', this.reload);
 	if (options.only) {
@@ -48,14 +57,35 @@ Select.prototype = Object.create(DOMSelect.prototype, extend({
 	var item = this.dbOptions.getItem(name);
 	return createOption.call(this, name,
 		this.customLabels[name] || (item.label && item._label) || name);
-}, { method: 'createOption' }), d.binder({
+}, { method: 'createOption' }), memoize(function (name) {
+	var el = this.document.createElement('optgroup');
+	el.setAttribute('label', this.group.set.getItem(name).label);
+	return el;
+}, { method: 'createOptgroup' }), d.binder({
 	reload: d(function () {
-		var options = this.dbOptions.listByOrder();
+		var options = this.dbOptions.listByOrder(), els, done;
 		if (this.onlyFilter) {
 			options = options.filter(this.onlyFilter.has, this.onlyFilter);
 		}
-		replaceContent.call(this.dom, this.chooseOption,
-			options.map(this.createOption));
+		if (this.group) {
+			els = [];
+			done = {};
+			options.forEach(function (name) {
+				var item = this.dbOptions.getItem(name)
+				  , group = item[this.group.name]
+				  , optgroup = this.createOptgroup(group)
+				  , option = this.createOption(name);
+				if (!done.hasOwnProperty(group)) {
+					clear.call(optgroup);
+					done[group] = true;
+					els.push(optgroup);
+				}
+				optgroup.appendChild(option);
+			}, this);
+		} else {
+			els = options.map(this.createOption);
+		}
+		replaceContent.call(this.dom, this.chooseOption, els);
 	})
 })));
 
