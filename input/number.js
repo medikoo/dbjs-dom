@@ -28,7 +28,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		var input = this.control = this.dom = this.document.createElement('input');
 		input.setAttribute('type', 'number');
 	}),
-	castAttribute: d(function (name, value) {
+	castControlAttribute: d(function (name, value) {
 		if (this.numberAttributes[name] && !isFinite(value)) value = null;
 		castControlAttribute.call(this, name, value);
 	})
