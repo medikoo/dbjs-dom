@@ -24,14 +24,16 @@ module.exports = Object.defineProperties(relation, {
 		if (name == null) name = this.name;
 		options.relation = this;
 		return this.assignDOMText(this.__ns.__value
-				.toDOMAttrBox(document, name, options));
+				.toDOMAttrBox(document, name, options), options);
 	}),
-	assignDOMText: d(function (text) {
-		var listener;
+	assignDOMText: d(function (text/*, options*/) {
+		var listener, options = Object(arguments[1]);
 		text.dismiss();
-		text.value = this.ns === Base ? this.value : this.objectValue;
+		text.value = (options.bare || (this.ns === Base)) ? this.value :
+				this.objectValue;
 		this.on('change', listener = function () {
-			text.value = this.ns === Base ? this.value : this.objectValue;
+			text.value = (options.bare || (this.ns === Base)) ? this.value :
+					this.objectValue;
 		});
 		text.dismiss = this.off.bind(this, 'change', listener);
 		return text;
