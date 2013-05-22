@@ -29,7 +29,10 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		input.setAttribute('type', 'number');
 	}),
 	castControlAttribute: d(function (name, value) {
-		if (this.numberAttributes[name] && !isFinite(value)) value = null;
+		if (this.numberAttributes[name] && !isFinite(value) &&
+				(!value || !value.toDOMAttr)) {
+			value = null;
+		}
 		castControlAttribute.call(this, name, value);
 	})
 });
