@@ -28,6 +28,8 @@ Radio = function (document, ns/*, options*/) {
 	DOMRadio.call(this, document, ns, options);
 	tOption = this.createOption('1', getLabel('true', options, ns));
 	fOption = this.createOption('0', getLabel('false', options, ns));
+	this.items['1'].setAttribute('data-type', 'boolean');
+	this.items['0'].setAttribute('data-type', 'boolean');
 
 	reverse = Number(options.order) < 0;
 	this.dom.appendChild(reverse ? fOption : tOption);
@@ -47,8 +49,9 @@ Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 		var el = makeEl.bind(this.document);
 		this.controls = {};
 		this.dom = el('span', this.control = el('input',
-			{ type: 'checkbox', value: '1' }), this.hidden = el('input',
-				{ type: 'hidden', value: '0' }));
+			{ type: 'checkbox', 'data-type': 'boolean', value: '1' }),
+			this.hidden = el('input', { type: 'hidden',
+				'data-type': 'boolean', value: '0' }));
 	}),
 	name: d.gs(getName, function (name) {
 		this._name = name;
