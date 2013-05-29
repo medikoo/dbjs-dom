@@ -1,15 +1,16 @@
 'use strict';
 
-var d              = require('es5-ext/lib/Object/descriptor')
-  , extend         = require('es5-ext/lib/Object/extend')
-  , validValue     = require('es5-ext/lib/Object/valid-value')
-  , memoize        = require('memoizee/lib/primitive')
-  , clear          = require('dom-ext/lib/Element/prototype/clear')
-  , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
-  , getObject      = require('dbjs/lib/objects')._get
-  , DOMRadio       = require('../../_controls/radio')
-  , DOMSelect      = require('../../_controls/select')
-  , DOMMultiple    = require('../../_multiple/checkbox')
+var d                = require('es5-ext/lib/Object/descriptor')
+  , extend           = require('es5-ext/lib/Object/extend')
+  , validValue       = require('es5-ext/lib/Object/valid-value')
+  , memoize          = require('memoizee/lib/primitive')
+  , clear            = require('dom-ext/lib/Element/prototype/clear')
+  , replaceContent   = require('dom-ext/lib/Element/prototype/replace-content')
+  , getObject        = require('dbjs/lib/objects')._get
+  , DOMRadio         = require('../../_controls/radio')
+  , DOMSelect        = require('../../_controls/select')
+  , DOMMultiple      = require('../../_multiple')
+  , DOMMultipleChBox = require('../../_multiple/checkbox')
 
   , Enum = getObject('Enum'), StringLine = getObject('StringLine')
   , createOption = DOMSelect.prototype.createOption
@@ -106,11 +107,11 @@ Multiple = function (document, ns/*, options*/) {
 	this.dbList = ns.options.itemsListByOrder().liveMap(function (item) {
 		return { label: item._label, value: item._subject_ };
 	}, this);
-	DOMMultiple.apply(this, arguments);
+	DOMMultipleChBox.apply(this, arguments);
 	this.dbList.on('change', this.reload);
 };
 
-Multiple.prototype = Object.create(DOMMultiple.prototype, {
+Multiple.prototype = Object.create(DOMMultipleChBox.prototype, {
 	constructor: d(Multiple)
 });
 
