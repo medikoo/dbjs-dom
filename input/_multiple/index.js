@@ -14,7 +14,7 @@ var contains      = require('es5-ext/lib/Array/prototype/contains')
   , nextTickOnce  = require('next-tick/lib/once')
   , Base          = require('dbjs').Base
   , serialize     = require('dbjs/lib/utils/serialize')
-  , DOMInput      = require('./_controls/input')
+  , DOMInput      = require('../_controls/input')
 
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , Input;
