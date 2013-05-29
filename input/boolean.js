@@ -71,10 +71,10 @@ Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 		if (nu !== '1') this.control.removeAttribute('checked');
 		else this.control.setAttribute('checked', 'checked');
 
+		this._value = nu;
 		if (nu !== old) this.control.checked = (nu === '1');
 		this.onChange();
-	}),
-	setCheckedValue: d(function () { throw new Error("Not supported"); })
+	})
 });
 
 module.exports = Object.defineProperties(BooleanType, {
