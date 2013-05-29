@@ -1,29 +1,21 @@
 'use strict';
 
-var noop           = require('es5-ext/lib/Function/noop')
-  , d              = require('es5-ext/lib/Object/descriptor')
+var d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
-  , forEach        = require('es5-ext/lib/Object/for-each')
-  , some           = require('es5-ext/lib/Object/some')
   , validValue     = require('es5-ext/lib/Object/valid-value')
   , memoize        = require('memoizee/lib/primitive')
-  , makeElement    = require('dom-ext/lib/Document/prototype/make-element')
   , clear          = require('dom-ext/lib/Element/prototype/clear')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
-  , nextTickOnce   = require('next-tick/lib/once')
   , getObject      = require('dbjs/lib/objects')._get
-  , DOMCheckbox    = require('../../_controls/checkbox')
   , DOMRadio       = require('../../_controls/radio')
   , DOMSelect      = require('../../_controls/select')
-  , DOMInput       = require('../../_controls/input')
-  , DOMMultiple    = require('../../_multiple')
+  , DOMMultiple    = require('../../_multiple/checkbox')
 
   , Enum = getObject('Enum'), StringLine = getObject('StringLine')
   , createOption = DOMSelect.prototype.createOption
   , createRadio = DOMRadio.prototype.createOption
-  , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
 
-  , Radio, Select, MultipleInput;
+  , Radio, Select, Multiple;
 
 require('../../');
 
@@ -110,79 +102,22 @@ Radio.prototype = Object.create(DOMRadio.prototype, extend({
 	reload: d(function () { replaceContent.call(this.dom, this.dbOptions); })
 })));
 
-MultipleInput = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]);
-	this.items = {};
-	this.make = makeElement.bind(document);
-	this.onChange = nextTickOnce(this.onChange.bind(this));
-	DOMInput.call(this, document, ns, options);
-	this.options = Object(options.control);
-	this.dbOptions = ns.options.itemsListByOrder()
-		.liveMap(this.renderOption, this);
-	this.dbOptions.on('change', this.reload);
-	this.reload();
+Multiple = function (document, ns/*, options*/) {
+	this.dbList = ns.options.itemsListByOrder().liveMap(function (item) {
+		return { label: item._label, value: item._subject_ };
+	}, this);
+	DOMMultiple.apply(this, arguments);
+	this.dbList.on('change', this.reload);
 };
 
-MultipleInput.prototype = Object.create(DOMInput.prototype, {
-	_value: d(null),
-	controlAttributes: d({}),
-	onChange: d(function () {
-		var value, changed, valid, emitChanged, emitValid;
-		value = this.value;
-		changed = some(this.items, function (item) { return item.changed; });
-		valid = this.required ? Boolean(value.length) : true;
-
-		if (this.changed !== changed) {
-			this.changed = changed;
-			emitChanged = true;
-		}
-		if (this.valid !== valid) {
-			this.valid = valid;
-			emitValid = true;
-		}
-
-		this.emit('change', value);
-		if (emitChanged) this.emit('change:changed', this.changed);
-		if (emitValid) this.emit('change:valid', this.valid);
-	}),
-	name: d.gs(getName, function (name) {
-		this._name = name;
-		name = this.name;
-		forEach(this.items, function (input) { input.name = name; });
-	}),
-	value: d.gs(function () {
-		return this.ns.options.listByOrder().filter(function (value) {
-			return this.items[value].value;
-		}, this);
-	}, function (value) {
-		forEach(this.items, function (input, val) {
-			input.value = value.has(val) || null;
-		});
-		this.onChange();
-	}),
-	castControlAttribute: d(noop),
-	_render: d(function () {
-		this.dom = this.document.createElement('ul');
-		this.dom.className = 'dbjs multiple enum';
-	}),
-	renderOption: d(function (item) {
-		var el = this.make, label, input, value = item._subject_;
-		this.items[value] = input =
-			new DOMCheckbox(this.document, this.ns, this.options);
-		input.name = this.name;
-		input.setCheckedValue(value);
-		input.parent = this;
-		label = el('label', input, ' ', item._label);
-		input.on('change', this.onChange);
-		return el('li', label);
-	}),
-	reload: d(function () { replaceContent.call(this.dom, this.dbOptions); })
+Multiple.prototype = Object.create(DOMMultiple.prototype, {
+	constructor: d(Multiple)
 });
 
 module.exports = Object.defineProperties(Enum, {
 	DOMRadio: d(Radio),
 	DOMSelect: d(Select),
-	DOMMultipleInput: d(MultipleInput),
+	DOMMultipleInput: d(Multiple),
 	toDOMInput: d(function (document/*, options*/) {
 		var options = Object(arguments[1]);
 		if (options.multiple) {
