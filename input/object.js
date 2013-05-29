@@ -14,6 +14,7 @@ var sepItems       = require('es5-ext/lib/Array/prototype/sep-items')
   , DOMInput       = require('./_controls/input')
   , DOMRadio       = require('./_controls/radio')
   , DOMSelect      = require('./_controls/select')
+  , DOMMultiple    = require('./_multiple/checkbox')
   , DOMComposite   = require('./_composite')
 
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
@@ -21,7 +22,7 @@ var sepItems       = require('es5-ext/lib/Array/prototype/sep-items')
   , createOption = DOMSelect.prototype.createOption
   , createRadio = DOMRadio.prototype.createOption
 
-  , Radio, Select, Edit;
+  , Radio, Select, Edit, Multiple;
 
 ObjectType.set('chooseLabel',
 	StringLine.rel({ required: true, value: 'Choose:' }));
@@ -130,6 +131,20 @@ Edit.prototype = Object.create(DOMComposite.prototype, {
 	})
 });
 
+Multiple = function (document, ns/*, options*/) {
+	var options = Object(arguments[2])
+	  , property = options.property;
+	this.dbList = ns.listByCreatedAt().liveMap(function (obj) {
+		return { label: property ? obj.get(property) : obj, value: obj._id_ };
+	}, this);
+	DOMMultiple.call(this, document, ns, options);
+	this.dbList.on('change', this.reload);
+};
+
+Multiple.prototype = Object.create(DOMMultiple.prototype, {
+	constructor: d(Multiple)
+});
+
 module.exports = Object.defineProperties(ObjectType, {
 	fromInputValue: d(function (value) {
 		var empty;
@@ -159,6 +174,9 @@ module.exports = Object.defineProperties(ObjectType, {
 	toDOMInput: d(function (document/*, options*/) {
 		var options = Object(arguments[1]);
 		if (options.multiple) {
+			if (options.type === 'checkbox') {
+				return new Multiple(document, this, options);
+			}
 			return new this.DOMMultipleInput(document, this, options);
 		}
 		if (options.type === 'edit') {
