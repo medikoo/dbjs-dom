@@ -43,16 +43,12 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			if (this._value == null) {
 				this.control.setAttribute('checked', 'checked');
 			}
-			this.control.setAttribute('value', value);
+			this.control.setAttribute('value', nu);
 		}
 
-		if (nu !== old) this.control.checked = (nu == null);
+		this._value = nu;
+		if (nu !== old) this.control.checked = (nu != null);
 		this.onChange();
-	}),
-	setCheckedValue: d(function (value) {
-		this.control.setAttribute('value', value);
-		if (this._value != null) this._value = value;
-		if (this.control.checked) this.onChange();
 	})
 });
 
