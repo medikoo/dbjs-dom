@@ -18,8 +18,10 @@ var noop          = require('es5-ext/lib/Function/noop')
 module.exports = Input = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]);
 	this.items = {};
-	this.options = Object(options.control);
-	this.customOptions = Object(options.controls);
+	this.options = Object(options.item);
+	this.options.control = extend(Object(options.control),
+		Object(this.options.control));
+	this.customOptions = Object(options.items);
 	this.onChange = nextTickOnce(this.onChange.bind(this));
 	this.make = makeElement.bind(document);
 	DOMInput.call(this, document, ns, options);
