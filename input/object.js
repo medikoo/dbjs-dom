@@ -133,9 +133,16 @@ Edit.prototype = Object.create(DOMComposite.prototype, {
 
 Multiple = function (document, ns/*, options*/) {
 	var options = Object(arguments[2])
-	  , property = options.property;
+	  , getLabel;
+
+	getLabel = function (obj) {
+		var label = options.label;
+		if (typeof label === 'function') return label(obj);
+		else if (typeof label === 'string') return obj.get(label);
+		else return obj;
+	};
 	this.dbList = ns.listByCreatedAt().liveMap(function (obj) {
-		return { label: property ? obj.get(property) : obj, value: obj._id_ };
+		return { label: getLabel(obj), value: obj._id_ };
 	}, this);
 	DOMMultiple.call(this, document, ns, options);
 	this.dbList.on('change', this.reload);
