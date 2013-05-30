@@ -1,17 +1,17 @@
 'use strict';
 
-var copy     = require('es5-ext/lib/Object/copy')
-  , extend   = require('es5-ext/lib/Object/extend')
-  , d        = require('es5-ext/lib/Object/descriptor')
-  , Db       = require('dbjs')
-  , DOMInput = require('./input')
+var copy        = require('es5-ext/lib/Object/copy')
+  , extend      = require('es5-ext/lib/Object/extend')
+  , d           = require('es5-ext/lib/Object/descriptor')
+  , dispatchEvt = require('dom-ext/lib/HTMLElement/prototype/dispatch-event-2')
+  , Db          = require('dbjs')
+  , DOMInput    = require('./input')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , Input;
 
 module.exports = Input = function (document, ns/*, options*/) {
 	DOMInput.apply(this, arguments);
-	this.dom.addEventListener('change', this.onChange, false);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
@@ -47,8 +47,12 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		}
 
 		this._value = nu;
-		if (nu !== old) this.control.checked = (nu != null);
-		this.onChange();
+		if (nu !== old) {
+			this.control.checked = (nu != null);
+			dispatchEvt.call(this.control, 'change');
+		} else {
+			this.onChange();
+		}
 	})
 });
 

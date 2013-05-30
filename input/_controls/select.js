@@ -1,12 +1,13 @@
 'use strict';
 
-var copy     = require('es5-ext/lib/Object/copy')
-  , d        = require('es5-ext/lib/Object/descriptor')
-  , extend   = require('es5-ext/lib/Object/extend')
-  , elExtend = require('dom-ext/lib/Element/prototype/extend')
-  , Db       = require('dbjs')
-  , DOMInput = require('./input')
-  , relation = require('dbjs/lib/_relation')
+var copy        = require('es5-ext/lib/Object/copy')
+  , d           = require('es5-ext/lib/Object/descriptor')
+  , extend      = require('es5-ext/lib/Object/extend')
+  , dispatchEvt = require('dom-ext/lib/HTMLElement/prototype/dispatch-event-2')
+  , elExtend    = require('dom-ext/lib/Element/prototype/extend')
+  , Db          = require('dbjs')
+  , DOMInput    = require('./input')
+  , relation    = require('dbjs/lib/_relation')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , Input;
@@ -28,7 +29,6 @@ module.exports = Input = function (document, ns/*, options*/) {
 		elExtend.call(this.chooseOption, chooseLabel);
 		this.control.appendChild(this.chooseOption);
 	}
-	this.dom.addEventListener('change', this.onChange, false);
 };
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
@@ -58,8 +58,12 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			}
 			this._value = nu;
 		}
-		if (nu !== old) this.control.value = nu;
-		this.onChange();
+		if (nu !== old) {
+			this.control.value = nu;
+			dispatchEvt.call(this.control, 'change');
+		} else {
+			this.onChange();
+		}
 	})
 });
 

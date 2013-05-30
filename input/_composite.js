@@ -1,16 +1,15 @@
 'use strict';
 
-var noop          = require('es5-ext/lib/Function/noop')
-  , copy          = require('es5-ext/lib/Object/copy')
-  , extend        = require('es5-ext/lib/Object/extend')
-  , d             = require('es5-ext/lib/Object/descriptor')
-  , every         = require('es5-ext/lib/Object/every')
-  , map           = require('es5-ext/lib/Object/map')
-  , some          = require('es5-ext/lib/Object/some')
-  , makeElement   = require('dom-ext/lib/Document/prototype/make-element')
-  , nextTickOnce  = require('next-tick/lib/once')
-  , Db            = require('dbjs')
-  , DOMInput      = require('./_controls/input')
+var noop        = require('es5-ext/lib/Function/noop')
+  , copy        = require('es5-ext/lib/Object/copy')
+  , extend      = require('es5-ext/lib/Object/extend')
+  , d           = require('es5-ext/lib/Object/descriptor')
+  , every       = require('es5-ext/lib/Object/every')
+  , map         = require('es5-ext/lib/Object/map')
+  , some        = require('es5-ext/lib/Object/some')
+  , makeElement = require('dom-ext/lib/Document/prototype/make-element')
+  , Db          = require('dbjs')
+  , DOMInput    = require('./_controls/input')
 
   , Base = Db.Base
   , Input;
@@ -22,7 +21,6 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.options.control = extend(Object(options.control),
 		Object(this.options.control));
 	this.customOptions = Object(options.items);
-	this.onChange = nextTickOnce(this.onChange.bind(this));
 	this.make = makeElement.bind(document);
 	DOMInput.call(this, document, ns, options);
 };

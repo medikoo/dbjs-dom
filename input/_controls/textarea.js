@@ -1,10 +1,11 @@
 'use strict';
 
-var copy     = require('es5-ext/lib/Object/copy')
-  , d        = require('es5-ext/lib/Object/descriptor')
-  , extend   = require('es5-ext/lib/Object/extend')
-  , Db       = require('dbjs')
-  , DOMInput = require('./input')
+var copy        = require('es5-ext/lib/Object/copy')
+  , d           = require('es5-ext/lib/Object/descriptor')
+  , extend      = require('es5-ext/lib/Object/extend')
+  , dispatchEvt = require('dom-ext/lib/HTMLElement/prototype/dispatch-event-2')
+  , Db          = require('dbjs')
+  , DOMInput    = require('./input')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , Input;
@@ -29,8 +30,12 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		var old = this.inputValue, nu = this.ns.toInputValue(value);
 		if (nu == null) nu = '';
 		if (this._value !== nu) this.control.firstChild.data = this._value = nu;
-		if (nu !== old) this.control.value = nu;
-		this.onChange();
+		if (nu !== old) {
+			this.control.value = nu;
+			dispatchEvt.call(this.control, 'change');
+		} else {
+			this.onChange();
+		}
 	})
 });
 

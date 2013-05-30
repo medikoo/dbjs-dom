@@ -11,7 +11,6 @@ var contains      = require('es5-ext/lib/Array/prototype/contains')
   , extendEl      = require('dom-ext/lib/Element/prototype/extend')
   , removeEl      = require('dom-ext/lib/Element/prototype/remove')
   , setPresenceEl = require('dom-ext/lib/Element/prototype/set-presence')
-  , nextTickOnce  = require('next-tick/lib/once')
   , Base          = require('dbjs').Base
   , serialize     = require('dbjs/lib/utils/serialize')
   , DOMInput      = require('../_controls/input')
@@ -24,7 +23,6 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.items = [];
 	this.removeButtons = [];
 	this.make = makeElement.bind(document);
-	this.onChange = nextTickOnce(this.onChange.bind(this));
 	delete options.multiple;
 	if (options.minInputsCount) {
 		this.minInputsCount = options.minInputsCount >>> 0;
@@ -99,7 +97,6 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 			item = this.addItem();
 			item.index = length++;
 		}
-		this.onChange();
 	}),
 	castControlAttribute: d(function (name, value) {
 		this.options.control[name] = value;

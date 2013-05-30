@@ -1,24 +1,24 @@
 'use strict';
 
-var partial        = require('es5-ext/lib/Function/prototype/partial')
-  , d              = require('es5-ext/lib/Object/descriptor')
-  , extend         = require('es5-ext/lib/Object/extend')
-  , forEach        = require('es5-ext/lib/Object/for-each')
-  , isRegExp       = require('es5-ext/lib/RegExp/is-reg-exp')
-  , startsWith     = require('es5-ext/lib/String/prototype/starts-with')
-  , ee             = require('event-emitter/lib/core')
-  , castAttribute  = require('dom-ext/lib/Element/prototype/cast-attribute')
-  , mergeClass     = require('dom-ext/lib/HTMLElement/prototype/merge-class')
-  , nextTick       = require('next-tick')
-  , Db             = require('dbjs')
-  , htmlAttributes = require('../_html-attributes')
+var d            = require('es5-ext/lib/Object/descriptor')
+  , forEach      = require('es5-ext/lib/Object/for-each')
+  , isRegExp     = require('es5-ext/lib/RegExp/is-reg-exp')
+  , startsWith   = require('es5-ext/lib/String/prototype/starts-with')
+  , ee           = require('event-emitter/lib/core')
+  , castAttr     = require('dom-ext/lib/Element/prototype/cast-attribute')
+  , dispatchEvt  = require('dom-ext/lib/HTMLElement/prototype/dispatch-event-2')
+  , mergeClass   = require('dom-ext/lib/HTMLElement/prototype/merge-class')
+  , nextTickOnce = require('next-tick/lib/once')
+  , Db           = require('dbjs')
+  , htmlAttrs    = require('../_html-attributes')
 
   , Input;
 
 module.exports = Input = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = Object(arguments[2]), onChange = this.onChange.bind(this);
 	this.document = document;
 	this.ns = ns;
+	this.onChange = nextTickOnce(onChange);
 	this._render(options);
 	this.dom._dbjsInput = this;
 	if (options.name) this.name = options.name;
@@ -37,8 +37,8 @@ module.exports = Input = function (document, ns/*, options*/) {
 	forEach(options, function (value, name) {
 		if (name === 'class') {
 			mergeClass.call(this.dom, value);
-		} else if (htmlAttributes[name] || startsWith.call(name, 'data-')) {
-			castAttribute.call(this.dom, name, value);
+		} else if (htmlAttrs[name] || startsWith.call(name, 'data-')) {
+			castAttr.call(this.dom, name, value);
 		} else if (name === 'control') {
 			forEach(value, function (value, name) {
 				this.castControlAttribute(name, value);
@@ -47,13 +47,15 @@ module.exports = Input = function (document, ns/*, options*/) {
 			this.castControlAttribute(name, value);
 		}
 	}, this);
-	document.addEventListener('reset',
-		this._resetListener = partial.call(nextTick, this.onChange),
+	onChange();
+	document.addEventListener('reset', this._resetListener = this.onChange,
 		false);
-	this.onChange();
+	if (this.control) {
+		this.control.addEventListener('change', this.onChange, false);
+	}
 };
 
-ee(Object.defineProperties(Input.prototype, extend({
+ee(Object.defineProperties(Input.prototype, {
 	_value: d(''),
 	_name: d(''),
 	controlAttributes: d({ autofocus: true, disabled: true, tabindex: true }),
@@ -100,24 +102,27 @@ ee(Object.defineProperties(Input.prototype, extend({
 		if (this._value !== nu) {
 			this.control.setAttribute('value', this._value = nu);
 		}
-		if (nu !== old) this.control.value = nu;
-		this.onChange();
+		if (nu !== old) {
+			this.control.value = nu;
+			dispatchEvt.call(this.control, 'change');
+		} else {
+			this.onChange();
+		}
 	}),
 	castControlAttribute: d(function (name, value) {
 		if (name === 'class') {
 			mergeClass.call(this.control, value);
-		} else if (!this.controlAttributes[name] && !htmlAttributes[name] &&
+		} else if (!this.controlAttributes[name] && !htmlAttrs[name] &&
 				!startsWith.call(name, 'data-')) {
 			return;
 		}
 		if (isRegExp(value)) value = value.source.slice(1, -1);
-		castAttribute.call(this.control, name, value);
+		castAttr.call(this.control, name, value);
 	}),
 	destroy: d(function () {
 		this.document.removeEventListener('reset', this._resetListener, false);
 		this.emit('destroy');
-	})
-}, d.binder({
+	}),
 	onChange: d(function () {
 		var value, inputValue, changed, valid, emitChanged, emitValid;
 		inputValue = this.inputValue;
@@ -140,6 +145,6 @@ ee(Object.defineProperties(Input.prototype, extend({
 		if (emitChanged) this.emit('change:changed', this.changed);
 		if (emitValid) this.emit('change:valid', this.valid);
 	})
-}))));
+}));
 
 Object.defineProperty(Db.Base, 'DOMInput', d(Input));

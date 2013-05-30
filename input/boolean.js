@@ -3,6 +3,7 @@
 var isCopy      = require('es5-ext/lib/Array/prototype/is-copy')
   , d           = require('es5-ext/lib/Object/descriptor')
   , makeEl      = require('dom-ext/lib/Document/prototype/make-element')
+  , dispatchEvt = require('dom-ext/lib/HTMLElement/prototype/dispatch-event-2')
   , Db          = require('dbjs')
   , DOMInput    = require('./_controls/input')
   , DOMRadio    = require('./_controls/radio')
@@ -72,8 +73,12 @@ Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 		else this.control.setAttribute('checked', 'checked');
 
 		this._value = nu;
-		if (nu !== old) this.control.checked = (nu === '1');
-		this.onChange();
+		if (nu !== old) {
+			this.control.checked = (nu === '1');
+			dispatchEvt.call(this.control, 'change');
+		} else {
+			this.onChange();
+		}
 	})
 });
 

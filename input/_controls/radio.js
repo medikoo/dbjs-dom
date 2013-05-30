@@ -1,18 +1,19 @@
 'use strict';
 
-var copy           = require('es5-ext/lib/Object/copy')
-  , d              = require('es5-ext/lib/Object/descriptor')
-  , extend         = require('es5-ext/lib/Object/extend')
-  , forEach        = require('es5-ext/lib/Object/for-each')
-  , some           = require('es5-ext/lib/Object/some')
-  , isRegExp       = require('es5-ext/lib/RegExp/is-reg-exp')
-  , startsWith     = require('es5-ext/lib/String/prototype/starts-with')
-  , castAttribute  = require('dom-ext/lib/Element/prototype/cast-attribute')
-  , mergeClass     = require('dom-ext/lib/HTMLElement/prototype/merge-class')
-  , elExtend       = require('dom-ext/lib/Element/prototype/extend')
-  , Db             = require('dbjs')
-  , DOMInput       = require('./input')
-  , htmlAttributes = require('../_html-attributes')
+var copy        = require('es5-ext/lib/Object/copy')
+  , d           = require('es5-ext/lib/Object/descriptor')
+  , extend      = require('es5-ext/lib/Object/extend')
+  , forEach     = require('es5-ext/lib/Object/for-each')
+  , some        = require('es5-ext/lib/Object/some')
+  , isRegExp    = require('es5-ext/lib/RegExp/is-reg-exp')
+  , startsWith  = require('es5-ext/lib/String/prototype/starts-with')
+  , castAttr    = require('dom-ext/lib/Element/prototype/cast-attribute')
+  , mergeClass  = require('dom-ext/lib/HTMLElement/prototype/merge-class')
+  , dispatchEvt = require('dom-ext/lib/HTMLElement/prototype/dispatch-event-2')
+  , elExtend    = require('dom-ext/lib/Element/prototype/extend')
+  , Db          = require('dbjs')
+  , DOMInput    = require('./input')
+  , htmlAttrs   = require('../_html-attributes')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
@@ -55,7 +56,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		input.setAttribute('value', value);
 		if (this.name) input.setAttribute('name', this.name);
 		forEach(this.attributes, function (value, name) {
-			castAttribute.call(input, name, value);
+			castAttr.call(input, name, value);
 		}, this);
 		label.appendChild(this.document.createTextNode(' '));
 		elExtend.call(label, labelTextDOM);
@@ -63,7 +64,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		return dom;
 	}),
 	castControlAttribute: d(function (name, value) {
-		if (!this.controlAttributes[name] && !htmlAttributes[name] &&
+		if (!this.controlAttributes[name] && !htmlAttrs[name] &&
 				!startsWith.call(name, 'data-')) {
 			return;
 		}
@@ -71,7 +72,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		this.attributes[name] = value;
 		forEach(this.controls, function (input) {
 			if (name === 'class') mergeClass.call(input, value);
-			else castAttribute.call(input, name, value);
+			else castAttr.call(input, name, value);
 		});
 	}),
 	inputValue: d.gs(function () {
@@ -99,11 +100,14 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		if (nu !== old) {
 			if ((nu != null) && this.items.hasOwnProperty(nu)) {
 				this.items[nu].checked = true;
+				dispatchEvt.call(this.items[nu], 'change');
 			} else if ((old != null) && this.items.hasOwnProperty(old)) {
 				this.items[old].checked = false;
+				dispatchEvt.call(this.items[old], 'change');
 			}
+		} else {
+			this.onChange();
 		}
-		this.onChange();
 	})
 });
 
