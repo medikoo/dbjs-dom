@@ -14,6 +14,7 @@ var clear          = require('es5-ext/lib/Array/prototype/clear')
 
 module.exports = DOMMultiple = function (document, ns/*, options*/) {
 	DOMInput.apply(this, arguments);
+	this.allItems = [];
 	this.reload();
 };
 
@@ -42,7 +43,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, extend({
 		return this.items.map(function (item) { return item.value; })
 			.filter(function (value) { return value != null; });
 	}, function (value) {
-		this.items.forEach(function (item) {
+		this.allItems.forEach(function (item) {
 			var obj = this.ns.fromInputValue(item.control.value);
 			item.value = value.has(obj) ? obj : null;
 		}, this);
@@ -74,5 +75,6 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, extend({
 	input.listItem = dom;
 	input.control.setAttribute('value', value);
 	input.on('change', this.onChange);
+	this.allItems.push(input);
 	return { dom: dom, input: input };
 }, { method: 'renderItem', length: 1 })));
