@@ -1,6 +1,7 @@
 'use strict';
 
 var sepItems       = require('es5-ext/lib/Array/prototype/sep-items')
+  , callable       = require('es5-ext/lib/Object/valid-callable')
   , d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
   , forEach        = require('es5-ext/lib/Object/for-each')
@@ -133,7 +134,7 @@ Edit.prototype = Object.create(DOMComposite.prototype, {
 
 Multiple = function (document, ns/*, options*/) {
 	var options = Object(arguments[2])
-	  , getLabel;
+	  , getLabel, compare;
 
 	getLabel = function (obj) {
 		var label = options.label;
@@ -141,9 +142,11 @@ Multiple = function (document, ns/*, options*/) {
 		else if (typeof label === 'string') return obj.get(label);
 		else return obj;
 	};
-	this.dbList = ns.listByCreatedAt().liveMap(function (obj) {
-		return { label: getLabel(obj), value: obj._id_ };
-	}, this);
+	if (options.sort != null) compare = callable(options.sort);
+	this.dbList = (compare ? ns.list(compare) : ns.listByCreatedAt())
+		.liveMap(function (obj) {
+			return { label: getLabel(obj), value: obj._id_ };
+		}, this);
 	DOMMultiple.call(this, document, ns, options);
 	this.dbList.on('change', this.reload);
 };
