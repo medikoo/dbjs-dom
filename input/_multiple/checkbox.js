@@ -54,7 +54,8 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, extend({
 	}),
 	safeRemoveItem: d(notSupported),
 	addItem: d(notSupported),
-	removeItem: d(notSupported),
+	removeItem: d(notSupported)
+}, d.binder({
 	reload: d(function () {
 		clear.call(this.items);
 		replaceContent.call(this.dom, this.dbList.map(function (item) {
@@ -63,7 +64,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, extend({
 			return data.dom;
 		}, this));
 	})
-}, memoize(function (value, label) {
+}), memoize(function (value, label) {
 	var el = this.make, input, dom;
 	input = new DOMCheckbox(this.document, this.ns, this.options);
 	dom = el('li', el('label', input, ' ', label));
