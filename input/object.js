@@ -134,7 +134,7 @@ Edit.prototype = Object.create(DOMComposite.prototype, {
 
 Multiple = function (document, ns/*, options*/) {
 	var options = Object(arguments[2])
-	  , getLabel, compare;
+	  , getLabel, compare, list, toData;
 
 	getLabel = function (obj) {
 		var label = options.label;
@@ -142,13 +142,22 @@ Multiple = function (document, ns/*, options*/) {
 		else if (typeof label === 'string') return obj.get(label);
 		else return obj;
 	};
-	if (options.sort != null) compare = callable(options.sort);
-	this.dbList = (compare ? ns.list(compare) : ns.listByCreatedAt())
-		.liveMap(function (obj) {
-			return { label: getLabel(obj), value: obj._id_ };
-		}, this);
+	if (options.list) {
+		list = options.list;
+	} else {
+		list = ((options.sort != null) ? ns.list(callable(compare)) :
+				ns.listByCreatedAt());
+	}
+	toData = function (obj) {
+		return { label: getLabel(obj), value: obj._id_ };
+	};
+	if (list.liveMap) {
+		this.dbList = list.liveMap(toData);
+		this.dbList.on('change', this.reload);
+	} else {
+		this.dbList = list.map(toData);
+	}
 	DOMMultiple.call(this, document, ns, options);
-	this.dbList.on('change', this.reload);
 };
 
 Multiple.prototype = Object.create(DOMMultiple.prototype, {
