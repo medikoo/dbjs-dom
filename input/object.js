@@ -136,7 +136,7 @@ Multiple = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]), getLabel, list, toData;
 
 	getLabel = function (obj) {
-		var label = options.label;
+		var label = options.itemLabel;
 		if (typeof label === 'function') return label(obj);
 		else if (typeof label === 'string') return obj.get(label);
 		else return obj;
