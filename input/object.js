@@ -133,8 +133,7 @@ Edit.prototype = Object.create(DOMComposite.prototype, {
 });
 
 Multiple = function (document, ns/*, options*/) {
-	var options = Object(arguments[2])
-	  , getLabel, compare, list, toData;
+	var options = Object(arguments[2]), getLabel, list, toData;
 
 	getLabel = function (obj) {
 		var label = options.label;
@@ -145,7 +144,7 @@ Multiple = function (document, ns/*, options*/) {
 	if (options.list) {
 		list = options.list;
 	} else {
-		list = ((options.sort != null) ? ns.list(callable(compare)) :
+		list = ((options.sort != null) ? ns.list(callable(options.sort)) :
 				ns.listByCreatedAt());
 	}
 	toData = function (obj) {
