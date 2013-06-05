@@ -60,8 +60,8 @@ module.exports = Object.defineProperties(relation, {
 			input.value = value;
 		};
 		if (this.multiple) {
-			value.on('add', onChange);
-			value.on('delete', onChange);
+			this.on('add', onChange);
+			this.on('delete', onChange);
 		} else {
 			this.on('change', onChange);
 		}
@@ -84,10 +84,8 @@ module.exports = Object.defineProperties(relation, {
 
 		input.once('destroy', function () {
 			delete input.relation;
-			if (value && value.off) {
-				value.off('add', onChange);
-				value.off('delete', onChange);
-			}
+			this.off('add', onChange);
+			this.off('delete', onChange);
 			this.off('change', onChange);
 			this._required.off('change', onRequiredChange);
 			this._ns.off('change', onMetaChange);
