@@ -2,6 +2,7 @@
 
 var d              = require('es5-ext/lib/Object/descriptor')
   , copy           = require('es5-ext/lib/Object/copy')
+  , extend         = require('es5-ext/lib/Object/extend')
   , filter         = require('es5-ext/lib/Object/filter')
   , forEach        = require('es5-ext/lib/Object/for-each')
   , makeElement    = require('dom-ext/lib/Document/prototype/make-element')
@@ -100,6 +101,10 @@ module.exports = Object.defineProperties(relation, {
 		inputOptions = filter(options, function (value, name) {
 			return !htmlAttributes[name];
 		});
+		if (options.input) {
+			extend(inputOptions, options.input);
+			delete inputOptions.input;
+		}
 		input = this.toDOMInput(document, inputOptions);
 
 		if (options.label == null) options.label = this._label;
