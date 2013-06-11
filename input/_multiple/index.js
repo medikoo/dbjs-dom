@@ -117,9 +117,14 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 	_render: d(function () {
 		var el = this.make;
 		this.domList = el('ul');
+		this.addButton = this.addLabel;
+		if (isAnchor(this.addButton)) {
+			castAttribute.call(this.addButton, 'onclick', this.addItem);
+		} else {
+			this.addButton = el('a', { onclick: this.addItem }, this.addButton);
+		}
 		this.dom = el('div', { class: 'dbjs multiple' }, this.domList,
-			el('div', { class: 'controls' },
-				this.addButton = el('a', { onclick: this.addItem }, this.addLabel)));
+			el('div', { class: 'controls' }, this.addButton));
 	}),
 	safeRemoveItem: d(function (input) {
 		if (this.domList.childNodes.length <= this.minInputsCount) return;
