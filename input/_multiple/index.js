@@ -8,9 +8,11 @@ var contains      = require('es5-ext/lib/Array/prototype/contains')
   , d             = require('es5-ext/lib/Object/descriptor')
   , extend        = require('es5-ext/lib/Object/extend')
   , makeElement   = require('dom-ext/lib/Document/prototype/make-element')
+  , castAttribute = require('dom-ext/lib/Element/prototype/cast-attribute')
   , extendEl      = require('dom-ext/lib/Element/prototype/extend')
   , removeEl      = require('dom-ext/lib/Element/prototype/remove')
   , setPresenceEl = require('dom-ext/lib/Element/prototype/set-presence')
+  , isAnchor   = require('dom-ext/lib/HTMLAnchorElement/is-html-anchor-element')
   , Base          = require('dbjs').Base
   , serialize     = require('dbjs/lib/utils/serialize')
   , DOMInput      = require('../_controls/input')
@@ -135,9 +137,15 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		var el = this.make, dom, input, removeButton;
 		input = this.ns.toDOMInput(this.document, this.options);
 		dom = el('li');
-		extendEl.call(dom, input,
+		removeButton = this.deleteLabel();
+		if (isAnchor(removeButton)) {
+			castAttribute.call(removeButton, 'onclick',
+				this.safeRemoveItem.bind(this, input));
+		} else {
 			removeButton = el('a', { onclick: this.safeRemoveItem.bind(this, input) },
-				this.deleteLabel()));
+				removeButton);
+		}
+		extendEl.call(dom, input, removeButton);
 		this.removeButtons.push(removeButton);
 		if (this.options.control.disabled) {
 			setPresenceEl.call(removeButton, false);
