@@ -88,7 +88,7 @@ module.exports = Object.defineProperties(relation, {
 			this.off('add', onChange);
 			this.off('delete', onChange);
 			this.off('change', onChange);
-			this._required.off('change', onRequiredChange);
+			if (onRequiredChange) this._required.off('change', onRequiredChange);
 			this._ns.off('change', onMetaChange);
 			this._multiple.off('change', onMetaChange);
 		}.bind(this));
