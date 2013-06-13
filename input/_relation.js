@@ -68,7 +68,7 @@ module.exports = Object.defineProperties(relation, {
 		}
 		if (initOptions.required == null) {
 			this._required.on('change', onRequiredChange = function (value) {
-				input.castAttribute('required', value);
+				input.required = value;
 			});
 		}
 
