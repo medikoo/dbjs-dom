@@ -171,8 +171,13 @@ module.exports = Object.defineProperties(relation, {
 				dom.classList[(!nu || (nu.value === undefined)) ? 'add' :
 						'remove']('dbjs-undefined');
 			});
-			cb.call(this,
-				this.hasOwnProperty('_value') ? { value: this._value } : null);
+			if ((typeof this._value === 'function') && !this._value.length) {
+				cb.call(this,
+					this.hasOwnProperty('__value') ? { value: this.__value } : null);
+			} else {
+				cb.call(this,
+					this.hasOwnProperty('_value') ? { value: this._value } : null);
+			}
 			input.on('destroy', function (cb) {
 				this.off('selfupdate', cb);
 			}.bind(this, cb));
