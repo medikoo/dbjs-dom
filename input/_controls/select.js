@@ -60,7 +60,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		}
 		if (nu !== old) {
 			this.control.value = nu;
-			dispatchEvt.call(this.control, 'change');
+			try { dispatchEvt.call(this.control, 'change'); } catch (e) {}
 		} else {
 			this.onChange();
 		}

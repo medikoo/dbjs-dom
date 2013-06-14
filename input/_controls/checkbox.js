@@ -49,7 +49,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		this._value = nu;
 		if (nu !== old) {
 			this.control.checked = (nu != null);
-			dispatchEvt.call(this.control, 'change');
+			try { dispatchEvt.call(this.control, 'change'); } catch (e) {}
 		} else {
 			this.onChange();
 		}

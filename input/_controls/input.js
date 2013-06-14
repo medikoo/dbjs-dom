@@ -104,7 +104,7 @@ ee(Object.defineProperties(Input.prototype, {
 		}
 		if (nu !== old) {
 			this.control.value = nu;
-			dispatchEvt.call(this.control, 'change');
+			try { dispatchEvt.call(this.control, 'change'); } catch (e) {}
 		} else {
 			this.onChange();
 		}

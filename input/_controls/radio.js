@@ -100,10 +100,10 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		if (nu !== old) {
 			if ((nu != null) && this.items.hasOwnProperty(nu)) {
 				this.items[nu].checked = true;
-				dispatchEvt.call(this.items[nu], 'change');
+				try { dispatchEvt.call(this.items[nu], 'change'); } catch (e) {}
 			} else if ((old != null) && this.items.hasOwnProperty(old)) {
 				this.items[old].checked = false;
-				dispatchEvt.call(this.items[old], 'change');
+				try { dispatchEvt.call(this.items[old], 'change'); } catch (e2) {}
 			}
 		} else {
 			this.onChange();
