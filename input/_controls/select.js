@@ -6,8 +6,9 @@ var copy        = require('es5-ext/lib/Object/copy')
   , dispatchEvt = require('dom-ext/lib/HTMLElement/prototype/dispatch-event-2')
   , elExtend    = require('dom-ext/lib/Element/prototype/extend')
   , Db          = require('dbjs')
-  , DOMInput    = require('./input')
   , relation    = require('dbjs/lib/_relation')
+  , DOMInput    = require('./input')
+  , eventOpts   = require('../_event-options')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , Input;
@@ -60,7 +61,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		}
 		if (nu !== old) {
 			this.control.value = nu;
-			try { dispatchEvt.call(this.control, 'change'); } catch (e) {}
+			try { dispatchEvt.call(this.control, 'change', eventOpts); } catch (e) {}
 		} else {
 			this.onChange();
 		}

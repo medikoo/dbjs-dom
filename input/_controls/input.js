@@ -11,6 +11,7 @@ var d            = require('es5-ext/lib/Object/descriptor')
   , nextTickOnce = require('next-tick/lib/once')
   , Db           = require('dbjs')
   , htmlAttrs    = require('../_html-attributes')
+  , eventOpts    = require('../_event-options')
 
   , Input;
 
@@ -104,7 +105,7 @@ ee(Object.defineProperties(Input.prototype, {
 		}
 		if (nu !== old) {
 			this.control.value = nu;
-			try { dispatchEvt.call(this.control, 'change'); } catch (e) {}
+			try { dispatchEvt.call(this.control, 'change', eventOpts); } catch (e) {}
 		} else {
 			this.onChange();
 		}

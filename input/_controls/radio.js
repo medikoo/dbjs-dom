@@ -14,6 +14,7 @@ var copy        = require('es5-ext/lib/Object/copy')
   , Db          = require('dbjs')
   , DOMInput    = require('./input')
   , htmlAttrs   = require('../_html-attributes')
+  , eventOpts   = require('../_event-options')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
@@ -100,10 +101,14 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		if (nu !== old) {
 			if ((nu != null) && this.items.hasOwnProperty(nu)) {
 				this.items[nu].checked = true;
-				try { dispatchEvt.call(this.items[nu], 'change'); } catch (e) {}
+				try {
+					dispatchEvt.call(this.items[nu], 'change', eventOpts);
+				} catch (e) {}
 			} else if ((old != null) && this.items.hasOwnProperty(old)) {
 				this.items[old].checked = false;
-				try { dispatchEvt.call(this.items[old], 'change'); } catch (e2) {}
+				try {
+					dispatchEvt.call(this.items[old], 'change', eventOpts);
+				} catch (e2) {}
 			}
 		} else {
 			this.onChange();

@@ -8,6 +8,7 @@ var isCopy      = require('es5-ext/lib/Array/prototype/is-copy')
   , DOMInput    = require('./_controls/input')
   , DOMRadio    = require('./_controls/radio')
   , DOMCheckbox = require('./_controls/checkbox')
+  , eventOpts   = require('./_event-options')
 
   , isArray = Array.isArray
   , BooleanType = Db.Boolean
@@ -75,7 +76,7 @@ Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 		this._value = nu;
 		if (nu !== old) {
 			this.control.checked = (nu === '1');
-			dispatchEvt.call(this.control, 'change');
+			try { dispatchEvt.call(this.control, 'change', eventOpts); } catch (e) {}
 		} else {
 			this.onChange();
 		}
