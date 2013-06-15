@@ -76,7 +76,7 @@ Object.defineProperties(Fieldset.prototype, extend({
 	}),
 	renderItem: d(function (rel) {
 		var options = this.getOptions(rel);
-		options.render = renderRow;
+		if (options.render == null) options.render = renderRow;
 		return (this.items[rel._id_] =
 			rel.toDOMInputComponent(this.document, options));
 	}),
