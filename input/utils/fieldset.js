@@ -18,7 +18,7 @@ var CustomError    = require('es5-ext/lib/Error/custom')
   , map = Array.prototype.map
   , getRel = function (name) { return this.get(name); }
   , Base = Db.Base
-  , Fieldset, renderRow;
+  , Fieldset, renderRow, renderRowSpan;
 
 renderRow = function (input, options) {
 	var el = makeElement.bind(input.document)
@@ -37,6 +37,26 @@ renderRow = function (input, options) {
 				input._name.replace(/[:#]/g, '-') }),
 			// hint
 			options.hint && el('p', { 'class': 'hint' }, options.hint)));
+};
+
+renderRowSpan = function (input, options) {
+	var el = makeElement.bind(input.document)
+	  , id = getId.call(input.control || input.dom);
+	return el('tr',
+		// label
+		el('td', { colspan: 2 },
+			el('p', el('label', { for: id }, options.label, ':')),
+			// input
+			el('div', input,
+				// required mark
+				el('span', { class: 'required-status' }, '*'),
+				// validation status mark
+				el('span', { class: 'validation-status' }, '✓'),
+				// error message
+				el('span', { class: 'error-message error-message-' +
+					input._name.replace(/[:#]/g, '-') }),
+				// hint
+				options.hint && el('p', { 'class': 'hint' }, options.hint))));
 };
 
 module.exports = Fieldset = function (document, list/*, options*/) {
@@ -77,6 +97,7 @@ Object.defineProperties(Fieldset.prototype, extend({
 	renderItem: d(function (rel) {
 		var options = this.getOptions(rel);
 		if (options.render == null) options.render = renderRow;
+		else if (options.render === 'span') options.render = renderRowSpan;
 		return (this.items[rel._id_] =
 			rel.toDOMInputComponent(this.document, options));
 	}),
