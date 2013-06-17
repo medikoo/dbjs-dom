@@ -189,6 +189,7 @@ module.exports = Object.defineProperties(ObjectType, {
 	DOMSelect: d(Select),
 	DOMEdit: d(Edit),
 	DOMInput: d(Select),
+	DOMMultipleCheckbox: d(Multiple),
 	toDOMInput: d(function (document/*, options*/) {
 		var options = Object(arguments[1]);
 		if (options.multiple) {
