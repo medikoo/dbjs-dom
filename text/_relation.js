@@ -19,12 +19,12 @@ module.exports = Object.defineProperties(relation, {
 		options.relation = this;
 		return this.assignDOMText(this.__ns.__value.toDOMText(document, options));
 	}),
-	toDOMAttrBox: d(function (document/*, name, options*/) {
+	toDOMAttrBox: d(function (element/*, name, options*/) {
 		var name = arguments[1], options = Object(arguments[2]);
 		if (name == null) name = this.name;
 		options.relation = this;
 		return this.assignDOMText(this.__ns.__value
-				.toDOMAttrBox(document, name, options), options);
+				.toDOMAttrBox(element, name, options), options);
 	}),
 	assignDOMText: d(function (text/*, options*/) {
 		var listener, options = Object(arguments[1]);
@@ -43,8 +43,8 @@ module.exports = Object.defineProperties(relation, {
 		if (!isFunction(options)) return this.toDOMText(document, options).dom;
 		return (new DOMValue(document, this, options)).toDOM();
 	}),
-	toDOMAttr: d(function (document/*, name, options*/) {
-		return this.toDOMAttrBox(document, arguments[1], arguments[2]).dom;
+	toDOMAttr: d(function (element/*, name, options*/) {
+		return this.toDOMAttrBox(element, arguments[1], arguments[2]).dom;
 	}),
 	lastModifiedDOM: d(function (document) {
 		var dom = document.createTextNode(''), onUpdate;

@@ -14,8 +14,8 @@ Object.defineProperties(Base, {
 	toDOMText: d(function (document/*, options*/) {
 		return new this.DOMText(document, this, arguments[1]);
 	}),
-	toDOMAttrBox: d(function (document, name/*, options*/) {
-		return new this.DOMAttr(document, name, this, arguments[2]);
+	toDOMAttrBox: d(function (element, name/*, options*/) {
+		return new this.DOMAttr(element, name, this, arguments[2]);
 	}),
 });
 
@@ -25,15 +25,15 @@ Object.defineProperties(Base.prototype, {
 		text.value = this;
 		return text;
 	}),
-	toDOMAttrBox: d(function (document, name/*, options*/) {
-		var text = this.ns.toDOMAttrBox(document, name, arguments[2]);
+	toDOMAttrBox: d(function (element, name/*, options*/) {
+		var text = this.ns.toDOMAttrBox(element, name, arguments[2]);
 		text.value = this;
 		return text;
 	}),
 	toDOM: d(function (document/*, options*/) {
 		return this.toDOMText(document, arguments[1]).dom;
 	}),
-	toDOMAttr: d(function (document, name/*, options*/) {
-		return this.toDOMAttrBox(document, name, arguments[2]).dom;
+	toDOMAttr: d(function (element, name/*, options*/) {
+		return this.toDOMAttrBox(element, name, arguments[2]).dom;
 	})
 });

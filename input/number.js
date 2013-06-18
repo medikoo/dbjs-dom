@@ -31,7 +31,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	castControlAttribute: d(function (name, value) {
 		if (this.numberAttributes[name]) {
 			if (value && value.toDOMAttr) {
-				value = value.toDOMAttr(this.document, name, { bare: true });
+				value.toDOMAttr(this, name, { bare: true });
+				return;
 			} else if (!isFinite(value)) {
 				value = null;
 			}
