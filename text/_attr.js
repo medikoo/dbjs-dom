@@ -1,12 +1,13 @@
 'use strict';
 
-var d  = require('es5-ext/lib/Object/descriptor')
-  , Db = require('dbjs')
+var d            = require('es5-ext/lib/Object/descriptor')
+  , validElement = require('dom-ext/lib/Element/valid-element')
+  , Db           = require('dbjs')
 
   , Attr;
 
 module.exports = Attr = function (element, name, ns) {
-	this.element = element;
+	this.element = validElement(element);
 	this.name = name;
 	this.ns = ns;
 };
