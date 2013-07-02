@@ -128,11 +128,10 @@ ee(Object.defineProperties(Table.prototype, extend({
 			this.body = el('tbody'));
 	}),
 	headCellRender: d(function (dom, options) {
-		var attr, sortName;
+		var sortName;
 		if (isNode(dom) && (dom.nodeName.toLowerCase() === 'th')) return dom;
 		if (options.sortName != null) {
 			sortName = options.sortName;
-			attr = this.document.createAttribute('href');
 			this.on('change', function () {
 				var data = {};
 				if (sortName) data.sort = sortName;
@@ -140,9 +139,9 @@ ee(Object.defineProperties(Table.prototype, extend({
 					data.reverse = true;
 				}
 				data = stringify(data);
-				attr.value = data ? '?' + data : '.';
+				dom.setAttribute('href',  data ? '?' + data : '.');
 			});
-			dom = this.el('a', attr, dom);
+			dom = this.el('a', dom);
 		}
 		return this.el('th', dom);
 	}),
