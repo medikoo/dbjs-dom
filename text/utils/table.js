@@ -180,7 +180,7 @@ ee(Object.defineProperties(Table.prototype, extend({
 		data = Object(data);
 		oForEach(this.filterMethods, function (fn, name) {
 			var filtered;
-			if (!data[name]) return;
+			if (data[name] == null) return;
 			filtered = fn(data[name]);
 			if (!filtered) return;
 			if (set) set = set.intersection(filtered);
