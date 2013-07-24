@@ -55,4 +55,4 @@ Object.defineProperties(DOM.prototype, extend({
 		return df;
 	})
 }, memoize(function (value) { return this.cb(value); },
-	 { method: 'render' })));
+		{ method: 'render' })));
