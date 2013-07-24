@@ -29,12 +29,11 @@ module.exports = Object.defineProperties(relation, {
 	assignDOMText: d(function (text/*, options*/) {
 		var listener, options = Object(arguments[1]);
 		text.dismiss();
-		text.value = (options.bare || (this.ns === Base)) ? this.value :
-				this.objectValue;
 		this.on('change', listener = function () {
 			text.value = (options.bare || (this.ns === Base)) ? this.value :
 					this.objectValue;
 		});
+		listener.call(this);
 		text.dismiss = this.off.bind(this, 'change', listener);
 		return text;
 	}),
