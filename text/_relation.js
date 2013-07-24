@@ -11,7 +11,19 @@ var isFunction = require('es5-ext/lib/Function/is-function')
 
   , defineProperty = Object.defineProperty
   , filterNull = function (value) { return value != null; }
-  , filterValue = function (value) { return value == null; };
+  , filterValue = function (value) { return value == null; }
+
+  , toObject;
+
+toObject = function (value) {
+	var type;
+	if (value == null) return value;
+	type = typeof value;
+	if ((type === 'object') || (type === 'function')) return value;
+	value = Object(value);
+	value.__proto__ = this;
+	return value;
+};
 
 module.exports = Object.defineProperties(relation, {
 	toDOMText: d(function (document/*, options*/) {
@@ -30,8 +42,19 @@ module.exports = Object.defineProperties(relation, {
 		var listener, options = Object(arguments[1]);
 		text.dismiss();
 		this.on('change', listener = function () {
-			text.value = (options.bare || (this.ns === Base)) ? this.value :
-					this.objectValue;
+			var value;
+			if (this.multiple) {
+				value = this.listByOrder();
+				if (!options.bare && (this.ns !== Base)) {
+					value = value.map(toObject.bind(this.ns.prototype));
+				}
+				value = value.join(', ');
+			} else if (options.bare || (this.ns === Base)) {
+				value = this.value;
+			} else {
+				value = this.objectValue;
+			}
+			text.value = value;
 		});
 		listener.call(this);
 		text.dismiss = this.off.bind(this, 'change', listener);
