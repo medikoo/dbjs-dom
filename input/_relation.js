@@ -107,7 +107,8 @@ module.exports = Object.defineProperties(relation, {
 		}
 		input = this.toDOMInput(document, inputOptions);
 
-		if (options.label == null) options.label = this._label;
+		if (options.label === false) options.label = null;
+		else if (options.label == null) options.label = this._label;
 		if (options.hint == null) options.hint = this._inputHint;
 
 		dom = (options.render || componentRender)(input, options);

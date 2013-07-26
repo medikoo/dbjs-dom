@@ -25,7 +25,7 @@ renderRow = function (input, options) {
 	  , id = getId.call(input.control || input.dom);
 	return el('tr',
 		// label
-		el('th', el('label', { for: id }, options.label, ':')),
+		el('th', el('label', { for: id }, options.label, options.label ? ':' : '')),
 		// input
 		el('td', input,
 			// required mark
@@ -45,7 +45,7 @@ renderRowSpan = function (input, options) {
 	return el('tr',
 		// label
 		el('td', { colspan: 2 },
-			el('p', el('label', { for: id }, options.label, ':')),
+			el('p', el('label', { for: id }, options.label ? ':' : '')),
 			// input
 			el('div', input,
 				// required mark
