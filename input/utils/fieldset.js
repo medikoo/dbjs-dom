@@ -29,9 +29,11 @@ renderRow = function (input, options) {
 		// input
 		el('td', input,
 			// required mark
-			el('span', { class: 'required-status' }, '*'),
+			(options.requiredStatus !== false) ?
+					el('span', { class: 'required-status' }, '*') : null,
 			// validation status mark
-			el('span', { class: 'validation-status' }, '✓'),
+			(options.validationStatus !== false) ?
+					el('span', { class: 'validation-status' }, '✓') : null,
 			// error message
 			el('span', { class: 'error-message error-message-' +
 				input._name.replace(/[:#]/g, '-') }),
