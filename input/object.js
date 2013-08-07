@@ -138,8 +138,8 @@ Multiple = function (document, ns/*, options*/) {
 	getLabel = function (obj) {
 		var label = options.itemLabel;
 		if (typeof label === 'function') return label(obj);
-		else if (typeof label === 'string') return obj.get(label);
-		else return obj;
+		if (typeof label === 'string') return obj.get(label);
+		return obj;
 	};
 	if (options.list) {
 		list = options.list;
@@ -200,7 +200,8 @@ module.exports = Object.defineProperties(ObjectType, {
 		}
 		if (options.type === 'edit') {
 			return new this.DOMEdit(document, this, options);
-		} else if (options.type === 'radio') {
+		}
+		if (options.type === 'radio') {
 			return new this.DOMRadio(document, this, options);
 		}
 		return new this.DOMInput(document, this, options);

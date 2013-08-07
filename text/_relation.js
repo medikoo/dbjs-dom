@@ -79,7 +79,7 @@ module.exports = Object.defineProperties(relation, {
 		return dom;
 	}),
 	filterDOM: d(function (dom/*, filter*/) {
-		var filter = arguments[1], onchange, value;
+		var filter = arguments[1], value;
 		validNode(dom);
 		if (filter === undefined) {
 			filter = filterNull;
@@ -91,20 +91,19 @@ module.exports = Object.defineProperties(relation, {
 				return current === value;
 			};
 		}
-		this.on('change', onchange = function (value) {
+		this.on('change', function (value) {
 			if (filter(value)) include.call(dom);
 			else exclude.call(dom);
 		});
 		if (filter(this.value)) {
 			if (dom._domExtLocation) include.call(dom);
 			return dom;
-		} else {
-			exclude.call(dom);
-			if (!dom._domExtLocation) {
-				defineProperty(dom, '_domExtLocation',
-					d(dom.ownerDocument.createTextNode('')));
-			}
-			return dom._domExtLocation;
 		}
+		exclude.call(dom);
+		if (!dom._domExtLocation) {
+			defineProperty(dom, '_domExtLocation',
+				d(dom.ownerDocument.createTextNode('')));
+		}
+		return dom._domExtLocation;
 	})
 });

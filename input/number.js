@@ -33,9 +33,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			if (value && value.toDOMAttr) {
 				value.toDOMAttr(this.control, name, { bare: true });
 				return;
-			} else if (!isFinite(value)) {
-				value = null;
 			}
+			if (!isFinite(value)) value = null;
 		}
 		castControlAttribute.call(this, name, value);
 	})

@@ -103,12 +103,12 @@ Input.prototype = Object.create(DOMInput.prototype, {
 				this.items[nu].checked = true;
 				try {
 					dispatchEvt.call(this.items[nu], 'change', eventOpts);
-				} catch (e) {}
+				} catch (ignore) {}
 			} else if ((old != null) && this.items.hasOwnProperty(old)) {
 				this.items[old].checked = false;
 				try {
 					dispatchEvt.call(this.items[old], 'change', eventOpts);
-				} catch (e2) {}
+				} catch (ignore) {}
 			}
 		} else {
 			this.onChange();

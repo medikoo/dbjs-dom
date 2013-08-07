@@ -76,7 +76,9 @@ Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 		this._value = nu;
 		if (nu !== old) {
 			this.control.checked = (nu === '1');
-			try { dispatchEvt.call(this.control, 'change', eventOpts); } catch (e) {}
+			try {
+				dispatchEvt.call(this.control, 'change', eventOpts);
+			} catch (ignore) {}
 		} else {
 			this.onChange();
 		}
@@ -95,7 +97,7 @@ module.exports = Object.defineProperties(BooleanType, {
 	}),
 	toInputValue: d(function (value) {
 		if (value == null) return null;
-		else return value.valueOf() ? '1' : '0';
+		return value.valueOf() ? '1' : '0';
 	}),
 	DOMRadio: d(Radio),
 	DOMCheckbox: d(Checkbox),
@@ -106,8 +108,7 @@ module.exports = Object.defineProperties(BooleanType, {
 		}
 		if (options.type === 'checkbox') {
 			return new this.DOMCheckbox(document, this, options);
-		} else {
-			return new this.DOMRadio(document, this, options);
 		}
+		return new this.DOMRadio(document, this, options);
 	})
 });

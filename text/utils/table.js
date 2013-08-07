@@ -51,10 +51,10 @@ module.exports = Table = function (document, set/*, options*/) {
 
 		// Sort methods
 		forEach.call(options.columns, function (options, index) {
-			var method, name;
+			var name;
 			if (!options.sort) return;
 			name = options.default ? '' : String(options.name || index);
-			method = this.setSortMethod(name, options.sort, options.reverse);
+			this.setSortMethod(name, options.sort, options.reverse);
 			options.sortName = name;
 		}, this);
 
@@ -78,14 +78,12 @@ module.exports = Table = function (document, set/*, options*/) {
 				}
 				return function (item) { return item.get(name); };
 			}
-			if (options.render != null) {
-				return callable(options.render);
-			} else if (options.name != null) {
+			if (options.render != null) return callable(options.render);
+			if (options.name != null) {
 				name = String(options.name);
 				return function (item) { return item.get(name); };
-			} else {
-				return noop;
 			}
+			return noop;
 		}, this);
 	} else if (set._type_ === 'namespace') {
 		this.cellRenderers = set.prototype.getPropertyNames(options.tag)

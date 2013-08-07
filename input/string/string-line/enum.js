@@ -129,8 +129,7 @@ module.exports = Object.defineProperties(Enum, {
 		}
 		if (options.type === 'radio') {
 			return new this.DOMRadio(document, this, options);
-		} else {
-			return new this.DOMSelect(document, this, options);
 		}
+		return new this.DOMSelect(document, this, options);
 	})
 });
