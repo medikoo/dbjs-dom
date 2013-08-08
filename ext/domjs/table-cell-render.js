@@ -3,9 +3,10 @@
 var d     = require('es5-ext/lib/Object/descriptor')
   , Table = require('../../text/utils/table')
 
-  , cellRender = Table.prototype.cellRender;
+  , cellRender = Table.prototype.cellRender
+  , customRender;
 
-var customRender = function (render, item) {
+customRender = function (render, item) {
 	var direct, df;
 	df = this.domjs.collect(function () { direct = render(item); });
 	return direct || df;
