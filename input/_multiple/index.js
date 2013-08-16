@@ -75,10 +75,11 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		name = this.name;
 		this.items.forEach(function (input) { input.name = name; });
 	}),
-	value: d.gs(function () {
+	inputValue: d.gs(function () {
 		return uniq.call(this.items.map(function (item) { return item.value; })
 			.filter(function (value) { return value != null; }));
-	}, function (value) {
+	}),
+	value: d.gs(function () { return this.inputValue; }, function (value) {
 		var length, item;
 		if (value._type_ === 'relation') {
 			value = value.values.map(serialize).sort(function (a, b) {
