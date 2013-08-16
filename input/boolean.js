@@ -49,7 +49,6 @@ Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 	inputValue: d.gs(function () { return this.control.checked ? '1' : '0'; }),
 	_render: d(function () {
 		var el = makeEl.bind(this.document);
-		this.controls = {};
 		this.dom = el('span', this.control = el('input',
 			{ type: 'checkbox', 'data-type': 'boolean', value: '1' }),
 			this.hidden = el('input', { type: 'hidden',
