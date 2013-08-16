@@ -7,6 +7,7 @@ var aFrom        = require('es5-ext/lib/Array/from')
   , extend       = require('es5-ext/lib/Object/extend')
   , d            = require('es5-ext/lib/Object/descriptor')
   , isObject     = require('es5-ext/lib/Object/is-object')
+  , callable     = require('es5-ext/lib/Object/valid-callable')
   , memoize      = require('memoizee/lib/primitive')
   , makeEl       = require('dom-ext/lib/Document/prototype/make-element')
   , append       = require('dom-ext/lib/Element/prototype/append')
@@ -19,19 +20,42 @@ var aFrom        = require('es5-ext/lib/Array/from')
   , DOMInput     = require('../_controls/input')
   , eventOpts    = require('../_event-options')
 
+  , defineProperty = Object.defineProperty
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , map = Array.prototype.map
   , File = require('dbjs/lib/objects')._get('File')
-  , Input;
+  , Input, render, renderItem;
 
 require('../');
 require('memoizee/lib/ext/method');
+
+render = function (options) {
+	var el = this.make;
+	return el('div',
+		this.valueDisplay = this.multiple ? el('ul') : el('span'),
+		el('label', options.label, this.control = el('input', { type: 'file' })));
+};
+
+renderItem = function (file) {
+	var el = this.make, data = {};
+	data.dom = el(this.multiple ? 'li' : 'span', { 'data-id': file._id_ });
+	append.call(data.dom,
+		el('a', { href: file._url, target: '_blank' }, file._name), " ",
+		data.control = el('input', { type: 'hidden', name: this.name,
+			value: file._id_ }),
+		el('a', { class: 'clear', onclick: this.removeItem.bind(this, data.dom) },
+			"x"));
+	return data;
+};
 
 Input = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]);
 	this.make = makeEl.bind(document);
 	this.controls = [];
 	if (options.multiple) this.multiple = true;
+	((options.render == null) || callable(options.render));
+	defineProperty(this, 'renderItem', d((options.renderItem == null) ?
+			renderItem : callable(options.renderItem)));
 	DOMInput.call(this, document, ns, options);
 	if (this.multiple) this.control.setAttribute('multiple', 'multiple');
 	this.control.setAttribute('accept', ns.accept.values.join(','));
@@ -46,10 +70,7 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 	dbAttributes: d(extend(copy(DOMInput.prototype.dbAttributes),
 		{ required: true })),
 	_render: d(function (options) {
-		var el = this.make;
-		this.dom = el('div',
-			this.valueDisplay = this.multiple ? el('ul') : el('span'),
-			el('label', options.label, this.control = el('input', { type: 'file' })));
+		this.dom = (options.render || render).call(this, options);
 		this.controls.push(this.control);
 	}),
 	name: d.gs(getName, function (name) {
@@ -100,12 +121,12 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		if (nu && this.multiple) {
 			if (!old || !isCopy.call(nu, old)) {
 				this.control.value = null;
-				replaceCont.call(this.valueDisplay, nu.map(this.renderItem));
+				replaceCont.call(this.valueDisplay, nu.map(this._renderItem));
 				changed = true;
 			}
 		} else if (nu !== old) {
 			this.control.value = null;
-			if (nu) replaceCont.call(this.valueDisplay, this.renderItem(nu));
+			if (nu) replaceCont.call(this.valueDisplay, this._renderItem(nu));
 			else clear.call(this.valueDisplay);
 			changed = true;
 		}
@@ -142,17 +163,12 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		dispatchEvnt.call(this.control, 'change', eventOpts);
 	})
 }, memoize(function (file) {
-	var el = this.make, control, dom;
+	var data;
 	file = File[file];
-	dom = el(this.multiple ? 'li' : 'span', { 'data-id': file._id_ });
-	append.call(dom,
-		el('a', { href: file._url, target: '_blank' }, file._name), " ",
-		control = el('input', { type: 'hidden', name: this.name,
-			value: file._id_ }),
-		el('a', { class: 'clear', onclick: this.removeItem.bind(this, dom) }, "x"));
-	this.controls.push(control);
-	return dom;
-}, { method: 'renderItem' })));
+	data = this.renderItem(file);
+	this.controls.push(data.control);
+	return data.dom;
+}, { method: '_renderItem' })));
 
 module.exports = Object.defineProperties(File, {
 	fromInputValue: d(function (value) {
