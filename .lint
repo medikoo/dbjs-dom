@@ -3,9 +3,9 @@
 module
 es5
 
+tabs
 indent 2
 maxlen 80
-tabs
 
 ass
 newcap
@@ -19,3 +19,6 @@ predef+ setTimeout
 ./input/_composite.js
 ./input/_multiple/index.js
 bitwise
+
+./input/object/file.js
+predef+ document
