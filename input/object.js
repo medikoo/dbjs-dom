@@ -183,7 +183,12 @@ module.exports = Object.defineProperties(ObjectType, {
 		return this[value];
 	}),
 	toInputValue: d(function (value) {
-		return (value == null) ? null : value._id_;
+		var id;
+		if (value == null) return null;
+		id = value._id_;
+		if (!this.propertyIsEnumerable(id)) return null;
+		if (this[id] !== value) return null;
+		return id;
 	}),
 	DOMRadio: d(Radio),
 	DOMSelect: d(Select),
