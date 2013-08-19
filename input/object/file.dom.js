@@ -194,7 +194,7 @@ module.exports = Object.defineProperties(File, {
 	DOMInput: d(Input),
 	toDOMInput: d(function (document/*, options*/) {
 		var options = Object(arguments[1]);
-		if (options.multiple && (options.type !== 'checkbox')) {
+		if (options.multiple || (options.type !== 'checkbox')) {
 			return new this.DOMInput(document, this, options);
 		}
 		return ObjectType.toDOMInput(document, options);
