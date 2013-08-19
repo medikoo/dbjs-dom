@@ -20,9 +20,9 @@ var aFrom        = require('es5-ext/lib/Array/from')
   , DOMInput     = require('../_controls/input')
   , eventOpts    = require('../_event-options')
 
+  , isArray = Array.isArray, map = Array.prototype.map
   , defineProperty = Object.defineProperty
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
-  , map = Array.prototype.map
   , File = require('dbjs/lib/objects')._get('File')
   , Input, render, renderItem;
 
@@ -184,6 +184,14 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 module.exports = Object.defineProperties(File, {
 	fromInputValue: d(function (value) {
 		if (value == null) return null;
+		if (isArray(value) && (value.length === 2)) {
+			if (typeof value[0] === 'string') {
+				if (isObject(value[1])) return value[1];
+			} else if (typeof value[1] === 'string') {
+				if (isObject(value[0])) return value[0];
+			}
+			return value;
+		}
 		if (isObject(value)) return value;
 		value = value.trim();
 		if (!value) return null;
