@@ -32,7 +32,7 @@ require('memoizee/lib/ext/method');
 render = function (options) {
 	var el = this.make;
 	return el('div',
-		this.valueDisplay = this.multiple ? el('ul') : el('span'),
+		this.valueDOM = this.multiple ? el('ul') : el('span'),
 		el('label', options.label, this.control = el('input', { type: 'file' })));
 };
 
@@ -82,10 +82,10 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		var value;
 		if (!this.multiple) {
 			if (this.control.files[0]) return this.control.files[0];
-			if (!this.valueDisplay.firstChild) return null;
-			return this.valueDisplay.firstChild.getAttribute('data-id');
+			if (!this.valueDOM.firstChild) return null;
+			return this.valueDOM.firstChild.getAttribute('data-id');
 		}
-		value = map.call(this.valueDisplay.childNodes, function (node) {
+		value = map.call(this.valueDOM.childNodes, function (node) {
 			return node.getAttribute('data-id');
 		}).concat(aFrom(this.control.files));
 		return value.length ? value : null;
@@ -121,13 +121,13 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		if (nu && this.multiple) {
 			if (!old || !isCopy.call(nu, old)) {
 				this.control.value = null;
-				replaceCont.call(this.valueDisplay, nu.map(this._renderItem));
+				replaceCont.call(this.valueDOM, nu.map(this._renderItem));
 				changed = true;
 			}
 		} else if (nu !== old) {
 			this.control.value = null;
-			if (nu) replaceCont.call(this.valueDisplay, this._renderItem(nu));
-			else clear.call(this.valueDisplay);
+			if (nu) replaceCont.call(this.valueDOM, this._renderItem(nu));
+			else clear.call(this.valueDOM);
 			changed = true;
 		}
 		if (changed) {
