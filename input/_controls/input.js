@@ -1,6 +1,7 @@
 'use strict';
 
 var d            = require('es5-ext/lib/Object/descriptor')
+  , extend       = require('es5-ext/lib/Object/extend')
   , forEach      = require('es5-ext/lib/Object/for-each')
   , isRegExp     = require('es5-ext/lib/RegExp/is-reg-exp')
   , startsWith   = require('es5-ext/lib/String/prototype/starts-with')
@@ -49,14 +50,13 @@ module.exports = Input = function (document, ns/*, options*/) {
 		}
 	}, this);
 	onChange();
-	document.addEventListener('reset', this._resetListener = this.onChange,
-		false);
 	if (this.control) {
+		document.addEventListener('reset', this._onReset, false);
 		this.control.addEventListener('change', this.onChange, false);
 	}
 };
 
-ee(Object.defineProperties(Input.prototype, {
+ee(Object.defineProperties(Input.prototype, extend({
 	_value: d(''),
 	_name: d(''),
 	controlAttributes: d({ autofocus: true, disabled: true, tabindex: true }),
@@ -128,7 +128,7 @@ ee(Object.defineProperties(Input.prototype, {
 		castAttr.call(this.control, name, value);
 	}),
 	destroy: d(function () {
-		this.document.removeEventListener('reset', this._resetListener, false);
+		this.document.removeEventListener('reset', this._onReset, false);
 		this.emit('destroy');
 	}),
 	onChange: d(function () {
@@ -153,6 +153,11 @@ ee(Object.defineProperties(Input.prototype, {
 		if (emitChanged) this.emit('change:changed', this.changed);
 		if (emitValid) this.emit('change:valid', this.valid);
 	})
-}));
+}, d.binder({
+	_onReset: d(function (e) {
+		if (e.target !== this.control.form) return;
+		this.inputValue = this._value;
+	})
+}))));
 
 Object.defineProperty(Db.Base, 'DOMInput', d(Input));

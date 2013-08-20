@@ -16,6 +16,7 @@ var copy        = require('es5-ext/lib/Object/copy')
   , htmlAttrs   = require('../_html-attributes')
   , eventOpts   = require('../_event-options')
 
+  , keys = Object.keys
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , Input;
@@ -25,9 +26,10 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.listItems = {};
 	this.attributes = {};
 	DOMInput.apply(this, arguments);
+	document.addEventListener('reset', this._onReset, false);
 };
 
-Input.prototype = Object.create(DOMInput.prototype, {
+Input.prototype = Object.create(DOMInput.prototype, extend({
 	_value: d(null),
 	constructor: d(Input),
 	controlAttributes: d(extend(copy(DOMInput.prototype.controlAttributes),
@@ -116,6 +118,14 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	value: d.gs(getValue, function (value) {
 		this.inputValue = this.ns.toInputValue(value);
 	})
-});
+}, d.binder({
+	_onReset: d(function (e) {
+		var key = keys(this.controls)[0], control;
+		if (!key) return;
+		control = this.controls[key];
+		if (e.target !== control.form) return;
+		this.inputValue = this._value;
+	})
+})));
 
 Object.defineProperty(Db.Base, 'DOMRadio', d(Input));

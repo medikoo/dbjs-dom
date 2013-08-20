@@ -44,6 +44,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.options.dbOptions = options.dbOptions;
 	this.options.control = Object(this.options.control);
 	DOMInput.call(this, document, ns, options);
+	document.addEventListener('reset', this._onReset, false);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, extend({
@@ -174,6 +175,14 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		this.domList.appendChild(dom);
 		this.onChange();
 		return input;
+	}),
+	_onReset: d(function (e) {
+		var control = this.dom.getElementsByTagName('input')[0];
+		if (!control) control = this.dom.getElementsByTagName('select')[0];
+		if (!control) control = this.dom.getElementsByTagName('textarea')[0];
+		if (!control) return;
+		if (e.target !== control.form) return;
+		this.inputValue = this._value;
 	})
 })));
 
