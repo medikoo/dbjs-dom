@@ -87,7 +87,11 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 			return this.valueDOM.firstChild.getAttribute('data-id');
 		}
 		value = map.call(this.valueDOM.childNodes, function (node) {
-			return node.getAttribute('data-id');
+			var id = node.getAttribute('data-id');
+			if (!id) {
+				throw new TypeError("Missing id (data-id attribute) on file item");
+			}
+			return id;
 		}).concat(aFrom(this.control.files));
 		return value.length ? value : null;
 	}, function (nu) {
