@@ -94,12 +94,10 @@ ee(Object.defineProperties(Input.prototype, {
 		this.emit('change:required', value);
 	}),
 	toDOM: d(function () { return this.dom; }),
-	inputValue: d.gs(function () { return this.control.value; }),
-	value: d.gs(function () {
-		return this.ns.fromInputValue(this.inputValue);
-	}, function (value) {
-		var old = this.inputValue, nu = this.ns.toInputValue(value);
-		if (nu == null) nu = '';
+	inputValue: d.gs(function () {
+		return this.control.value;
+	}, function (nu) {
+		var old = this.inputValue;
 		if (this._value !== nu) {
 			this.control.setAttribute('value', this._value = nu);
 		}
@@ -111,6 +109,13 @@ ee(Object.defineProperties(Input.prototype, {
 		} else {
 			this.onChange();
 		}
+	}),
+	value: d.gs(function () {
+		return this.ns.fromInputValue(this.inputValue);
+	}, function (value) {
+		value = this.ns.toInputValue(value);
+		if (value == null) value = '';
+		this.inputValue = value;
 	}),
 	castControlAttribute: d(function (name, value) {
 		if (name === 'class') {

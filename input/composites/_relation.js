@@ -24,5 +24,5 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		var state = getInputValue.call(this);
 		state.Db = Db;
 		return this.getValue.call(state);
-	})
+	}, noop)
 });

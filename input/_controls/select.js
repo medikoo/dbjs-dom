@@ -10,7 +10,8 @@ var copy        = require('es5-ext/lib/Object/copy')
   , DOMInput    = require('./input')
   , eventOpts   = require('../_event-options')
 
-  , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
+  , getInputValue =
+	Object.getOwnPropertyDescriptor(DOMInput.prototype, 'inputValue').get
   , Input;
 
 module.exports = Input = function (document, ns/*, options*/) {
@@ -47,9 +48,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		elExtend.call(option, labelTextDOM);
 		return option;
 	}),
-	value: d.gs(getValue, function (value) {
-		var old = this.inputValue, nu = this.ns.toInputValue(value);
-		if (nu == null) nu = '';
+	inputValue: d.gs(getInputValue, function (nu) {
+		var old = this.inputValue;
 		if (this._value !== nu) {
 			if (this.items.hasOwnProperty(this._value)) {
 				this.items[this._value].removeAttribute('selected');

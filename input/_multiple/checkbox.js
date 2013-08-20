@@ -1,6 +1,7 @@
 'use strict';
 
 var clear          = require('es5-ext/lib/Array/prototype/clear')
+  , contains       = require('es5-ext/lib/Array/prototype/contains')
   , d              = require('es5-ext/lib/Object/descriptor')
   , extend         = require('es5-ext/lib/Object/extend')
   , memoize        = require('memoizee/lib/primitive')
@@ -39,13 +40,15 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, extend({
 		if (emitChanged) this.emit('change:changed', this.changed);
 		if (emitValid) this.emit('change:valid', this.valid);
 	}),
-	value: d.gs(function () {
+	inputValue: d.gs(function () {
 		return this.items.map(function (item) { return item.value; })
 			.filter(function (value) { return value != null; });
 	}, function (value) {
+		if (value == null) value = [];
+		this._value = value;
 		this.allItems.forEach(function (item) {
 			var obj = this.ns.fromInputValue(item.control.value);
-			item.value = value.has(obj) ? obj : null;
+			item.value = contains.call(value, obj) ? obj : null;
 		}, this);
 		this.onChange();
 	}),

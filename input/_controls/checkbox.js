@@ -34,10 +34,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	}),
 	inputValue: d.gs(function () {
 		return this.control.checked ? this.control.value : null;
-	}),
-	value: d.gs(getValue, function (value) {
-		var old = this.inputValue, nu = this.ns.toInputValue(value);
-
+	}, function (nu) {
+		var old = this.inputValue;
 		if (nu == null) {
 			this.control.removeAttribute('checked');
 		} else {
@@ -56,6 +54,9 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		} else {
 			this.onChange();
 		}
+	}),
+	value: d.gs(getValue, function (value) {
+		this.inputValue = this.ns.toInputValue(value);
 	})
 });
 

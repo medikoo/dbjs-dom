@@ -90,34 +90,8 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 			return node.getAttribute('data-id');
 		}).concat(aFrom(this.control.files));
 		return value.length ? value : null;
-	}),
-	value: d.gs(function () {
-		var value = this.inputValue;
-		if (value == null) return null;
-		if (this.multiple) return value.map(this.ns.toInputValue, this.ns);
-		return this.ns.toInputValue(value);
-	}, function (value) {
-		var old = this.inputValue, nu, changed;
-
-		// Prepare value
-		if (value == null) {
-			nu = null;
-		} else if (this.multiple) {
-			if (!value._isSet_) throw new TypeError("Expected set value");
-			if (value._type_ === 'relation') {
-				value = value.values.map(serialize).sort(function (a, b) {
-					return value[a].order - value[b].order;
-				}).map(function (key) { return value[key]._subject_; });
-			} else {
-				value = value.values;
-			}
-			if (!value.length) nu = null;
-			else nu = compact.call(value.map(this.ns.toInputValue, this.ns));
-		} else {
-			nu = this.ns.toInputValue(value);
-		}
-
-		// Set value
+	}, function (nu) {
+		var old = this.inputValue, changed;
 		this._value = nu;
 		if (this.multiple) {
 			if (nu) {
@@ -147,6 +121,31 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		} else {
 			this.onChange();
 		}
+	}),
+	value: d.gs(function () {
+		var value = this.inputValue;
+		if (value == null) return null;
+		if (this.multiple) return value.map(this.ns.toInputValue, this.ns);
+		return this.ns.toInputValue(value);
+	}, function (value) {
+		if (value == null) {
+			value = null;
+		} else if (this.multiple) {
+			if (!value._isSet_) throw new TypeError("Expected set value");
+			if (value._type_ === 'relation') {
+				value = value.values.map(serialize).sort(function (a, b) {
+					return value[a].order - value[b].order;
+				}).map(function (key) { return value[key]._subject_; });
+			} else {
+				value = value.values;
+			}
+			if (!value.length) value = null;
+			else value = compact.call(value.map(this.ns.toInputValue, this.ns));
+		} else {
+			value = this.ns.toInputValue(value);
+		}
+
+		this.inputValue = value;
 	}),
 	onChange: d(function () {
 		var value, changed, valid, emitChanged, emitValid;

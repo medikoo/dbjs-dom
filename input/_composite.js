@@ -53,7 +53,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	}),
 	inputValue: d.gs(function () {
 		return map(this.items, function (input) { return input.value; });
-	}),
+	}, noop),
 	value: d.gs(function () { return this.inputValue; }, noop),
 	castControlAttribute: d(noop),
 	getOptions: d(function (rel) {

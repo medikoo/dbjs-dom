@@ -78,27 +78,31 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 	inputValue: d.gs(function () {
 		return uniq.call(this.items.map(function (item) { return item.value; })
 			.filter(function (value) { return value != null; }));
-	}),
-	value: d.gs(function () { return this.inputValue; }, function (value) {
+	}, function (value) {
 		var length, item;
-		if (value._type_ === 'relation') {
-			value = value.values.map(serialize).sort(function (a, b) {
-				return value[a].order - value[b].order;
-			}).map(function (key) { return value[key]._subject_; });
-		} else {
-			value = value.values;
-		}
+		if (value == null) value = [];
+		this._value = value;
 		value.forEach(function (value, index) {
 			var item = this.items[index];
 			if (!item) item = this.addItem();
 			item.index = index;
 			item.value = value;
 		}, this);
+
 		length = value.length;
 		while (this.items[length]) this.removeItem(this.items[length]);
 		while (length < this.minInputsCount) {
 			item = this.addItem();
 			item.index = length++;
+		}
+	}),
+	value: d.gs(function () { return this.inputValue; }, function (value) {
+		if (value._type_ === 'relation') {
+			this.inputValue = value.values.map(serialize).sort(function (a, b) {
+				return value[a].order - value[b].order;
+			}).map(function (key) { return value[key]._subject_; });
+		} else {
+			this.inputValue = value.values;
 		}
 	}),
 	castControlAttribute: d(function (name, value) {

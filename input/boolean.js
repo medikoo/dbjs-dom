@@ -46,7 +46,6 @@ Checkbox = function (document, ns/*, options*/) {
 Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 	constructor: d(Checkbox),
 	_value: d('0'),
-	inputValue: d.gs(function () { return this.control.checked ? '1' : '0'; }),
 	_render: d(function () {
 		var el = makeEl.bind(this.document);
 		this.dom = el('span', this.control = el('input',
@@ -65,9 +64,10 @@ Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 			this.hidden.removeAttribute('name');
 		}
 	}),
-	value: d.gs(getValue, function (value) {
-		var old = this.inputValue, nu = this.ns.toInputValue(value);
-		if (nu == null) nu = '0';
+	inputValue: d.gs(function () {
+		return this.control.checked ? '1' : '0';
+	}, function (nu) {
+		var old = this.inputValue;
 
 		if (nu !== '1') this.control.removeAttribute('checked');
 		else this.control.setAttribute('checked', 'checked');
@@ -81,6 +81,11 @@ Checkbox.prototype = Object.create(DOMCheckbox.prototype, {
 		} else {
 			this.onChange();
 		}
+	}),
+	value: d.gs(getValue, function (value) {
+		value = this.ns.toInputValue(value);
+		if (value == null) value = '0';
+		this.inputValue = value;
 	})
 });
 

@@ -86,9 +86,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			return false;
 		});
 		return selectedValue;
-	}),
-	value: d.gs(getValue, function (value) {
-		var old = this.inputValue, nu = this.ns.toInputValue(value);
+	}, function (nu) {
+		var old = this.inputValue;
 		if (this._value !== nu) {
 			if ((this._value != null) && this.items.hasOwnProperty(this._value)) {
 				this.items[this._value].removeAttribute('checked');
@@ -113,6 +112,9 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		} else {
 			this.onChange();
 		}
+	}),
+	value: d.gs(getValue, function (value) {
+		this.inputValue = this.ns.toInputValue(value);
 	})
 });
 
