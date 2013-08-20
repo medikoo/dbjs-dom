@@ -28,7 +28,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		this.control = this.dom = this.document.createElement('textarea');
 		this.dom.appendChild(this.document.createTextNode(''));
 	}),
-	value: d.gs(getInputValue, function (nu) {
+	inputValue: d.gs(getInputValue, function (nu) {
 		var old = this.inputValue;
 		if (this._value !== nu) this.control.firstChild.data = this._value = nu;
 		if (nu !== old) {
