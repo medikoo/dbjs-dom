@@ -44,7 +44,8 @@ module.exports = Object.defineProperties(relation, {
 		this.on('change', listener = function () {
 			var value;
 			if (this.multiple) {
-				value = this.listByOrder();
+				value = this.value;
+				value = value.listByOrder ? value.listByOrder() : value.values;
 				if (!options.bare && (this.ns !== Base)) {
 					value = value.map(toObject.bind(this.ns.prototype));
 				}
