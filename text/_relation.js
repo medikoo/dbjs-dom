@@ -1,7 +1,7 @@
 'use strict';
 
-var isFunction = require('es5-ext/lib/Function/is-function')
-  , d          = require('es5-ext/lib/Object/descriptor')
+var isFunction = require('es5-ext/function/is-function')
+  , d          = require('es5-ext/object/descriptor')
   , validNode  = require('dom-ext/lib/Node/valid-node')
   , exclude    = require('dom-ext/lib/Node/prototype/_exclude')
   , include    = require('dom-ext/lib/Node/prototype/_include')

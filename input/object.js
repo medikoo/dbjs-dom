@@ -1,11 +1,11 @@
 'use strict';
 
-var sepItems       = require('es5-ext/lib/Array/prototype/sep-items')
-  , callable       = require('es5-ext/lib/Object/valid-callable')
-  , d              = require('es5-ext/lib/Object/descriptor')
-  , extend         = require('es5-ext/lib/Object/extend')
-  , forEach        = require('es5-ext/lib/Object/for-each')
-  , isPlainObject  = require('es5-ext/lib/Object/is-plain-object')
+var sepItems       = require('es5-ext/array/#/sep-items')
+  , callable       = require('es5-ext/object/valid-callable')
+  , d              = require('es5-ext/object/descriptor')
+  , extend         = require('es5-ext/object/extend')
+  , forEach        = require('es5-ext/object/for-each')
+  , isPlainObject  = require('es5-ext/object/is-plain-object')
   , exclude        = require('dom-ext/lib/Element/prototype/exclude')
   , include        = require('dom-ext/lib/Element/prototype/include')
   , replace        = require('dom-ext/lib/Element/prototype/replace')

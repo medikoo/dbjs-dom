@@ -1,10 +1,10 @@
 'use strict';
 
-var d            = require('es5-ext/lib/Object/descriptor')
-  , extend       = require('es5-ext/lib/Object/extend')
-  , forEach      = require('es5-ext/lib/Object/for-each')
-  , isRegExp     = require('es5-ext/lib/RegExp/is-reg-exp')
-  , startsWith   = require('es5-ext/lib/String/prototype/starts-with')
+var d            = require('es5-ext/object/descriptor')
+  , extend       = require('es5-ext/object/extend')
+  , forEach      = require('es5-ext/object/for-each')
+  , isRegExp     = require('es5-ext/reg-exp/is-reg-exp')
+  , startsWith   = require('es5-ext/string/#/starts-with')
   , ee           = require('event-emitter/lib/core')
   , castAttr     = require('dom-ext/lib/Element/prototype/cast-attribute')
   , dispatchEvt  = require('dom-ext/lib/HTMLElement/prototype/dispatch-event-2')

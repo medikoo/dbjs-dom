@@ -1,6 +1,6 @@
 'use strict';
 
-var d            = require('es5-ext/lib/Object/descriptor')
+var d            = require('es5-ext/object/descriptor')
   , validElement = require('dom-ext/lib/Element/valid-element')
   , Db           = require('dbjs')
 

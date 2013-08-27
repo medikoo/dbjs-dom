@@ -1,6 +1,6 @@
 'use strict';
 
-var d        = require('es5-ext/lib/Object/descriptor')
+var d        = require('es5-ext/object/descriptor')
   , DOMInput = require('../date-time').DOMInput
 
   , DateType = require('dbjs/lib/objects')._get('Date')

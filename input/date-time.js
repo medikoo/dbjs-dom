@@ -1,9 +1,9 @@
 'use strict';
 
-var isDate   = require('es5-ext/lib/Date/is-date')
-  , copy     = require('es5-ext/lib/Object/copy')
-  , extend   = require('es5-ext/lib/Object/extend')
-  , d        = require('es5-ext/lib/Object/descriptor')
+var isDate   = require('es5-ext/date/is-date')
+  , copy     = require('es5-ext/object/copy')
+  , extend   = require('es5-ext/object/extend')
+  , d        = require('es5-ext/object/descriptor')
   , DOMInput = require('./_controls/input')
 
   , DateTime = require('dbjs').DateTime

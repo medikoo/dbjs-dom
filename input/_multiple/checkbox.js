@@ -1,9 +1,9 @@
 'use strict';
 
-var clear          = require('es5-ext/lib/Array/prototype/clear')
-  , contains       = require('es5-ext/lib/Array/prototype/contains')
-  , d              = require('es5-ext/lib/Object/descriptor')
-  , extend         = require('es5-ext/lib/Object/extend')
+var clear          = require('es5-ext/array/#/clear')
+  , contains       = require('es5-ext/array/#/contains')
+  , d              = require('es5-ext/object/descriptor')
+  , extend         = require('es5-ext/object/extend')
   , memoize        = require('memoizee/lib/primitive')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
   , DOMCheckbox    = require('../_controls/checkbox')

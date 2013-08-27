@@ -1,7 +1,7 @@
 'use strict';
 
-var CustomError = require('es5-ext/lib/Error/custom')
-  , forEach     = require('es5-ext/lib/Object/for-each')
+var CustomError = require('es5-ext/error/custom')
+  , forEach     = require('es5-ext/object/for-each')
   , getObject   = require('dbjs/lib/objects')._get
 
   , getName, getRel;

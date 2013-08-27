@@ -1,8 +1,8 @@
 'use strict';
 
-var d                = require('es5-ext/lib/Object/descriptor')
-  , extend           = require('es5-ext/lib/Object/extend')
-  , validValue       = require('es5-ext/lib/Object/valid-value')
+var d                = require('es5-ext/object/descriptor')
+  , extend           = require('es5-ext/object/extend')
+  , validValue       = require('es5-ext/object/valid-value')
   , memoize          = require('memoizee/lib/primitive')
   , clear            = require('dom-ext/lib/Element/prototype/clear')
   , replaceContent   = require('dom-ext/lib/Element/prototype/replace-content')

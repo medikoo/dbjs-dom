@@ -1,6 +1,6 @@
 'use strict';
 
-var d    = require('es5-ext/lib/Object/descriptor')
+var d    = require('es5-ext/object/descriptor')
   , Db   = require('../../')
   , Enum = require('dbjs/lib/objects')._get('Enum')
 

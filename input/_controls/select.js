@@ -1,8 +1,8 @@
 'use strict';
 
-var copy        = require('es5-ext/lib/Object/copy')
-  , d           = require('es5-ext/lib/Object/descriptor')
-  , extend      = require('es5-ext/lib/Object/extend')
+var copy        = require('es5-ext/object/copy')
+  , d           = require('es5-ext/object/descriptor')
+  , extend      = require('es5-ext/object/extend')
   , dispatchEvt = require('dom-ext/lib/HTMLElement/prototype/dispatch-event-2')
   , elExtend    = require('dom-ext/lib/Element/prototype/extend')
   , Db          = require('dbjs')

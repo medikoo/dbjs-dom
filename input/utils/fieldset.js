@@ -1,10 +1,10 @@
 'use strict';
 
-var CustomError    = require('es5-ext/lib/Error/custom')
-  , d              = require('es5-ext/lib/Object/descriptor')
-  , extend         = require('es5-ext/lib/Object/extend')
-  , forEach        = require('es5-ext/lib/Object/for-each')
-  , startsWith     = require('es5-ext/lib/String/prototype/starts-with')
+var CustomError    = require('es5-ext/error/custom')
+  , d              = require('es5-ext/object/descriptor')
+  , extend         = require('es5-ext/object/extend')
+  , forEach        = require('es5-ext/object/for-each')
+  , startsWith     = require('es5-ext/string/#/starts-with')
   , makeElement    = require('dom-ext/lib/Document/prototype/make-element')
   , castAttribute  = require('dom-ext/lib/Element/prototype/cast-attribute')
   , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
