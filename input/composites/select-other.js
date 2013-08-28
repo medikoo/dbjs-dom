@@ -1,8 +1,8 @@
 'use strict';
 
 var d           = require('es5-ext/object/descriptor')
-  , include     = require('dom-ext/lib/Element/prototype/include')
-  , exclude     = require('dom-ext/lib/Element/prototype/exclude')
+  , include     = require('dom-ext/element/#/include')
+  , exclude     = require('dom-ext/element/#/exclude')
   , DOMInput    = require('./_relation')
   , getFields   = require('./_get-fields')
 

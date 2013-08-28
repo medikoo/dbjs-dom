@@ -2,9 +2,9 @@
 
 var isFunction = require('es5-ext/function/is-function')
   , d          = require('es5-ext/object/descriptor')
-  , validNode  = require('dom-ext/lib/Node/valid-node')
-  , exclude    = require('dom-ext/lib/Node/prototype/_exclude')
-  , include    = require('dom-ext/lib/Node/prototype/_include')
+  , validNode  = require('dom-ext/node/valid-node')
+  , exclude    = require('dom-ext/node/#/_exclude')
+  , include    = require('dom-ext/node/#/_include')
   , Base       = require('dbjs').Base
   , relation   = require('dbjs/lib/_relation')
   , DOMValue   = require('./utils/rel-value')

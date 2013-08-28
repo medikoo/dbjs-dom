@@ -3,7 +3,7 @@
 var d       = require('es5-ext/object/descriptor')
   , extend  = require('es5-ext/object/extend')
   , memoize = require('memoizee/lib/regular')
-  , remove  = require('dom-ext/lib/Element/prototype/remove')
+  , remove  = require('dom-ext/element/#/remove')
 
   , isArray = Array.isArray
   , DOM;

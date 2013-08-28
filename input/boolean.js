@@ -2,8 +2,8 @@
 
 var isCopy      = require('es5-ext/array/#/is-copy')
   , d           = require('es5-ext/object/descriptor')
-  , makeEl      = require('dom-ext/lib/Document/prototype/make-element')
-  , dispatchEvt = require('dom-ext/lib/HTMLElement/prototype/dispatch-event-2')
+  , makeEl      = require('dom-ext/document/#/make-element')
+  , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
   , Db          = require('dbjs')
   , DOMInput    = require('./_controls/input')
   , DOMRadio    = require('./_controls/radio')

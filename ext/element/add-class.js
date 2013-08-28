@@ -1,6 +1,6 @@
 'use strict';
 
-var element = require('dom-ext/lib/Element/valid-element')
+var element = require('dom-ext/element/valid-element')
 
   , prefix = '_dbjs:relation:class.';
 

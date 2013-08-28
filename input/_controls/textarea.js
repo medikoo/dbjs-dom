@@ -3,7 +3,7 @@
 var copy        = require('es5-ext/object/copy')
   , d           = require('es5-ext/object/descriptor')
   , extend      = require('es5-ext/object/extend')
-  , dispatchEvt = require('dom-ext/lib/HTMLElement/prototype/dispatch-event-2')
+  , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
   , Db          = require('dbjs')
   , DOMInput    = require('./input')
   , eventOpts   = require('../_event-options')

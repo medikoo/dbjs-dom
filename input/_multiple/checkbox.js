@@ -5,7 +5,7 @@ var clear          = require('es5-ext/array/#/clear')
   , d              = require('es5-ext/object/descriptor')
   , extend         = require('es5-ext/object/extend')
   , memoize        = require('memoizee/lib/primitive')
-  , replaceContent = require('dom-ext/lib/Element/prototype/replace-content')
+  , replaceContent = require('dom-ext/element/#/replace-content')
   , DOMCheckbox    = require('../_controls/checkbox')
   , DOMInput       = require('./')
 

@@ -40,7 +40,7 @@ user._firstName.toDOMAttr(p, 'title');
 Above describes low-level way of working with things, which it's not very effective for common dev work.
 You can configure your tool of choice to detect `toDOM` functions automatically and call them behind the scenes.
 
-It's what e.g. [`dom-ext/lib/Document/prototype/normalize`](https://github.com/medikoo/dom-ext/blob/master/lib/Document/prototype/normalize.js) does, which is used internally by [DOMJS](https://github.com/medikoo/domjs) engine.
+It's what e.g. [`dom-ext/document/#/normalize`](https://github.com/medikoo/dom-ext/blob/master/document/%23/normalize.js) does, which is used internally by [DOMJS](https://github.com/medikoo/domjs) engine.
 Therefore with DOMJS onboard, you can build templates as:
 
 ```javascript
