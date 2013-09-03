@@ -32,7 +32,8 @@ module.exports = Input = function (document, ns/*, options*/) {
 		if (name === true) name = dbName;
 		if (options[name] != null) return;
 		if (options.dbOptions[dbName] != null) value = options.dbOptions[dbName];
-		else if (ns[dbName] != null) value = ns[dbName];
+		else if (dbName === 'required') return;
+		if (ns[dbName] != null) value = ns[dbName];
 		else return;
 		this.castControlAttribute(name, value);
 	}, this);
