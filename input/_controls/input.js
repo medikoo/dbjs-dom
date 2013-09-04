@@ -33,10 +33,10 @@ module.exports = Input = function (document, ns/*, options*/) {
 		if (options[name] != null) return;
 		if (options.dbOptions[dbName] != null) {
 			value = options.dbOptions[dbName];
-		} else if ((dbName !== 'required') && (ns[dbName] != null)) {
-			value = ns[dbName];
 		} else {
-			return;
+			if (dbName === 'required') return;
+			if (ns[dbName] != null) value = ns[dbName];
+			else return;
 		}
 		this.castControlAttribute(name, value);
 	}, this);
