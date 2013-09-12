@@ -23,10 +23,12 @@ var sepItems       = require('es5-ext/array/#/sep-items')
   , createOption = DOMSelect.prototype.createOption
   , createRadio = DOMRadio.prototype.createOption
 
-  , Radio, Select, Edit, Multiple;
+  , Radio, Select, Edit, Multiple, rel;
 
-ObjectType.set('chooseLabel',
-	StringLine.rel({ required: true, value: 'Choose:' }));
+rel = ObjectType.get('chooseLabel');
+rel._ns.$$setValue(StringLine);
+rel._required.$$setValue(true);
+rel.$$setValue("Choose:");
 
 Select = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]), list;

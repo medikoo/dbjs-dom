@@ -70,5 +70,5 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	})
 });
 
-relation.set('chooseLabel', Db.String);
+relation.get('chooseLabel')._ns.$$setValue(Db.String);
 Object.defineProperty(Db.Base, 'DOMSelect', d(Input));
