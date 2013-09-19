@@ -18,25 +18,40 @@ var sepItems       = require('es5-ext/array/#/sep-items')
   , DOMMultiple    = require('./_multiple/checkbox')
   , DOMComposite   = require('./_composite')
 
+  , map = Array.prototype.map
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , StringLine = getObject('StringLine')
   , createOption = DOMSelect.prototype.createOption
   , createRadio = DOMRadio.prototype.createOption
 
-  , Radio, Select, Edit, Multiple, rel;
+  , Radio, Select, Edit, Multiple, rel, resolveDbOptions;
 
 rel = ObjectType.get('chooseLabel');
 rel._ns.$$setValue(StringLine);
 rel._required.$$setValue(true);
 rel.$$setValue("Choose:");
 
+resolveDbOptions = function (ns, options) {
+	var list;
+	if (options.list != null) {
+		this.dbOptions = map.call(options.list, function (obj) {
+			if (!obj || (obj.constructor !== ns)) {
+				throw new TypeError(obj + " is not a " + ns._id_);
+			}
+			return this.createOption(obj);
+		}, this);
+	} else {
+		list = (options.compare ? ns.list(options.compare) : ns.listByCreatedAt());
+		this.dbOptions = list.liveMap(this.createOption, this);
+		this.dbOptions.on('change', this.reload);
+	}
+};
+
 Select = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]), list;
+	var options = Object(arguments[2]);
 	DOMSelect.call(this, document, ns, options);
 	this.property = options.property;
-	list = (options.compare ? ns.list(options.compare) : ns.listByCreatedAt());
-	this.dbOptions = list.liveMap(this.createOption, this);
-	this.dbOptions.on('change', this.reload);
+	resolveDbOptions.call(this, ns, options);
 	this.reload();
 };
 Select.prototype = Object.create(DOMSelect.prototype, extend({
@@ -53,13 +68,11 @@ Select.prototype = Object.create(DOMSelect.prototype, extend({
 })));
 
 Radio = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]), list;
+	var options = Object(arguments[2]);
 	DOMRadio.call(this, document, ns, options);
 	this.dom.classList.add('object-list');
 	this.property = options.property;
-	list = (options.compare ? ns.list(options.compare) : ns.listByCreatedAt());
-	this.dbOptions = list.liveMap(this.createOption, this);
-	this.dbOptions.on('change', this.reload);
+	resolveDbOptions.call(this, ns, options);
 	this.reload();
 };
 Radio.prototype = Object.create(DOMRadio.prototype, extend({
