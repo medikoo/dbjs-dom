@@ -2,8 +2,9 @@
 
 var clear          = require('es5-ext/array/#/clear')
   , contains       = require('es5-ext/array/#/contains')
-  , d              = require('es5-ext/object/descriptor')
   , extend         = require('es5-ext/object/extend')
+  , d              = require('d/d')
+  , autoBind       = require('d/auto-bind')
   , memoize        = require('memoizee/lib/primitive')
   , replaceContent = require('dom-ext/element/#/replace-content')
   , DOMCheckbox    = require('../_controls/checkbox')
@@ -59,7 +60,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, extend({
 	safeRemoveItem: d(notSupported),
 	addItem: d(notSupported),
 	removeItem: d(notSupported)
-}, d.binder({
+}, autoBind({
 	reload: d(function () {
 		clear.call(this.items);
 		replaceContent.call(this.dom, this.dbList.map(function (item) {

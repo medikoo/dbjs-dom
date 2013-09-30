@@ -1,10 +1,11 @@
 'use strict';
 
 var CustomError    = require('es5-ext/error/custom')
-  , d              = require('es5-ext/object/descriptor')
   , extend         = require('es5-ext/object/extend')
   , forEach        = require('es5-ext/object/for-each')
   , startsWith     = require('es5-ext/string/#/starts-with')
+  , d              = require('d/d')
+  , autoBind       = require('d/auto-bind')
   , makeElement    = require('dom-ext/document/#/make-element')
   , castAttribute  = require('dom-ext/element/#/cast-attribute')
   , replaceContent = require('dom-ext/element/#/replace-content')
@@ -105,7 +106,7 @@ Object.defineProperties(Fieldset.prototype, extend({
 	}),
 	toDOM: d(function () { return this.dom; }),
 	getOptions: d(DOMComposite.prototype.getOptions)
-}, d.binder({
+}, autoBind({
 	reload: d(function () {
 		replaceContent.call(this.domItems, this.prepend, this.list, this.append);
 	})

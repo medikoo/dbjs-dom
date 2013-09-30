@@ -1,10 +1,11 @@
 'use strict';
 
-var d            = require('es5-ext/object/descriptor')
-  , extend       = require('es5-ext/object/extend')
+var extend       = require('es5-ext/object/extend')
   , forEach      = require('es5-ext/object/for-each')
   , isRegExp     = require('es5-ext/reg-exp/is-reg-exp')
   , startsWith   = require('es5-ext/string/#/starts-with')
+  , d            = require('d/d')
+  , autoBind     = require('d/auto-bind')
   , ee           = require('event-emitter/lib/core')
   , castAttr     = require('dom-ext/element/#/cast-attribute')
   , dispatchEvt  = require('dom-ext/html-element/#/dispatch-event-2')
@@ -157,7 +158,7 @@ ee(Object.defineProperties(Input.prototype, extend({
 		if (emitChanged) this.emit('change:changed', this.changed);
 		if (emitValid) this.emit('change:valid', this.valid);
 	})
-}, d.binder({
+}, autoBind({
 	_onReset: d(function (e) {
 		if (e.target !== this.control.form) return;
 		this.inputValue = this._value;

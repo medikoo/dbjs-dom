@@ -2,10 +2,11 @@
 
 var sepItems       = require('es5-ext/array/#/sep-items')
   , callable       = require('es5-ext/object/valid-callable')
-  , d              = require('es5-ext/object/descriptor')
   , extend         = require('es5-ext/object/extend')
   , forEach        = require('es5-ext/object/for-each')
   , isPlainObject  = require('es5-ext/object/is-plain-object')
+  , d              = require('d/d')
+  , autoBind       = require('d/auto-bind')
   , exclude        = require('dom-ext/element/#/exclude')
   , include        = require('dom-ext/element/#/include')
   , replace        = require('dom-ext/element/#/replace')
@@ -61,7 +62,7 @@ Select.prototype = Object.create(DOMSelect.prototype, extend({
 			this.property ? obj.get(this.property).toDOM(this.document) :
 					this.document.createTextNode(obj));
 	})
-}, d.binder({
+}, autoBind({
 	reload: d(function () {
 		replaceContent.call(this.control, this.chooseOption, this.dbOptions);
 	})
@@ -82,7 +83,7 @@ Radio.prototype = Object.create(DOMRadio.prototype, extend({
 			this.property ? obj.get(this.property).toDOM(this.document) :
 					this.document.createTextNode(obj));
 	})
-}, d.binder({
+}, autoBind({
 	reload: d(function () { replaceContent.call(this.dom, this.dbOptions); })
 })));
 

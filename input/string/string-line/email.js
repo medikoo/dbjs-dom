@@ -1,8 +1,8 @@
 'use strict';
 
 var copy     = require('es5-ext/object/copy')
-  , d        = require('es5-ext/object/descriptor')
   , extend   = require('es5-ext/object/extend')
+  , d        = require('d/d')
   , DOMInput = require('../string-line').DOMInput
 
   , Email = require('dbjs/lib/objects')._get('Email')

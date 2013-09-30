@@ -1,6 +1,6 @@
 'use strict';
 
-var d           = require('es5-ext/object/descriptor')
+var d           = require('d/d')
   , include     = require('dom-ext/element/#/include')
   , exclude     = require('dom-ext/element/#/exclude')
   , DOMInput    = require('./_relation')

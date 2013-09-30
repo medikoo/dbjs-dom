@@ -18,6 +18,7 @@
     "generator"
   ],
   "dependencies": {
+    "d": "git://github.com/medikoo/d.git",
     "es5-ext": "git://github.com/medikoo/es5-ext.git",
     "dbjs": "git://github.com/medikoo/dbjs.git",
     "dbjs-ext": "git://github.com/medikoo/dbjs-ext.git"

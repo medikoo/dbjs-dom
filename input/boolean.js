@@ -1,7 +1,7 @@
 'use strict';
 
 var isCopy      = require('es5-ext/array/#/is-copy')
-  , d           = require('es5-ext/object/descriptor')
+  , d           = require('d/d')
   , makeEl      = require('dom-ext/document/#/make-element')
   , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
   , Db          = require('dbjs')

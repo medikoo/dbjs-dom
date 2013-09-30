@@ -1,10 +1,10 @@
 'use strict';
 
-var d              = require('es5-ext/object/descriptor')
-  , copy           = require('es5-ext/object/copy')
+var copy           = require('es5-ext/object/copy')
   , extend         = require('es5-ext/object/extend')
   , filter         = require('es5-ext/object/filter')
   , forEach        = require('es5-ext/object/for-each')
+  , d              = require('d/d')
   , makeElement    = require('dom-ext/document/#/make-element')
   , castAttribute  = require('dom-ext/element/#/cast-attribute')
   , replace        = require('dom-ext/element/#/replace')

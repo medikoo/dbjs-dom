@@ -4,10 +4,11 @@ var CustomError    = require('es5-ext/error/custom')
   , isFunction     = require('es5-ext/function/is-function')
   , invoke         = require('es5-ext/function/invoke')
   , noop           = require('es5-ext/function/noop')
-  , d              = require('es5-ext/object/descriptor')
   , extend         = require('es5-ext/object/extend')
   , oForEach       = require('es5-ext/object/for-each')
   , callable       = require('es5-ext/object/valid-callable')
+  , d              = require('d/d')
+  , autoBind       = require('d/auto-bind')
   , memoize        = require('memoizee/lib/regular')
   , ee             = require('event-emitter/lib/core')
   , isNode         = require('dom-ext/node/is-node')
@@ -226,7 +227,7 @@ ee(Object.defineProperties(Table.prototype, extend({
 		this.cellRenderers.map(function (render) {
 			return this.cellRender(render, item);
 		}, this));
-}, { method: 'rowRender' }), d.binder({
+}, { method: 'rowRender' }), autoBind({
 	reload: d(function () {
 		var list;
 		if (this.list.length) {

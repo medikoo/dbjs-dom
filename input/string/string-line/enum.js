@@ -1,8 +1,9 @@
 'use strict';
 
-var d                = require('es5-ext/object/descriptor')
-  , extend           = require('es5-ext/object/extend')
+var extend           = require('es5-ext/object/extend')
   , validValue       = require('es5-ext/object/valid-value')
+  , d                = require('d/d')
+  , autoBind         = require('d/auto-bind')
   , memoize          = require('memoizee/lib/primitive')
   , clear            = require('dom-ext/element/#/clear')
   , replaceContent   = require('dom-ext/element/#/replace-content')
@@ -54,7 +55,7 @@ Select.prototype = Object.create(DOMSelect.prototype, extend({
 	var el = this.document.createElement('optgroup');
 	el.setAttribute('label', this.group.set.getItem(name).label);
 	return el;
-}, { method: 'createOptgroup' }), d.binder({
+}, { method: 'createOptgroup' }), autoBind({
 	reload: d(function () {
 		var options = this.dbOptions.listByOrder(), els, done;
 		if (this.onlyFilter) {
@@ -99,7 +100,7 @@ Radio.prototype = Object.create(DOMRadio.prototype, extend({
 			this.customLabels[item._subject_] || (item.label && item._label) ||
 			item._subject_);
 	})
-}, d.binder({
+}, autoBind({
 	reload: d(function () { replaceContent.call(this.dom, this.dbOptions); })
 })));
 

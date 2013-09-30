@@ -5,8 +5,9 @@ var contains      = require('es5-ext/array/#/contains')
   , remove        = require('es5-ext/array/#/remove')
   , k             = require('es5-ext/function/k')
   , copy          = require('es5-ext/object/copy')
-  , d             = require('es5-ext/object/descriptor')
   , extend        = require('es5-ext/object/extend')
+  , d             = require('d/d')
+  , autoBind      = require('d/auto-bind')
   , makeElement   = require('dom-ext/document/#/make-element')
   , castAttribute = require('dom-ext/element/#/cast-attribute')
   , extendEl      = require('dom-ext/element/#/extend')
@@ -163,7 +164,7 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 		}
 		return { dom: dom, input: input };
 	}),
-}, d.binder({
+}, autoBind({
 	addItem: d(function () {
 		var data = this.renderItem(), input = data.input, dom = data.dom;
 		if (this.name) input.name = this.name;

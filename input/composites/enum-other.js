@@ -1,7 +1,7 @@
 'use strict';
 
 var CustomError = require('es5-ext/error/custom')
-  , d           = require('es5-ext/object/descriptor')
+  , d           = require('d/d')
   , DOMInput    = require('./_relation')
   , getFields   = require('./_get-fields')
 

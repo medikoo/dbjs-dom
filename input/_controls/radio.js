@@ -1,12 +1,13 @@
 'use strict';
 
 var copy        = require('es5-ext/object/copy')
-  , d           = require('es5-ext/object/descriptor')
   , extend      = require('es5-ext/object/extend')
   , forEach     = require('es5-ext/object/for-each')
   , some        = require('es5-ext/object/some')
   , isRegExp    = require('es5-ext/reg-exp/is-reg-exp')
   , startsWith  = require('es5-ext/string/#/starts-with')
+  , d           = require('d/d')
+  , autoBind    = require('d/auto-bind')
   , castAttr    = require('dom-ext/element/#/cast-attribute')
   , mergeClass  = require('dom-ext/html-element/#/merge-class')
   , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
@@ -118,7 +119,7 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 	value: d.gs(getValue, function (value) {
 		this.inputValue = this.ns.toInputValue(value);
 	})
-}, d.binder({
+}, autoBind({
 	_onReset: d(function (e) {
 		var key = keys(this.controls)[0], control;
 		if (!key) return;

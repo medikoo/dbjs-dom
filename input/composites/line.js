@@ -1,7 +1,7 @@
 'use strict';
 
 var sepItems = require('es5-ext/array/#/sep-items')
-  , d        = require('es5-ext/object/descriptor')
+  , d        = require('d/d')
   , DOMInput = require('./_relation')
 
   , Input;

@@ -1,8 +1,8 @@
 'use strict';
 
 var noop     = require('es5-ext/function/noop')
-  , d        = require('es5-ext/object/descriptor')
   , callable = require('es5-ext/object/valid-callable')
+  , d        = require('d/d')
   , Db       = require('dbjs')
   , DOMInput = require('../_composite')
 

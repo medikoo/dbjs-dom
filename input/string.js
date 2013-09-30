@@ -1,6 +1,6 @@
 'use strict';
 
-var d           = require('es5-ext/object/descriptor')
+var d           = require('d/d')
   , Db          = require('dbjs')
   , DOMTextarea = require('./_controls/textarea');
 
