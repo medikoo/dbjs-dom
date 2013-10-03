@@ -23,7 +23,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	_render: d(function () {
 		var input = this.control = this.dom = this.document.createElement('input');
 		input.setAttribute('type', 'url');
-	}),
+	})
 });
 
 module.exports = Object.defineProperties(Url, {

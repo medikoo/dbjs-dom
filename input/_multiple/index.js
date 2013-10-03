@@ -163,7 +163,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			setPresenceEl.call(removeButton, false);
 		}
 		return { dom: dom, input: input };
-	}),
+	})
 }, autoBind({
 	addItem: d(function () {
 		var data = this.renderItem(), input = data.input, dom = data.dom;

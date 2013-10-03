@@ -16,7 +16,7 @@ Object.defineProperties(Base, {
 	}),
 	toDOMAttrBox: d(function (element, name/*, options*/) {
 		return new this.DOMAttr(element, name, this, arguments[2]);
-	}),
+	})
 });
 
 Object.defineProperties(Base.prototype, {

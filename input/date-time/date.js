@@ -17,12 +17,12 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	_render: d(function () {
 		var input = this.control = this.dom = this.document.createElement('input');
 		input.setAttribute('type', 'date');
-	}),
+	})
 });
 
 module.exports = Object.defineProperties(DateType, {
 	toInputValue: d(function (value) {
 		return (value == null) ? null : value.toISOString().slice(0, 10);
 	}),
-	DOMInput: d(Input),
+	DOMInput: d(Input)
 });

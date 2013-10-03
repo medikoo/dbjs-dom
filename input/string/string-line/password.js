@@ -21,7 +21,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	_render: d(function () {
 		var input = this.control = this.dom = this.document.createElement('input');
 		input.setAttribute('type', 'password');
-	}),
+	})
 });
 
 module.exports = Object.defineProperty(Password, 'DOMInput', d(Input));

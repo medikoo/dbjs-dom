@@ -54,5 +54,5 @@ module.exports = Object.defineProperties(DateTime, {
 	toInputValue: d(function (value) {
 		return (value == null) ? null : value.toISOString().slice(0, 16);
 	}),
-	DOMInput: d(Input),
+	DOMInput: d(Input)
 });
