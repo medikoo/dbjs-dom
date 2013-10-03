@@ -1,6 +1,6 @@
 'use strict';
 
-var extend           = require('es5-ext/object/extend')
+var assign           = require('es5-ext/object/assign-multiple')
   , validValue       = require('es5-ext/object/valid-value')
   , d                = require('d/d')
   , autoBind         = require('d/auto-bind')
@@ -45,7 +45,7 @@ Select = function (document, ns/*, options*/) {
 	}
 	this.reload();
 };
-Select.prototype = Object.create(DOMSelect.prototype, extend({
+Select.prototype = Object.create(DOMSelect.prototype, assign({
 	constructor: d(Select)
 }, memoize(function (name) {
 	var item = this.dbOptions.getItem(name);
@@ -93,7 +93,7 @@ Radio = function (document, ns/*, options*/) {
 	this.dbOptions.on('change', this.reload);
 	this.reload();
 };
-Radio.prototype = Object.create(DOMRadio.prototype, extend({
+Radio.prototype = Object.create(DOMRadio.prototype, assign({
 	constructor: d(Radio),
 	createOption: d(function (item) {
 		return createRadio.call(this, item._subject_,

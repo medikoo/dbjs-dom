@@ -1,7 +1,7 @@
 'use strict';
 
 var copy        = require('es5-ext/object/copy')
-  , extend      = require('es5-ext/object/extend')
+  , assign      = require('es5-ext/object/assign')
   , forEach     = require('es5-ext/object/for-each')
   , some        = require('es5-ext/object/some')
   , isRegExp    = require('es5-ext/reg-exp/is-reg-exp')
@@ -11,7 +11,7 @@ var copy        = require('es5-ext/object/copy')
   , castAttr    = require('dom-ext/element/#/cast-attribute')
   , mergeClass  = require('dom-ext/html-element/#/merge-class')
   , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
-  , elExtend    = require('dom-ext/element/#/extend')
+  , extend      = require('dom-ext/element/#/extend')
   , Db          = require('dbjs')
   , DOMInput    = require('./input')
   , htmlAttrs   = require('../_html-attributes')
@@ -30,12 +30,12 @@ module.exports = Input = function (document, ns/*, options*/) {
 	document.addEventListener('reset', this._onReset, false);
 };
 
-Input.prototype = Object.create(DOMInput.prototype, extend({
+Input.prototype = Object.create(DOMInput.prototype, assign({
 	_value: d(null),
 	constructor: d(Input),
-	controlAttributes: d(extend(copy(DOMInput.prototype.controlAttributes),
+	controlAttributes: d(assign(copy(DOMInput.prototype.controlAttributes),
 		{ required: true })),
-	dbAttributes: d(extend(copy(DOMInput.prototype.dbAttributes),
+	dbAttributes: d(assign(copy(DOMInput.prototype.dbAttributes),
 		{ required: true })),
 	_render: d(function () {
 		this.dom = this.document.createElement('ul');
@@ -63,7 +63,7 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 			castAttr.call(input, name, value);
 		}, this);
 		label.appendChild(this.document.createTextNode(' '));
-		elExtend.call(label, labelTextDOM);
+		extend.call(label, labelTextDOM);
 		input.addEventListener('change', this.onChange, false);
 		return dom;
 	}),

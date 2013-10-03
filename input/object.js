@@ -2,7 +2,7 @@
 
 var sepItems       = require('es5-ext/array/#/sep-items')
   , callable       = require('es5-ext/object/valid-callable')
-  , extend         = require('es5-ext/object/extend')
+  , assign         = require('es5-ext/object/assign')
   , forEach        = require('es5-ext/object/for-each')
   , isPlainObject  = require('es5-ext/object/is-plain-object')
   , d              = require('d/d')
@@ -55,7 +55,7 @@ Select = function (document, ns/*, options*/) {
 	resolveDbOptions.call(this, ns, options);
 	this.reload();
 };
-Select.prototype = Object.create(DOMSelect.prototype, extend({
+Select.prototype = Object.create(DOMSelect.prototype, assign({
 	constructor: d(Select),
 	createOption: d(function (obj) {
 		return createOption.call(this, obj._id_,
@@ -76,7 +76,7 @@ Radio = function (document, ns/*, options*/) {
 	resolveDbOptions.call(this, ns, options);
 	this.reload();
 };
-Radio.prototype = Object.create(DOMRadio.prototype, extend({
+Radio.prototype = Object.create(DOMRadio.prototype, assign({
 	constructor: d(Radio),
 	createOption: d(function (obj) {
 		return createRadio.call(this, obj._id_,

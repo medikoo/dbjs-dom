@@ -1,7 +1,7 @@
 'use strict';
 
 var copy     = require('es5-ext/object/copy')
-  , extend   = require('es5-ext/object/extend')
+  , assign   = require('es5-ext/object/assign')
   , d        = require('d/d')
   , Db       = require('dbjs')
   , DOMInput = require('./_controls/input')
@@ -17,10 +17,10 @@ Input = function (document, ns/*, options*/) {
 
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
-	controlAttributes: d(extend(copy(DOMInput.prototype.controlAttributes),
+	controlAttributes: d(assign(copy(DOMInput.prototype.controlAttributes),
 		{ autocomplete: true, list: true, max: true, min: true, placeholder: true,
 			readonly: true, required: true, step: true })),
-	dbAttributes: d(extend(copy(DOMInput.prototype.dbAttributes),
+	dbAttributes: d(assign(copy(DOMInput.prototype.dbAttributes),
 		{ max: true, min: true, inputPlaceholder: 'placeholder', required: true,
 			step: true })),
 	numberAttributes: d({ min: true, max: true }),

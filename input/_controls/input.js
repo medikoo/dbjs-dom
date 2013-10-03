@@ -1,6 +1,6 @@
 'use strict';
 
-var extend       = require('es5-ext/object/extend')
+var assign       = require('es5-ext/object/assign')
   , forEach      = require('es5-ext/object/for-each')
   , isRegExp     = require('es5-ext/reg-exp/is-reg-exp')
   , startsWith   = require('es5-ext/string/#/starts-with')
@@ -61,7 +61,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	}
 };
 
-ee(Object.defineProperties(Input.prototype, extend({
+ee(Object.defineProperties(Input.prototype, assign({
 	_value: d(''),
 	_name: d(''),
 	controlAttributes: d({ autofocus: true, disabled: true, tabindex: true }),

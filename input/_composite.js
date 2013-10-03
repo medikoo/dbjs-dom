@@ -2,7 +2,7 @@
 
 var noop        = require('es5-ext/function/noop')
   , copy        = require('es5-ext/object/copy')
-  , extend      = require('es5-ext/object/extend')
+  , assign      = require('es5-ext/object/assign')
   , every       = require('es5-ext/object/every')
   , map         = require('es5-ext/object/map')
   , some        = require('es5-ext/object/some')
@@ -18,7 +18,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	var options = Object(arguments[2]);
 	this.items = {};
 	this.options = Object(options.item);
-	this.options.control = extend(Object(options.control),
+	this.options.control = assign(Object(options.control),
 		Object(this.options.control));
 	this.customOptions = Object(options.items);
 	this.make = makeElement.bind(document);
@@ -59,10 +59,10 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	getOptions: d(function (rel) {
 		var options = copy(this.options);
 		if (this.customOptions[rel.name]) {
-			extend(options, this.customOptions[rel.name]);
+			assign(options, this.customOptions[rel.name]);
 		}
 		if (this.customOptions[rel._id_]) {
-			extend(options, this.customOptions[rel._id_]);
+			assign(options, this.customOptions[rel._id_]);
 		}
 		return options;
 	}),

@@ -1,7 +1,7 @@
 'use strict';
 
 var copy        = require('es5-ext/object/copy')
-  , extend      = require('es5-ext/object/extend')
+  , assign      = require('es5-ext/object/assign')
   , d           = require('d/d')
   , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
   , Db          = require('dbjs')
@@ -19,10 +19,10 @@ module.exports = Input = function (document, ns/*, options*/) {
 
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
-	controlAttributes: d(extend(copy(DOMInput.prototype.controlAttributes),
+	controlAttributes: d(assign(copy(DOMInput.prototype.controlAttributes),
 		{ cols: true, inputmode: true, maxlength: true, placeholder: true,
 			readonly: true, required: true, rows: true, wrap: true })),
-	dbAttributes: d(extend(copy(DOMInput.prototype.dbAttributes),
+	dbAttributes: d(assign(copy(DOMInput.prototype.dbAttributes),
 		{ max: 'maxlength', inputPlaceholder: 'placeholder', required: true })),
 	_render: d(function () {
 		this.control = this.dom = this.document.createElement('textarea');

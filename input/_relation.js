@@ -1,7 +1,7 @@
 'use strict';
 
 var copy           = require('es5-ext/object/copy')
-  , extend         = require('es5-ext/object/extend')
+  , assign         = require('es5-ext/object/assign')
   , filter         = require('es5-ext/object/filter')
   , forEach        = require('es5-ext/object/for-each')
   , d              = require('d/d')
@@ -102,7 +102,7 @@ module.exports = Object.defineProperties(relation, {
 			return !htmlAttributes[name];
 		});
 		if (options.input) {
-			extend(inputOptions, options.input);
+			assign(inputOptions, options.input);
 			delete inputOptions.input;
 		}
 		input = this.toDOMInput(document, inputOptions);

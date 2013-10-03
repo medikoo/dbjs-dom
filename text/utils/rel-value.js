@@ -1,6 +1,6 @@
 'use strict';
 
-var extend  = require('es5-ext/object/extend')
+var assign  = require('es5-ext/object/assign')
   , d       = require('d/d')
   , memoize = require('memoizee/lib/regular')
   , remove  = require('dom-ext/element/#/remove')
@@ -21,7 +21,7 @@ DOM = module.exports = function (document, rel, cb) {
 	rel.on('change', this.update.bind(this));
 };
 
-Object.defineProperties(DOM.prototype, extend({
+Object.defineProperties(DOM.prototype, assign({
 	update: d(function () {
 		var parent, value = this.rel.value
 		  , dom = (value != null) ? this.render(value) : this.location;

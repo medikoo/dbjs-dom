@@ -2,7 +2,7 @@
 
 var clear          = require('es5-ext/array/#/clear')
   , contains       = require('es5-ext/array/#/contains')
-  , extend         = require('es5-ext/object/extend')
+  , assign         = require('es5-ext/object/assign-multiple')
   , d              = require('d/d')
   , autoBind       = require('d/auto-bind')
   , memoize        = require('memoizee/lib/primitive')
@@ -20,7 +20,7 @@ module.exports = DOMMultiple = function (document, ns/*, options*/) {
 	this.reload();
 };
 
-DOMMultiple.prototype = Object.create(DOMInput.prototype, extend({
+DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 	constructor: d(DOMMultiple),
 	onChange: d(function () {
 		var value, changed, valid, emitChanged, emitValid;

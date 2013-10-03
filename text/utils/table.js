@@ -4,7 +4,7 @@ var CustomError    = require('es5-ext/error/custom')
   , isFunction     = require('es5-ext/function/is-function')
   , invoke         = require('es5-ext/function/invoke')
   , noop           = require('es5-ext/function/noop')
-  , extend         = require('es5-ext/object/extend')
+  , assign         = require('es5-ext/object/assign-multiple')
   , oForEach       = require('es5-ext/object/for-each')
   , callable       = require('es5-ext/object/valid-callable')
   , d              = require('d/d')
@@ -118,7 +118,7 @@ module.exports = Table = function (document, set/*, options*/) {
 	this.reset();
 };
 
-ee(Object.defineProperties(Table.prototype, extend({
+ee(Object.defineProperties(Table.prototype, assign({
 	reverse: d(false),
 	render: d(function (options) {
 		var el = makeElement.bind(this.document);

@@ -1,7 +1,7 @@
 'use strict';
 
 var CustomError    = require('es5-ext/error/custom')
-  , extend         = require('es5-ext/object/extend')
+  , assign         = require('es5-ext/object/assign')
   , forEach        = require('es5-ext/object/for-each')
   , startsWith     = require('es5-ext/string/#/starts-with')
   , d              = require('d/d')
@@ -91,7 +91,7 @@ module.exports = Fieldset = function (document, list/*, options*/) {
 };
 Object.defineProperty(Fieldset, 'renderRow', d(renderRow));
 
-Object.defineProperties(Fieldset.prototype, extend({
+Object.defineProperties(Fieldset.prototype, assign({
 	render: d(function () {
 		var el = makeElement.bind(this.document);
 		this.dom = el('fieldset', el('table',

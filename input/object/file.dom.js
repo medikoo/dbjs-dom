@@ -4,7 +4,7 @@ var aFrom        = require('es5-ext/array/from')
   , compact      = require('es5-ext/array/#/compact')
   , isCopy       = require('es5-ext/array/#/is-copy')
   , copy         = require('es5-ext/object/copy')
-  , extend       = require('es5-ext/object/extend')
+  , assign       = require('es5-ext/object/assign')
   , isObject     = require('es5-ext/object/is-object')
   , callable     = require('es5-ext/object/valid-callable')
   , d            = require('d/d')
@@ -62,13 +62,13 @@ Input = function (document, ns/*, options*/) {
 	this.control.setAttribute('accept', ns.accept.values.join(','));
 };
 
-Input.prototype = Object.create(DOMInput.prototype, extend({
+Input.prototype = Object.create(DOMInput.prototype, assign({
 	constructor: d(Input),
 	multiple: d(false),
 	_value: d(null),
-	controlAttributes: d(extend(copy(DOMInput.prototype.controlAttributes),
+	controlAttributes: d(assign(copy(DOMInput.prototype.controlAttributes),
 		{ required: true })),
-	dbAttributes: d(extend(copy(DOMInput.prototype.dbAttributes),
+	dbAttributes: d(assign(copy(DOMInput.prototype.dbAttributes),
 		{ required: true })),
 	_render: d(function (options) {
 		this.dom = (options.render || render).call(this, options);

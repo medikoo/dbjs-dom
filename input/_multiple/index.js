@@ -5,12 +5,12 @@ var contains      = require('es5-ext/array/#/contains')
   , remove        = require('es5-ext/array/#/remove')
   , k             = require('es5-ext/function/k')
   , copy          = require('es5-ext/object/copy')
-  , extend        = require('es5-ext/object/extend')
+  , assign        = require('es5-ext/object/assign')
   , d             = require('d/d')
   , autoBind      = require('d/auto-bind')
   , makeElement   = require('dom-ext/document/#/make-element')
   , castAttribute = require('dom-ext/element/#/cast-attribute')
-  , extendEl      = require('dom-ext/element/#/extend')
+  , extend        = require('dom-ext/element/#/extend')
   , removeEl      = require('dom-ext/element/#/remove')
   , setPresenceEl = require('dom-ext/element/#/set-presence')
   , isAnchor     = require('dom-ext/html-anchor-element/is-html-anchor-element')
@@ -48,7 +48,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	document.addEventListener('reset', this._onReset, false);
 };
 
-Input.prototype = Object.create(DOMInput.prototype, extend({
+Input.prototype = Object.create(DOMInput.prototype, assign({
 	_value: d(null),
 	controlAttributes: d({}),
 	minInputsCount: d(0),
@@ -157,7 +157,7 @@ Input.prototype = Object.create(DOMInput.prototype, extend({
 			removeButton = el('a', { onclick: this.safeRemoveItem.bind(this, input) },
 				removeButton);
 		}
-		extendEl.call(dom, input, removeButton);
+		extend.call(dom, input, removeButton);
 		this.removeButtons.push(removeButton);
 		if (this.options.control.disabled) {
 			setPresenceEl.call(removeButton, false);
