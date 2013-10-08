@@ -1,6 +1,6 @@
 'use strict';
 
-var CustomError = require('es5-ext/error/custom')
+var customError = require('es5-ext/error/custom')
   , forEach     = require('es5-ext/object/for-each')
   , getObject   = require('dbjs/lib/objects')._get
 
@@ -11,7 +11,7 @@ getName = function (rel, name, ns) {
 	if (field) field = field.__value;
 
 	if (field == null) {
-		throw new CustomError("Missing field name setting", 'NO_FIELD_SETTING');
+		throw customError("Missing field name setting", 'NO_FIELD_SETTING');
 	}
 	return field;
 };
@@ -19,7 +19,7 @@ getName = function (rel, name, ns) {
 getRel = function (obj, name, ns) {
 	var rel = obj.get(name);
 	if ((rel.ns !== ns) && !ns.isPrototypeOf(rel.ns)) {
-		throw new CustomError("Namespace mismatch", 'WRONG_NAMESPACE');
+		throw customError("Namespace mismatch", 'WRONG_NAMESPACE');
 	}
 	return rel;
 };

@@ -1,6 +1,6 @@
 'use strict';
 
-var CustomError    = require('es5-ext/error/custom')
+var customError    = require('es5-ext/error/custom')
   , assign         = require('es5-ext/object/assign')
   , forEach        = require('es5-ext/object/for-each')
   , startsWith     = require('es5-ext/string/#/starts-with')
@@ -137,7 +137,7 @@ Object.defineProperty(dbProto, 'toDOMFieldset',
 			}
 			include.forEach(function (rel) {
 				if (!rel || (rel._type_ !== 'relation')) {
-					throw new CustomError("Include item must be a relation",
+					throw customError("Include item must be a relation",
 						'INVALID_RELATION');
 				}
 			});

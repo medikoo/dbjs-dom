@@ -1,6 +1,6 @@
 'use strict';
 
-var CustomError    = require('es5-ext/error/custom')
+var customError    = require('es5-ext/error/custom')
   , isFunction     = require('es5-ext/function/is-function')
   , invoke         = require('es5-ext/function/invoke')
   , noop           = require('es5-ext/function/noop')
@@ -97,7 +97,7 @@ module.exports = Table = function (document, set/*, options*/) {
 				return function (item) { return item.get(name); };
 			});
 	} else {
-		throw new CustomError("Columns layout not provided", 'MISSING_COLUMNS');
+		throw customError("Columns layout not provided", 'MISSING_COLUMNS');
 	}
 
 	// Rows
@@ -155,7 +155,7 @@ ee(Object.defineProperties(Table.prototype, assign({
 		var getList;
 		if (typeof data === 'string') {
 			if (!this.obj.listByProperty) {
-				throw new CustomError("Property sort not supported",
+				throw customError("Property sort not supported",
 					'NO_SET_NAME_SORT_SUPPORT');
 			}
 			getList = function (set) { return set.listByProperty(data); };
@@ -200,10 +200,10 @@ ee(Object.defineProperties(Table.prototype, assign({
 	}),
 	sort: d(function (list, reverse) {
 		if (!isArray(list)) {
-			throw new CustomError("List must be an array", "ARRAY_EXPECTED");
+			throw customError("List must be an array", "ARRAY_EXPECTED");
 		}
 		if (list.obj !== this.set) {
-			throw new CustomError("List doesn't match set", 'LIST_MISMATCH');
+			throw customError("List doesn't match set", 'LIST_MISMATCH');
 		}
 		reverse = Boolean(reverse);
 		if ((this.list === list) && (this.reverse === reverse)) return;

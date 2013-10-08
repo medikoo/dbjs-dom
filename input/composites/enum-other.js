@@ -1,6 +1,6 @@
 'use strict';
 
-var CustomError = require('es5-ext/error/custom')
+var customError = require('es5-ext/error/custom')
   , d           = require('d/d')
   , DOMInput    = require('./_relation')
   , getFields   = require('./_get-fields')
@@ -24,7 +24,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			'enum');
 		otherItem = enumInput.listItems.other.firstChild;
 		if (!otherItem) {
-			throw new CustomError("Other item not found", 'OTHER_NOT_FOUND');
+			throw customError("Other item not found", 'OTHER_NOT_FOUND');
 		}
 		otherItem.appendChild(this.document.createTextNode(': '));
 
