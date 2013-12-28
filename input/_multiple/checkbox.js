@@ -6,15 +6,17 @@ var clear          = require('es5-ext/array/#/clear')
   , d              = require('d/d')
   , autoBind       = require('d/auto-bind')
   , memoize        = require('memoizee/lib/primitive')
+  , memDesc        = require('memoizee/lib/d')(memoize)
   , replaceContent = require('dom-ext/element/#/replace-content')
   , DOMCheckbox    = require('../_controls/checkbox')
   , DOMInput       = require('./')
 
+  , map = Array.prototype.map
   , notSupported = function () { throw new Error('Not supported'); }
 
   , DOMMultiple;
 
-module.exports = DOMMultiple = function (document, ns/*, options*/) {
+module.exports = DOMMultiple = function (document, type/*, options*/) {
 	DOMInput.apply(this, arguments);
 	this.allItems = [];
 	this.reload();
@@ -48,7 +50,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 		if (value == null) value = [];
 		this._value = value;
 		this.allItems.forEach(function (item) {
-			var obj = this.ns.fromInputValue(item.control.value);
+			var obj = this.type.fromInputValue(item.control.value);
 			item.value = contains.call(value, obj) ? obj : null;
 		}, this);
 		this.onChange();
@@ -63,22 +65,24 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 }, autoBind({
 	reload: d(function () {
 		clear.call(this.items);
-		replaceContent.call(this.dom, this.dbList.map(function (item) {
+		replaceContent.call(this.dom, map.call(this.dbList, function (item) {
 			var data = this.renderItem(item.value, item.label);
 			this.items.push(data.input);
 			return data.dom;
 		}, this));
 	})
-}), memoize(function (value, label) {
-	var el = this.make, input, dom;
-	input = new DOMCheckbox(this.document, this.ns, this.options);
-	dom = el('li', el('label', input, ' ', label));
+}), memDesc({
+	renderItem: d(function (value, label) {
+		var el = this.make, input, dom;
+		input = new DOMCheckbox(this.document, this.type, this.options);
+		dom = el('li', el('label', input, ' ', label));
 
-	if (this.name) input.name = this.name;
-	input.parent = this;
-	input.listItem = dom;
-	input.control.setAttribute('value', value);
-	input.on('change', this.onChange);
-	this.allItems.push(input);
-	return { dom: dom, input: input };
-}, { method: 'renderItem', length: 1 })));
+		if (this.name) input.name = this.name;
+		input.parent = this;
+		input.listItem = dom;
+		input.control.setAttribute('value', value);
+		input.on('change', this.onChange);
+		this.allItems.push(input);
+		return { dom: dom, input: input };
+	}, { length: 1 })
+})));

@@ -1,8 +1,9 @@
 'use strict';
 
-var sepItems = require('es5-ext/array/#/sep-items')
-  , d        = require('d/d')
-  , DOMInput = require('./_relation')
+var sepItems        = require('es5-ext/array/#/sep-items')
+  , d               = require('d/d')
+  , DOMInput        = require('./_observable')
+  , resolveTriggers = require('dbjs/_setup/utils/resolve-static-triggers')
 
   , Input;
 
@@ -12,18 +13,19 @@ module.exports = Input = function (document, ns/*, options*/) {
 
 Input.prototype = Object.create(DOMInput.prototype, {
 	_render: d(function (options) {
-		var el = this.make, rel = options.dbOptions;
+		var el = this.make, desc = options.dbOptions
+		  , triggers = resolveTriggers(desc._value_)
+		  , object = this.observable.object;
 
-		this.dom = el('div', sepItems.call(rel.triggers.values.map(function (name) {
-			return this.get(name);
-		}, rel.obj).sort(function (a, b) {
-			return a.__order.__value - b.__order.__value;
-		}).map(function (rel) {
-			var opts = this.getOptions(rel);
-			if ((opts.placeholder == null) && rel.__label.__value) {
-				opts.placeholder = rel._label;
+		this.dom = el('div', sepItems.call(triggers.map(function (name) {
+			return this._get(name);
+		}, object).map(function (observable) {
+			var desc = observable.descriptor, opts = this.getOptions(desc);
+			if ((opts.placeholder == null) && desc.label) {
+				opts.placeholder = desc.label;
 			}
-			return this.addItem(rel.toDOMInput(this.document, opts), rel._id_);
+			return this.addItem(observable.toDOMInput(this.document, opts),
+				observable.dbId);
 		}, this), (options.sep != null) ? options.sep : ' '));
 	})
 });

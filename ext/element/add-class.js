@@ -1,22 +1,23 @@
 'use strict';
 
-var element = require('dom-ext/element/valid-element')
+var isObservableValue = require('observable-value/is-observable-value')
+  , element           = require('dom-ext/element/valid-element')
 
   , prefix = '_dbjs:relation:class.';
 
 module.exports = function (value) {
 	var current;
 	element(this);
-	if (!value || (value._type_ !== 'relation')) {
+	if (!isObservableValue(value)) {
 		this.classList.add(value);
 		return this;
 	}
-	if (this.hasOwnProperty(prefix + value._id_)) return;
-	current = value.objectValue;
+	if (this.hasOwnProperty(prefix + value.dbId)) return;
+	current = value.value;
 	if (current != null) this.classList.add(current);
-	value.on('change', this[prefix + value._id_] = function (nu, old) {
+	value.on('change', this[prefix + value.dbId] = function () {
 		if (current != null) this.classList.remove(current);
-		current = value.objectValue;
+		current = value.value;
 		if (current != null) this.classList.add(current);
 	}.bind(this));
 };

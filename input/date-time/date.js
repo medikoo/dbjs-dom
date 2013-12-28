@@ -1,14 +1,14 @@
 'use strict';
 
-var d        = require('d/d')
-  , DOMInput = require('../date-time').DOMInput
+var memoize  = require('memoizee/lib/regular')
+  , d        = require('d/d')
+  , setup    = require('../')
+  , DOMInput = require('../5.date-time').Input
 
-  , DateType = require('dbjs/lib/objects')._get('Date')
+  , defineProperties = Object.defineProperties
   , Input;
 
-require('../');
-
-Input = function (document, ns/*, options*/) {
+Input = function (document, type/*, options*/) {
 	DOMInput.apply(this, arguments);
 };
 
@@ -20,9 +20,13 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	})
 });
 
-module.exports = Object.defineProperties(DateType, {
-	toInputValue: d(function (value) {
-		return (value == null) ? null : value.toISOString().slice(0, 10);
-	}),
-	DOMInput: d(Input)
+module.exports = exports = memoize(function (db) {
+	defineProperties(setup(db).Date, {
+		toInputValue: d(function (value) {
+			return (value == null) ? null : value.toISOString().slice(0, 10);
+		}),
+		DOMInput: d(Input)
+	});
 });
+
+exports.Input = Input;

@@ -10,20 +10,20 @@ var assign  = require('es5-ext/object/assign')
 
 require('memoizee/lib/ext/method');
 
-DOM = module.exports = function (document, rel, cb) {
+DOM = module.exports = function (document, observable, cb) {
 	var value;
 	this.document = document;
-	this.rel = rel;
+	this.observable = observable;
 	this.cb = cb;
 	this.location = document.createTextNode('');
-	value = rel.value;
+	value = observable.value;
 	this.current = (value != null) ? this.render(value) : this.location;
-	rel.on('change', this.update.bind(this));
+	observable.on('change', this.update.bind(this));
 };
 
 Object.defineProperties(DOM.prototype, assign({
 	update: d(function () {
-		var parent, value = this.rel.value
+		var parent, value = this.observable.value
 		  , dom = (value != null) ? this.render(value) : this.location;
 		if (dom === this.current) return;
 		if (isArray(this.current)) {

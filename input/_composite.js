@@ -8,13 +8,11 @@ var noop        = require('es5-ext/function/noop')
   , some        = require('es5-ext/object/some')
   , d           = require('d/d')
   , makeElement = require('dom-ext/document/#/make-element')
-  , Db          = require('dbjs')
   , DOMInput    = require('./_controls/input')
 
-  , Base = Db.Base
   , Input;
 
-module.exports = Input = function (document, ns/*, options*/) {
+module.exports = Input = function (document, type/*, options*/) {
 	var options = Object(arguments[2]);
 	this.items = {};
 	this.options = Object(options.item);
@@ -22,7 +20,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 		Object(this.options.control));
 	this.customOptions = Object(options.items);
 	this.make = makeElement.bind(document);
-	DOMInput.call(this, document, ns, options);
+	DOMInput.call(this, document, type, options);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
@@ -56,13 +54,13 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	}, noop),
 	value: d.gs(function () { return this.inputValue; }, noop),
 	castControlAttribute: d(noop),
-	getOptions: d(function (rel) {
+	getOptions: d(function (desc) {
 		var options = copy(this.options);
-		if (this.customOptions[rel.name]) {
-			assign(options, this.customOptions[rel.name]);
+		if (this.customOptions[desc.key]) {
+			assign(options, this.customOptions[desc.key]);
 		}
-		if (this.customOptions[rel._id_]) {
-			assign(options, this.customOptions[rel._id_]);
+		if (this.customOptions[desc.__id__]) {
+			assign(options, this.customOptions[desc.__id__]);
 		}
 		return options;
 	}),
@@ -73,5 +71,3 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		return input;
 	})
 });
-
-Object.defineProperty(Base, 'DOMInputComposite', d(Input));

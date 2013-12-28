@@ -5,8 +5,6 @@ var copy        = require('es5-ext/object/copy')
   , d           = require('d/d')
   , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
   , extend      = require('dom-ext/element/#/extend')
-  , Db          = require('dbjs')
-  , relation    = require('dbjs/lib/_relation')
   , DOMInput    = require('./input')
   , eventOpts   = require('../_event-options')
 
@@ -14,16 +12,16 @@ var copy        = require('es5-ext/object/copy')
 	Object.getOwnPropertyDescriptor(DOMInput.prototype, 'inputValue').get
   , Input;
 
-module.exports = Input = function (document, ns/*, options*/) {
+module.exports = Input = function (document, type/*, options*/) {
 	var options = Object(arguments[2]), chooseLabel;
 	this.items = {};
-	DOMInput.call(this, document, ns, options);
+	DOMInput.call(this, document, type, options);
 	if (options.chooseLabel != null) {
 		chooseLabel = options.chooseLabel;
 	} else if (options.dbOptions.chooseLabel != null) {
 		chooseLabel = options.dbOptions.chooseLabel;
 	} else {
-		chooseLabel = ns.chooseLabel && ns._chooseLabel;
+		chooseLabel = type.chooseLabel;
 	}
 	if (chooseLabel) {
 		this.chooseOption = this.items[''] = this.document.createElement('option');
@@ -69,6 +67,3 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		}
 	})
 });
-
-relation.get('chooseLabel')._ns.$$setValue(Db.String);
-Object.defineProperty(Db.Base, 'DOMSelect', d(Input));

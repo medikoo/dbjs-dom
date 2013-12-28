@@ -1,29 +1,31 @@
 'use strict';
 
 var d       = require('d/d')
-  , Db      = require('dbjs')
-  , DOMAttr = require('./_attr')
-  , DOMText = require('./_text')
+  , base    = require('./1.base')
 
+  , defineProperties = Object.defineProperties
+  , DOMAttr = base.Attr, DOMText = base.Text
   , getValue = Object.getOwnPropertyDescriptor(DOMText.prototype, 'value').get
   , getAttrValue =
 	Object.getOwnPropertyDescriptor(DOMAttr.prototype, 'value').get
-  , Base = Db.Base
   , Text, Attr, setValue;
 
-Text = function (document, ns, options) {
+Text = function (document, type, options) {
 	this.document = document;
-	this.ns = ns;
+	this.type = type;
 	this.property = options && options.property;
-	this.box = new DOMText(document, Base);
+	this.box = new DOMText(document, type.database.Base);
 	this.dom = this.box.dom;
 };
 
 Text.prototype = Object.create(DOMText.prototype, {
 	constructor: d(Text),
 	value: d.gs(getValue, setValue = function (value) {
+		var observable;
 		if (value && this.property) {
-			value.get(this.property).assignDOMText(this.box);
+			observable = value._get(this.property);
+			if (observable.assignDOMText) observable.assignDOMText(this.box);
+			else this.box.value = observable;
 		} else {
 			this.box.dismiss();
 			this.box.value = value;
@@ -31,11 +33,11 @@ Text.prototype = Object.create(DOMText.prototype, {
 	})
 });
 
-Attr = function (document, name, ns, options) {
+Attr = function (document, name, type, options) {
 	this.document = document;
-	this.ns = ns;
+	this.type = type;
 	this.property = options && options.property;
-	this.box = new DOMAttr(document, name, Base);
+	this.box = new DOMAttr(document, name, type.database.Base);
 	this.dom = this.box.dom;
 };
 
@@ -44,7 +46,12 @@ Attr.prototype = Object.create(DOMAttr.prototype, {
 	value: d.gs(getAttrValue, setValue)
 });
 
-module.exports = Object.defineProperties(Db.Object, {
-	DOMText: d(Text),
-	DOMAttr: d(Attr)
-});
+module.exports = exports = function (db) {
+	return defineProperties(db.Object, {
+		DOMText: d(Text),
+		DOMAttr: d(Attr)
+	});
+};
+
+exports.Attr = Attr;
+exports.Text = Text;

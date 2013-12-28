@@ -2,26 +2,28 @@
 
 var customError = require('es5-ext/error/custom')
   , d           = require('d/d')
-  , DOMInput    = require('./_relation')
+  , DOMInput    = require('./_observable')
   , getFields   = require('./_get-fields')
 
   , Input;
 
-module.exports = Input = function (document, ns/*, options*/) {
+module.exports = Input = function (document, type/*, options*/) {
 	DOMInput.apply(this, arguments);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
 	_render: d(function (options) {
-		var rel = options.dbOptions
-		  , data = getFields(rel, { enumField: 'Enum', otherField: 'StringLine' })
+		var desc = options.dbOptions
+		  , data = getFields(this.observable.object, desc,
+				{ enumField: desc.database.StringLine,
+					otherField: desc.database.StringLine })
 		  , inputOpts, enumInput, other, otherItem;
 
-		inputOpts = this.getOptions(data.rels[data.names.enumField]);
+		inputOpts = this.getOptions(data.observables[data.names.enumField]);
 		inputOpts.type = 'radio';
 		this.addItem(enumInput =
-			data.rels[data.names.enumField].toDOMInput(this.document, inputOpts),
-			'enum');
+			data.observables[data.names.enumField]
+			.toDOMInput(this.document, inputOpts), 'enum');
 		otherItem = enumInput.listItems.other.firstChild;
 		if (!otherItem) {
 			throw customError("Other item not found", 'OTHER_NOT_FOUND');
@@ -29,8 +31,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		otherItem.appendChild(this.document.createTextNode(': '));
 
 		this.addItem(other =
-			data.rels[data.names.otherField].toDOMInput(this.document,
-				this.getOptions(data.rels[data.names.otherField])), 'other');
+			data.observables[data.names.otherField].toDOMInput(this.document,
+				this.getOptions(data.observables[data.names.otherField])), 'other');
 		otherItem.appendChild(other.dom);
 
 		enumInput.on('change', function () {

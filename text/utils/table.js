@@ -1,34 +1,41 @@
 'use strict';
 
-var customError    = require('es5-ext/error/custom')
+var aFrom          = require('es5-ext/array/from')
+  , customError    = require('es5-ext/error/custom')
   , isFunction     = require('es5-ext/function/is-function')
   , invoke         = require('es5-ext/function/invoke')
   , noop           = require('es5-ext/function/noop')
   , assign         = require('es5-ext/object/assign-multiple')
   , oForEach       = require('es5-ext/object/for-each')
   , callable       = require('es5-ext/object/valid-callable')
+  , validSet       = require('es6-set/valid-set')
   , d              = require('d/d')
   , autoBind       = require('d/auto-bind')
   , memoize        = require('memoizee/lib/regular')
+  , memPrimitive   = require('memoizee/lib/primitive')
   , ee             = require('event-emitter/lib/core')
   , isNode         = require('dom-ext/node/is-node')
   , validDocument  = require('dom-ext/document/valid-document')
   , makeElement    = require('dom-ext/document/#/make-element')
   , replaceContent = require('dom-ext/element/#/replace-content')
-  , validSet       = require('set-collection/lib/valid-set')
   , stringify      = require('querystring-x/encode')
-  , Db             = require('dbjs')
+  , validDb        = require('dbjs/valid-dbjs')
 
   , isArray = Array.isArray, map = Array.prototype.map
   , forEach = Array.prototype.forEach
   , defineProperty = Object.defineProperty
-  , Base = Db.Base
   , cellName = { td: true, th: true }
-  , Table;
+  , sortByProperty, Table;
 
 require('memoizee/lib/ext/method');
 
-module.exports = Table = function (document, set/*, options*/) {
+sortByProperty = memPrimitive(function (name) {
+	return function (a, b) {
+		return String(a[name]).localeCompare(String(b[name]));
+	};
+});
+
+Table = function (document, set/*, options*/) {
 	var options = Object(arguments[2]), getList, classes;
 	this.document = validDocument(document);
 	this.el = makeElement.bind(this.document);
@@ -70,32 +77,13 @@ module.exports = Table = function (document, set/*, options*/) {
 		// Cells
 		this.cellRenderers = map.call(options.columns, function (options, index) {
 			var name;
-			if ((set._type_ === 'namespace') && (typeof options === 'string')) {
-				name = options;
-				if (this.head) {
-					this.head.appendChild(
-						this.headCellRender(set.prototype.get(name)._label)
-					);
-				}
-				return function (item) { return item.get(name); };
-			}
 			if (options.render != null) return callable(options.render);
 			if (options.name != null) {
 				name = String(options.name);
-				return function (item) { return item.get(name); };
+				return function (item) { return item._get(name); };
 			}
 			return noop;
 		}, this);
-	} else if (set._type_ === 'namespace') {
-		this.cellRenderers = set.prototype.getPropertyNames(options.tag)
-			.listByOrder().map(function (name) {
-				if (this.head) {
-					this.head.appendChild(
-						this.headCellRenderer(this.get(name)._label.toDOM(this.document))
-					);
-				}
-				return function (item) { return item.get(name); };
-			});
 	} else {
 		throw customError("Columns layout not provided", 'MISSING_COLUMNS');
 	}
@@ -105,9 +93,7 @@ module.exports = Table = function (document, set/*, options*/) {
 		if (options.sort) {
 			this.setSortMethod('', options.sort, options.reverse);
 		} else {
-			if (set._type_ === 'namespace') getList = invoke('listByCreatedAt');
-			else if (set.listByOrder) getList = invoke('listByOrder');
-			else getList = invoke('list');
+			getList = invoke('toArray');
 			this.sortMethods[''] = {
 				getList: getList,
 				reverse: false
@@ -154,16 +140,14 @@ ee(Object.defineProperties(Table.prototype, assign({
 	setSortMethod: d(function (name, data, reverse) {
 		var getList;
 		if (typeof data === 'string') {
-			if (!this.obj.listByProperty) {
-				throw customError("Property sort not supported",
-					'NO_SET_NAME_SORT_SUPPORT');
-			}
-			getList = function (set) { return set.listByProperty(data); };
+			getList = memoize(function (set) {
+				return set.toArray(sortByProperty(data));
+			});
 		} else if (isFunction(data)) {
 			if (data.length === 1) {
 				getList = memoize(data);
 			} else {
-				getList = memoize(function (set) { return set.list(data); });
+				getList = memoize(function (set) { return set.toArray(data); });
 			}
 		}
 		return (this.sortMethods[name] = {
@@ -182,7 +166,7 @@ ee(Object.defineProperties(Table.prototype, assign({
 			if (data[name] == null) return;
 			filtered = fn(data[name]);
 			if (!filtered) return;
-			if (set) set = set.intersection(filtered);
+			if (set) set = set.and(filtered);
 			else set = filtered;
 		});
 		if (set) this.set = set;
@@ -201,9 +185,6 @@ ee(Object.defineProperties(Table.prototype, assign({
 	sort: d(function (list, reverse) {
 		if (!isArray(list)) {
 			throw customError("List must be an array", "ARRAY_EXPECTED");
-		}
-		if (list.obj !== this.set) {
-			throw customError("List doesn't match set", 'LIST_MISMATCH');
 		}
 		reverse = Boolean(reverse);
 		if ((this.list === list) && (this.reverse === reverse)) return;
@@ -232,7 +213,7 @@ ee(Object.defineProperties(Table.prototype, assign({
 		var list;
 		if (this.list.length) {
 			list = this.list.map(this.rowRender);
-			if (this.reverse) list.reverse();
+			if (this.reverse) list = aFrom(list).reverse();
 		} else {
 			list = [this.emptyRow];
 		}
@@ -240,8 +221,11 @@ ee(Object.defineProperties(Table.prototype, assign({
 	})
 }))));
 
-Object.defineProperty(Base, 'DOMTable', d(Table));
+module.exports = exports = memoize(function (db) {
+	defineProperty(validDb(db).Base, 'DOMTable', d(Table));
+	defineProperty(db.Object, 'toDOMTable', d(function (document/*, options*/) {
+		return new this.DOMTable(document, this.instances, arguments[1]);
+	}));
+});
 
-Object.defineProperty(Db, 'toDOMTable', d(function (document/*, options*/) {
-	return new this.DOMTable(document, this, arguments[1]);
-}));
+exports.Table = Table;

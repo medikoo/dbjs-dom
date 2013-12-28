@@ -4,7 +4,6 @@ var copy        = require('es5-ext/object/copy')
   , assign      = require('es5-ext/object/assign')
   , d           = require('d/d')
   , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
-  , Db          = require('dbjs')
   , DOMInput    = require('./input')
   , eventOpts   = require('../_event-options')
 
@@ -12,7 +11,7 @@ var copy        = require('es5-ext/object/copy')
 	Object.getOwnPropertyDescriptor(DOMInput.prototype, 'inputValue').get
   , Input;
 
-module.exports = Input = function (document, ns/*, options*/) {
+module.exports = Input = function (document, type/*, options*/) {
 	DOMInput.apply(this, arguments);
 	this.dom.addEventListener('input', this.onChange, false);
 };
@@ -41,5 +40,3 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		}
 	})
 });
-
-Object.defineProperty(Db.Base, 'DOMTextarea', d(Input));

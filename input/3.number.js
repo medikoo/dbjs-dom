@@ -3,14 +3,13 @@
 var copy     = require('es5-ext/object/copy')
   , assign   = require('es5-ext/object/assign')
   , d        = require('d/d')
-  , Db       = require('dbjs')
   , DOMInput = require('./_controls/input')
 
+  , defineProperties = Object.defineProperties
   , castControlAttribute = DOMInput.prototype.castControlAttribute
-  , NumberType = Db.Number
   , Input;
 
-Input = function (document, ns/*, options*/) {
+Input = function (document, type/*, options*/) {
 	DOMInput.apply(this, arguments);
 	this.control.addEventListener('input', this.onChange, false);
 };
@@ -40,11 +39,15 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	})
 });
 
-module.exports = Object.defineProperties(NumberType, {
-	fromInputValue: d(function (value) {
-		if (value == null) return null;
-		value = value.trim();
-		return (!value || isNaN(value)) ? null : Number(value);
-	}),
-	DOMInput: d(Input)
-});
+module.exports = exports = function (db) {
+	defineProperties(db.Number, {
+		fromInputValue: d(function (value) {
+			if (value == null) return null;
+			value = value.trim();
+			return (!value || isNaN(value)) ? null : Number(value);
+		}),
+		DOMInput: d(Input)
+	});
+};
+
+exports.Input = Input;

@@ -12,7 +12,6 @@ var copy        = require('es5-ext/object/copy')
   , mergeClass  = require('dom-ext/html-element/#/merge-class')
   , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
   , extend      = require('dom-ext/element/#/extend')
-  , Db          = require('dbjs')
   , DOMInput    = require('./input')
   , htmlAttrs   = require('../_html-attributes')
   , eventOpts   = require('../_event-options')
@@ -22,7 +21,7 @@ var copy        = require('es5-ext/object/copy')
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , Input;
 
-module.exports = Input = function (document, ns/*, options*/) {
+module.exports = Input = function (document, type/*, options*/) {
 	this.controls = this.items = {};
 	this.listItems = {};
 	this.attributes = {};
@@ -117,7 +116,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		}
 	}),
 	value: d.gs(getValue, function (value) {
-		this.inputValue = this.ns.toInputValue(value);
+		this.inputValue = this.type.toInputValue(value);
 	})
 }, autoBind({
 	_onReset: d(function (e) {
@@ -128,5 +127,3 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		this.inputValue = this._value;
 	})
 })));
-
-Object.defineProperty(Db.Base, 'DOMRadio', d(Input));

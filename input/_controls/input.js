@@ -11,16 +11,15 @@ var assign       = require('es5-ext/object/assign')
   , dispatchEvt  = require('dom-ext/html-element/#/dispatch-event-2')
   , mergeClass   = require('dom-ext/html-element/#/merge-class')
   , nextTickOnce = require('next-tick/lib/once')
-  , Db           = require('dbjs')
   , htmlAttrs    = require('../_html-attributes')
   , eventOpts    = require('../_event-options')
 
   , Input;
 
-module.exports = Input = function (document, ns/*, options*/) {
+module.exports = Input = function (document, type/*, options*/) {
 	var options = Object(arguments[2]), onChange = this.onChange.bind(this);
 	this.document = document;
-	this.ns = ns;
+	this.type = type;
 	this.onChange = nextTickOnce(onChange);
 	this._render(options);
 	this.dom._dbjsInput = this;
@@ -36,7 +35,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 			value = options.dbOptions[dbName];
 		} else {
 			if (dbName === 'required') return;
-			if (ns[dbName] != null) value = ns[dbName];
+			if (type[dbName] != null) value = type[dbName];
 			else return;
 		}
 		this.castControlAttribute(name, value);
@@ -116,9 +115,9 @@ ee(Object.defineProperties(Input.prototype, assign({
 		}
 	}),
 	value: d.gs(function () {
-		return this.ns.fromInputValue(this.inputValue);
+		return this.type.fromInputValue(this.inputValue);
 	}, function (value) {
-		value = this.ns.toInputValue(value);
+		value = this.type.toInputValue(value);
 		if (value == null) value = '';
 		this.inputValue = value;
 	}),
@@ -164,5 +163,3 @@ ee(Object.defineProperties(Input.prototype, assign({
 		this.inputValue = this._value;
 	})
 }))));
-
-Object.defineProperty(Db.Base, 'DOMInput', d(Input));

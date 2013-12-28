@@ -7,26 +7,26 @@ var aFrom        = require('es5-ext/array/from')
   , assign       = require('es5-ext/object/assign')
   , isObject     = require('es5-ext/object/is-object')
   , callable     = require('es5-ext/object/valid-callable')
+  , toArray      = require('es6-iterator/to-array')
   , d            = require('d/d')
-  , memoize      = require('memoizee/lib/primitive')
+  , memoize      = require('memoizee/lib/regular')
+  , memPrimitive = require('memoizee/lib/primitive')
   , makeEl       = require('dom-ext/document/#/make-element')
   , append       = require('dom-ext/element/#/append')
   , clear        = require('dom-ext/element/#/clear')
   , remove       = require('dom-ext/element/#/remove')
   , replaceCont  = require('dom-ext/element/#/replace-content')
   , dispatchEvnt = require('dom-ext/html-element/#/dispatch-event-2')
-  , ObjectType   = require('dbjs').Object
-  , serialize    = require('dbjs/lib/utils/serialize')
   , DOMInput     = require('../_controls/input')
   , eventOpts    = require('../_event-options')
+  , setup        = require('../')
 
   , isArray = Array.isArray, map = Array.prototype.map
   , defineProperty = Object.defineProperty
+  , defineProperties = Object.defineProperties
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
-  , File = require('dbjs/lib/objects')._get('File')
   , Input, render, renderItem;
 
-require('../');
 require('memoizee/lib/ext/method');
 
 render = function (options) {
@@ -49,7 +49,7 @@ renderItem = function (file) {
 	return data;
 };
 
-Input = function (document, ns/*, options*/) {
+Input = function (document, type/*, options*/) {
 	var options = Object(arguments[2]);
 	this.make = makeEl.bind(document);
 	this.controls = [];
@@ -57,9 +57,9 @@ Input = function (document, ns/*, options*/) {
 	((options.render == null) || callable(options.render));
 	defineProperty(this, 'renderItem', d((options.renderItem == null) ?
 			renderItem : callable(options.renderItem)));
-	DOMInput.call(this, document, ns, options);
+	DOMInput.call(this, document, type, options);
 	if (this.multiple) this.control.setAttribute('multiple', 'multiple');
-	this.control.setAttribute('accept', ns.accept.values.join(','));
+	this.control.setAttribute('accept', toArray(type.accept).join(','));
 };
 
 Input.prototype = Object.create(DOMInput.prototype, assign({
@@ -129,24 +129,17 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	value: d.gs(function () {
 		var value = this.inputValue;
 		if (value == null) return null;
-		if (this.multiple) return value.map(this.ns.toInputValue, this.ns);
-		return this.ns.toInputValue(value);
+		if (this.multiple) return value.map(this.type.toInputValue, this.type);
+		return this.type.toInputValue(value);
 	}, function (value) {
 		if (value == null) {
 			value = null;
 		} else if (this.multiple) {
-			if (!value._isSet_) throw new TypeError("Expected set value");
-			if (value._type_ === 'relation') {
-				value = value.values.map(serialize).sort(function (a, b) {
-					return value[a].order - value[b].order;
-				}).map(function (key) { return value[key]._subject_; });
-			} else {
-				value = value.values;
-			}
+			value = toArray(value);
 			if (!value.length) value = null;
-			else value = compact.call(value.map(this.ns.toInputValue, this.ns));
+			else value = compact.call(value.map(this.type.toInputValue, this.type));
 		} else {
-			value = this.ns.toInputValue(value);
+			value = this.type.toInputValue(value);
 		}
 
 		this.inputValue = value;
@@ -176,38 +169,40 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		if (!this.multiple) this.dom.classList.remove('filled');
 		dispatchEvnt.call(this.control, 'change', eventOpts);
 	})
-}, memoize(function (file) {
+}, memPrimitive(function (file) {
 	var data;
-	file = File[file];
+	file = this.type.getById(file);
 	data = this.renderItem(file);
 	this.controls.push(data.control);
 	return data.dom;
 }, { method: '_renderItem' })));
 
-module.exports = Object.defineProperties(File, {
-	fromInputValue: d(function (value) {
-		if (value == null) return null;
-		if (isArray(value) && (value.length === 2)) {
-			if (typeof value[0] === 'string') {
-				if (isObject(value[1])) return value[1];
-			} else if (typeof value[1] === 'string') {
-				if (isObject(value[0])) return value[0];
+module.exports = memoize(function (db) {
+	defineProperties(setup(db).File, {
+		fromInputValue: d(function (value) {
+			if (value == null) return null;
+			if (isArray(value) && (value.length === 2)) {
+				if (typeof value[0] === 'string') {
+					if (isObject(value[1])) return value[1];
+				} else if (typeof value[1] === 'string') {
+					if (isObject(value[0])) return value[0];
+				}
+				return value;
 			}
-			return value;
-		}
-		if (isObject(value)) return value;
-		value = value.trim();
-		if (!value) return null;
-		if (!this.propertyIsEnumerable(value)) return null;
-		if (this[value]._id_ !== value) return null;
-		return this[value];
-	}),
-	DOMInput: d(Input),
-	toDOMInput: d(function (document/*, options*/) {
-		var options = Object(arguments[1]);
-		if (options.multiple || (options.type !== 'checkbox')) {
-			return new this.DOMInput(document, this, options);
-		}
-		return ObjectType.toDOMInput(document, options);
-	})
+			if (isObject(value)) return value;
+			value = value.trim();
+			if (!value) return null;
+			if (!this.propertyIsEnumerable(value)) return null;
+			if (this[value].__id__ !== value) return null;
+			return this[value];
+		}),
+		DOMInput: d(Input),
+		toDOMInput: d(function (document/*, options*/) {
+			var options = Object(arguments[1]);
+			if (options.multiple || (options.type !== 'checkbox')) {
+				return new this.DOMInput(document, this, options);
+			}
+			return db.Object.toDOMInput(document, options);
+		})
+	});
 });

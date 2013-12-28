@@ -1,11 +1,23 @@
 'use strict';
 
-module.exports = require('../text');
+var memoize      = require('memoizee/lib/regular')
+  , text         = require('../text')
+  , baseType     = require('./1.base')
+  , booleanType  = require('./2.boolean')
+  , numberType   = require('./3.number')
+  , stringType   = require('./4.string')
+  , dateTimeType = require('./5.date-time')
+  , objectType   = require('./6.object');
 
-require('./_relation');
-require('./base');
-require('./boolean');
-require('./date-time');
-require('./number');
-require('./object');
-require('./string');
+require('./observable');
+
+module.exports = memoize(function (db) {
+	text(db);
+	baseType(db);
+	booleanType(db);
+	numberType(db);
+	stringType(db);
+	dateTimeType(db);
+	objectType(db);
+	return db;
+});

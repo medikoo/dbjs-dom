@@ -4,14 +4,13 @@ var copy        = require('es5-ext/object/copy')
   , assign      = require('es5-ext/object/assign')
   , d           = require('d/d')
   , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
-  , Db          = require('dbjs')
   , DOMInput    = require('./input')
   , eventOpts   = require('../_event-options')
 
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
   , Input;
 
-module.exports = Input = function (document, ns/*, options*/) {
+module.exports = Input = function (document, type/*, options*/) {
 	DOMInput.apply(this, arguments);
 };
 
@@ -56,8 +55,6 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		}
 	}),
 	value: d.gs(getValue, function (value) {
-		this.inputValue = this.ns.toInputValue(value);
+		this.inputValue = this.type.toInputValue(value);
 	})
 });
-
-Object.defineProperty(Db.Base, 'DOMCheckbox', d(Input));

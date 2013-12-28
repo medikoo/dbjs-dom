@@ -14,14 +14,12 @@ var contains      = require('es5-ext/array/#/contains')
   , removeEl      = require('dom-ext/element/#/remove')
   , setPresenceEl = require('dom-ext/element/#/set-presence')
   , isAnchor     = require('dom-ext/html-anchor-element/is-html-anchor-element')
-  , Base          = require('dbjs').Base
-  , serialize     = require('dbjs/lib/utils/serialize')
   , DOMInput      = require('../_controls/input')
 
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , Input;
 
-module.exports = Input = function (document, ns/*, options*/) {
+module.exports = Input = function (document, type/*, options*/) {
 	var options = copy(Object(arguments[2]));
 	this.items = [];
 	this.removeButtons = [];
@@ -44,7 +42,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 	this.options = Object(options.item);
 	this.options.dbOptions = options.dbOptions;
 	this.options.control = Object(this.options.control);
-	DOMInput.call(this, document, ns, options);
+	DOMInput.call(this, document, type, options);
 	document.addEventListener('reset', this._onReset, false);
 };
 
@@ -81,17 +79,17 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		return uniq.call(this.items.map(function (item) { return item.value; })
 			.filter(function (value) { return value != null; }));
 	}, function (value) {
-		var length, item;
+		var length, item, index = 0;
 		if (value == null) value = [];
 		this._value = value;
-		value.forEach(function (value, index) {
-			var item = this.items[index];
+		value.forEach(function (value) {
+			var item = this.items[index++];
 			if (!item) item = this.addItem();
 			item.index = index;
 			item.value = value;
 		}, this);
 
-		length = value.length;
+		length = value.size;
 		while (this.items[length]) this.removeItem(this.items[length]);
 		while (length < this.minInputsCount) {
 			item = this.addItem();
@@ -99,13 +97,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		}
 	}),
 	value: d.gs(function () { return this.inputValue; }, function (value) {
-		if (value._type_ === 'relation') {
-			this.inputValue = value.values.map(serialize).sort(function (a, b) {
-				return value[a].order - value[b].order;
-			}).map(function (key) { return value[key]._subject_; });
-		} else {
-			this.inputValue = value.values;
-		}
+		this.inputValue = value;
 	}),
 	castControlAttribute: d(function (name, value) {
 		this.options.control[name] = value;
@@ -147,7 +139,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	}),
 	renderItem: d(function () {
 		var el = this.make, dom, input, removeButton;
-		input = this.ns.toDOMInput(this.document, this.options);
+		input = this.type.toDOMInput(this.document, this.options);
 		dom = el('li');
 		removeButton = this.deleteLabel();
 		if (isAnchor(removeButton)) {
@@ -159,9 +151,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		}
 		extend.call(dom, input, removeButton);
 		this.removeButtons.push(removeButton);
-		if (this.options.control.disabled) {
-			setPresenceEl.call(removeButton, false);
-		}
+		if (this.options.control.disabled) setPresenceEl.call(removeButton, false);
 		return { dom: dom, input: input };
 	})
 }, autoBind({
@@ -186,5 +176,3 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		this.inputValue = this._value;
 	})
 })));
-
-Object.defineProperty(Base, 'DOMMultipleInput', d(Input));

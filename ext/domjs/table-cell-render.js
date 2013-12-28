@@ -1,7 +1,7 @@
 'use strict';
 
 var d     = require('d/d')
-  , Table = require('../../text/utils/table')
+  , Table = require('../../text/utils/table').Table
 
   , cellRender = Table.prototype.cellRender
   , customRender;

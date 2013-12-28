@@ -1,24 +1,22 @@
 'use strict';
 
-var customError    = require('es5-ext/error/custom')
-  , assign         = require('es5-ext/object/assign')
+var assign         = require('es5-ext/object/assign')
   , forEach        = require('es5-ext/object/for-each')
   , startsWith     = require('es5-ext/string/#/starts-with')
   , d              = require('d/d')
   , autoBind       = require('d/auto-bind')
+  , memoize        = require('memoizee/lib/regular')
+  , isObservable   = require('observable-value/is-observable')
   , makeElement    = require('dom-ext/document/#/make-element')
   , castAttribute  = require('dom-ext/element/#/cast-attribute')
   , replaceContent = require('dom-ext/element/#/replace-content')
   , getId          = require('dom-ext/html-element/#/get-id')
-  , SetCollection  = require('set-collection')
-  , dbProto        = require('dbjs/lib/_proto')
-  , Db             = require('../')
   , DOMComposite   = require('../_composite')
   , htmlAttributes = require('../_html-attributes')
+  , setup          = require('../')
 
-  , map = Array.prototype.map
-  , getRel = function (name) { return this.get(name); }
-  , Base = Db.Base
+  , defineProperty = Object.defineProperty
+  , getObservable = function (name) { return this._get(name); }
   , Fieldset, renderRow, renderRowSpan;
 
 renderRow = function (input, options) {
@@ -30,11 +28,11 @@ renderRow = function (input, options) {
 		// input
 		el('td', input,
 			// required mark
-			(options.requiredStatus !== false) ?
-					el('span', { class: 'required-status' }, '*') : null,
+			(options.requiredStatus !== false)
+			? el('span', { class: 'required-status' }, '*') : null,
 			// validation status mark
-			(options.validationStatus !== false) ?
-					el('span', { class: 'validation-status' }, '✓') : null,
+			(options.validationStatus !== false)
+			? el('span', { class: 'validation-status' }, '✓') : null,
 			// error message
 			el('span', { class: 'error-message error-message-' +
 				input._name.replace(/[:#]/g, '-') }),
@@ -62,7 +60,7 @@ renderRowSpan = function (input, options) {
 				options.hint && el('p', { 'class': 'hint' }, options.hint))));
 };
 
-module.exports = Fieldset = function (document, list/*, options*/) {
+Fieldset = function (document, list/*, options*/) {
 	var options = Object(arguments[2]);
 
 	this.document = document;
@@ -73,12 +71,8 @@ module.exports = Fieldset = function (document, list/*, options*/) {
 	this.prepend = options.prepend;
 	this.append = options.append;
 
-	if (list.liveMap) {
-		this.list = list.liveMap(this.renderItem, this);
-		this.list.on('change', this.reload);
-	} else {
-		this.list = list.map(this.renderItem, this);
-	}
+	this.list = list.map(this.renderItem, this);
+	if (isObservable(this.list)) this.list.on('change', this.reload);
 
 	this.render();
 	forEach(options, function (value, name) {
@@ -97,12 +91,12 @@ Object.defineProperties(Fieldset.prototype, assign({
 		this.dom = el('fieldset', el('table',
 			this.domItems = el('tbody')));
 	}),
-	renderItem: d(function (rel) {
-		var options = this.getOptions(rel);
+	renderItem: d(function (observable) {
+		var options = this.getOptions(observable.descriptor);
 		if (options.render == null) options.render = renderRow;
 		else if (options.render === 'span') options.render = renderRowSpan;
-		return (this.items[rel._id_] =
-			rel.toDOMInputComponent(this.document, options));
+		return (this.items[observable.dbId] =
+			observable.toDOMInputComponent(this.document, options));
 	}),
 	toDOM: d(function () { return this.dom; }),
 	getOptions: d(DOMComposite.prototype.getOptions)
@@ -112,67 +106,26 @@ Object.defineProperties(Fieldset.prototype, assign({
 	})
 })));
 
-Object.defineProperty(Base, 'DOMFieldset', d(Fieldset));
+module.exports = exports = memoize(function (db) {
+	var proto = setup(db).Base.prototype;
 
-Object.defineProperty(dbProto, 'toDOMFieldset',
-	d(function (document/*, options*/) {
-		var options = Object(arguments[1]), data, list, include, controlOpts
-		  , setup, byOrder;
+	defineProperty(db.Base, 'DOMFieldset', d(Fieldset));
+
+	defineProperty(proto, 'toDOMFieldset', d(function (document/*, options*/) {
+		var options = Object(arguments[1]), data;
 
 		if (options.names != null) {
-			data = options.names._isSet_ ? options.names.values : options.names;
-			data = new SetCollection(map.call(data, getRel, this));
+			data = options.names.map(getObservable, this);
 		} else {
-			data = this.getProperties(options.tag);
+			data = this.toSet('key').toArray().map(getObservable, this);
 		}
 
 		if (options.include) {
-			if (options.include._type_ === 'relation') {
-				include = new SetCollection();
-				include.add(options.include);
-			} else if (!options.include._isSet_) {
-				include = new SetCollection(options.include);
-			} else {
-				include = options.include;
-			}
-			include.forEach(function (rel) {
-				if (!rel || (rel._type_ !== 'relation')) {
-					throw customError("Include item must be a relation",
-						'INVALID_RELATION');
-				}
-			});
-			data = data.union(include);
+			throw new TypeError("`include` option is (postponed). Fix it");
 		}
 
-		controlOpts = Object(options.controls);
-
-		byOrder = function (a, b) {
-			var aOpts = controlOpts[a._id_] || controlOpts[a.name]
-			  , bOpts = controlOpts[b._id_] || controlOpts[b.name];
-			a = (aOpts && !isNaN(aOpts.order)) ? aOpts.order : a.order;
-			b = (bOpts && !isNaN(bOpts.order)) ? bOpts.order : b.order;
-			return a - b;
-		};
-
-		if (data.list) {
-			list = data.list(byOrder);
-			list.forEach(setup = function (rel) {
-				var opts = controlOpts[rel._id_] || controlOpts[rel.name];
-				if (opts && !isNaN(opts.order)) return;
-				rel._order.on('change', list._sort);
-			});
-			data.on('add', function (rel) {
-				setup(rel);
-				list._sort();
-			});
-			data.on('delete', function (rel) {
-				var opts = controlOpts[rel._id_] || controlOpts[rel.name];
-				if (opts && !isNaN(opts.order)) return;
-				rel._order.off('change', list._sort);
-			});
-		} else {
-			list = data.values.sort(byOrder);
-		}
-
-		return new Base.DOMFieldset(document, list, options);
+		return new db.Base.DOMFieldset(document, data, options);
 	}));
+});
+
+exports.Fieldset = Fieldset;

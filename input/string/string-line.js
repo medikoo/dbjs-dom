@@ -3,14 +3,14 @@
 var copy     = require('es5-ext/object/copy')
   , assign   = require('es5-ext/object/assign')
   , d        = require('d/d')
+  , memoize  = require('memoizee/lib/regular')
   , DOMInput = require('../_controls/input')
+  , setup    = require('../')
 
-  , StringLine = require('dbjs/lib/objects')._get('StringLine')
+  , defineProperty = Object.defineProperty
   , Input;
 
-require('../');
-
-Input = function (document, ns/*, options*/) {
+Input = function (document, type/*, options*/) {
 	DOMInput.apply(this, arguments);
 	this.dom.addEventListener('input', this.onChange, false);
 	this.dom.addEventListener('keyup', this.onChange, false);
@@ -31,4 +31,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	})
 });
 
-module.exports = Object.defineProperty(StringLine, 'DOMInput', d(Input));
+module.exports = exports = memoize(function (db) {
+	defineProperty(setup(db).StringLine, 'DOMInput', d(Input));
+});
+
+exports.Input = Input;

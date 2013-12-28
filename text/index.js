@@ -1,8 +1,15 @@
 'use strict';
 
-module.exports = require('dbjs');
+var memoize     = require('memoizee/lib/regular')
+  , validDb     = require('dbjs/valid-dbjs')
+  , baseType    = require('./1.base')
+  , booleanType = require('./2.boolean')
+  , objectType  = require('./3.object');
 
-require('./_relation');
-require('./base');
-require('./boolean');
-require('./object');
+require('./observable');
+
+module.exports = memoize(function (db) {
+	baseType(validDb(db));
+	booleanType(db);
+	objectType(db);
+});

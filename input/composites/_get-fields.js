@@ -2,35 +2,32 @@
 
 var customError = require('es5-ext/error/custom')
   , forEach     = require('es5-ext/object/for-each')
-  , getObject   = require('dbjs/lib/objects')._get
 
-  , getName, getRel;
+  , getName, getObservable;
 
-getName = function (rel, name, ns) {
-	var field = rel['__' + name];
-	if (field) field = field.__value;
-
+getName = function (desc, name) {
+	var field = desc[name];
 	if (field == null) {
 		throw customError("Missing field name setting", 'NO_FIELD_SETTING');
 	}
 	return field;
 };
 
-getRel = function (obj, name, ns) {
-	var rel = obj.get(name);
-	if ((rel.ns !== ns) && !ns.isPrototypeOf(rel.ns)) {
-		throw customError("Namespace mismatch", 'WRONG_NAMESPACE');
+getObservable = function (obj, name, Type) {
+	var observable = obj._get(name)
+	  , observableType = observable.descriptor.type;
+	if ((observableType !== Type) && !Type.isPrototypeOf(observableType)) {
+		throw customError("Type mismatch", 'WRONG_TYPE');
 	}
-	return rel;
+	return observable;
 };
 
-module.exports = function (rel, data) {
-	var result = { names: {}, rels: {} };
-	forEach(data, function (ns, name) {
+module.exports = function (obj, desc, data) {
+	var result = { names: {}, observables: {} };
+	forEach(data, function (Type, name) {
 		var propName;
-		ns = getObject(ns);
-		result.names[name] = propName = getName(rel, name, ns);
-		result.rels[propName] = getRel(rel.obj, propName, ns);
+		result.names[name] = propName = getName(desc, name);
+		result.observables[propName] = getObservable(obj, propName, Type);
 	});
 	return result;
 };

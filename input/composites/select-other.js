@@ -3,7 +3,7 @@
 var d           = require('d/d')
   , include     = require('dom-ext/element/#/include')
   , exclude     = require('dom-ext/element/#/exclude')
-  , DOMInput    = require('./_relation')
+  , DOMInput    = require('./_observable')
   , getFields   = require('./_get-fields')
 
   , Input;
@@ -14,22 +14,24 @@ module.exports = Input = function (document, ns/*, options*/) {
 
 Input.prototype = Object.create(DOMInput.prototype, {
 	_render: d(function (options) {
-		var el = this.make, rel = options.dbOptions
-		  , data = getFields(rel, { selectField: 'Enum', otherField: 'String' })
+		var el = this.make, desc = options.dbOptions
+		  , data = getFields(this.observable.object, desc,
+				{ selectField: desc.database.StringLine,
+					otherField: desc.database.String })
 		  , selectInput, other, label;
 
 		this.addItem(selectInput =
-			data.rels[data.names.selectField].toDOMInput(this.document,
-				this.getOptions(data.rels[data.names.selectField])), 'select');
+			data.observables[data.names.selectField].toDOMInput(this.document,
+				this.getOptions(data.observables[data.names.selectField])), 'select');
 		this.addItem(other =
-			data.rels[data.names.otherField].toDOMInput(this.document,
-				this.getOptions(data.rels[data.names.otherField])), 'other');
+			data.observables[data.names.otherField].toDOMInput(this.document,
+				this.getOptions(data.observables[data.names.otherField])), 'other');
 
 		selectInput.on('change', function () {
 			((selectInput.value === 'other') ? include : exclude).call(label);
 		});
 
 		this.dom = el('div', selectInput, label = el('label',
-			data.rels[data.names.otherField]._label, other));
+			data.observables[data.names.otherField].label, other));
 	})
 });

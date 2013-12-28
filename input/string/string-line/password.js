@@ -3,14 +3,14 @@
 var copy     = require('es5-ext/object/copy')
   , assign   = require('es5-ext/object/assign')
   , d        = require('d/d')
-  , DOMInput = require('../string-line').DOMInput
+  , memoize  = require('memoizee/lib/regular')
+  , DOMInput = require('../string-line').Input
+  , setup    = require('../../')
 
-  , Password = require('dbjs/lib/objects')._get('Password')
+  , defineProperty = Object.defineProperty
   , Input;
 
-require('../../');
-
-Input = function (document, ns/*, options*/) {
+Input = function (document, type/*, options*/) {
 	DOMInput.apply(this, arguments);
 };
 
@@ -24,4 +24,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	})
 });
 
-module.exports = Object.defineProperty(Password, 'DOMInput', d(Input));
+module.exports = exports = memoize(function (db) {
+	defineProperty(setup(db).Password, 'DOMInput', d(Input));
+});
+
+exports.Input = Input;

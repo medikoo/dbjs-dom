@@ -6,12 +6,12 @@ var isDate   = require('es5-ext/date/is-date')
   , d        = require('d/d')
   , DOMInput = require('./_controls/input')
 
-  , DateTime = require('dbjs').DateTime
+  , defineProperties = Object.defineProperties
   , re = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/
   , castControlAttribute = DOMInput.prototype.castControlAttribute
   , Input;
 
-Input = function (document, ns/*, options*/) {
+Input = function (document, type/*, options*/) {
 	DOMInput.apply(this, arguments);
 	this.control.addEventListener('input', this.onChange, false);
 };
@@ -30,29 +30,30 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	}),
 	castControlAttribute: d(function (name, value) {
 		if (this.dateAttributes[name] && isDate(value)) {
-			value = this.ns.toInputValue(value);
+			value = this.type.toInputValue(value);
 		}
 		castControlAttribute.call(this, name, value);
 	})
 });
 
-module.exports = Object.defineProperties(DateTime, {
-	fromInputValue: d(function (value) {
-		var match, args;
-		if (value == null) return null;
-		value = value.trim();
-		if (!value) return null;
-		match = value.match(re);
-		if (!match) return null;
-		args = [Number(match[1]), Number(match[2]) - 1, Number(match[3]),
-			match[4] ? Number(match[4]) : 0, match[5] ? Number(match[5]) : 0];
-		if (this.prototype.validateCreate.apply(this.prototype, args)) {
-			return null;
-		}
-		return this.prototype.create.apply(this.prototype, args);
-	}),
-	toInputValue: d(function (value) {
-		return (value == null) ? null : value.toISOString().slice(0, 16);
-	}),
-	DOMInput: d(Input)
-});
+module.exports = exports = function (db) {
+	defineProperties(db.DateTime, {
+		fromInputValue: d(function (value) {
+			var match;
+			if (value == null) return null;
+			value = value.trim();
+			if (!value) return null;
+			match = value.match(re);
+			if (!match) return null;
+			return this.normalize(new Date(Number(match[1]), Number(match[2]) - 1,
+				Number(match[3]), match[4] ? Number(match[4]) : 0,
+				match[5] ? Number(match[5]) : 0));
+		}),
+		toInputValue: d(function (value) {
+			return (value == null) ? null : value.toISOString().slice(0, 16);
+		}),
+		DOMInput: d(Input)
+	});
+};
+
+exports.Input = Input;

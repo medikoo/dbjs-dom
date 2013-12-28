@@ -3,18 +3,17 @@
 var noop     = require('es5-ext/function/noop')
   , callable = require('es5-ext/object/valid-callable')
   , d        = require('d/d')
-  , Db       = require('dbjs')
   , DOMInput = require('../_composite')
 
   , getInputValue =
 	Object.getOwnPropertyDescriptor(DOMInput.prototype, 'inputValue').get
   , Input;
 
-module.exports = Input = function (document, ns/*, options*/) {
+module.exports = Input = function (document, type/*, options*/) {
 	var options = Object(arguments[2]);
 	options.dbOptions = Object(options.dbOptions);
-	this.getValue = callable(options.dbOptions._value);
-	DOMInput.call(this, document, ns, options);
+	this.getValue = callable(options.dbOptions._value_);
+	DOMInput.call(this, document, type, options);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
@@ -22,7 +21,6 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	name: d.gs(noop, noop),
 	inputValue: d.gs(function () {
 		var state = getInputValue.call(this);
-		state.Db = Db;
 		return this.getValue.call(state);
 	}, noop)
 });
