@@ -88,7 +88,7 @@ Edit.prototype = Object.create(DOMComposite.prototype, {
 	constructor: d(Edit),
 	_render: d(function (options) {
 		var el = this.make, props, desc = options.dbOptions
-		  , obj = this.ns.prototype;
+		  , obj = this.type.prototype;
 		props = options.inputProperties || desc.inputProperties ||
 			this.type.inputProperties ||
 			this.type.prototype.toSet('key').toArray();
