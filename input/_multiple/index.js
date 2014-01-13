@@ -79,11 +79,11 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		return uniq.call(this.items.map(function (item) { return item.value; })
 			.filter(function (value) { return value != null; }));
 	}, function (value) {
-		var length, item, index = 0;
+		var length, item, index = -1;
 		if (value == null) value = [];
 		this._value = value;
 		value.forEach(function (value) {
-			var item = this.items[index++];
+			var item = this.items[++index];
 			if (!item) item = this.addItem();
 			item.index = index;
 			item.value = value;
