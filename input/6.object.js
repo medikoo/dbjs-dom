@@ -186,9 +186,7 @@ module.exports = exports = function (db) {
 			}
 			value = value.trim();
 			if (!value) return null;
-			if (!this.propertyIsEnumerable(value)) return null;
-			if (this[value].__id__ !== value) return null;
-			return this[value];
+			return this.getById(value);
 		}),
 		toInputValue: d(function (value) {
 			var id;
