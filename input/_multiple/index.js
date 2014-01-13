@@ -6,6 +6,7 @@ var contains      = require('es5-ext/array/#/contains')
   , k             = require('es5-ext/function/k')
   , copy          = require('es5-ext/object/copy')
   , assign        = require('es5-ext/object/assign')
+  , Set           = require('es6-set')
   , d             = require('d/d')
   , autoBind      = require('d/auto-bind')
   , makeElement   = require('dom-ext/document/#/make-element')
@@ -80,7 +81,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			.filter(function (value) { return value != null; }));
 	}, function (value) {
 		var length, item, index = -1;
-		if (value == null) value = [];
+		if (value == null) value = new Set();
 		this._value = value;
 		value.forEach(function (value) {
 			var item = this.items[++index];
