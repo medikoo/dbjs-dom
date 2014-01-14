@@ -95,9 +95,10 @@ Radio.prototype = Object.create(DOMRadio.prototype, assign({
 })));
 
 Multiple = function (document, type/*, options*/) {
+	var meta = type.meta;
 	this.dbList = [];
-	type.options.forEach(function (item, name) {
-		this.push({ label: item.label, value: name });
+	type.members.forEach(function (name) {
+		this.push({ label: meta[name].label, value: name });
 	}, this.dbList);
 	DOMMultipleChBox.apply(this, arguments);
 };
