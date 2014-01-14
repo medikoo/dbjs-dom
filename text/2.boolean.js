@@ -13,7 +13,7 @@ var d    = require('d/d')
 Text = function (document, type, options) {
 	this.document = document;
 	this.type = type;
-	this.descriptor = options && options.descriptor;
+	this.observable = options && options.observable;
 	this.box = new DOMText(document, type.database.Base);
 	this.dom = this.box.dom;
 };
@@ -27,9 +27,11 @@ Text.prototype = Object.create(DOMText.prototype, {
 			return;
 		}
 		if (value.valueOf()) {
-			this.box.value = this.descriptor.trueLabel || this.type.trueLabel;
+			this.box.value = this.observable.descriptor.trueLabel ||
+				this.type.trueLabel;
 		} else {
-			this.box.value = this.descriptor.falseLabel || this.type.falseLabel;
+			this.box.value = this.observable.descriptor.falseLabel ||
+				this.type.falseLabel;
 		}
 	})
 });
