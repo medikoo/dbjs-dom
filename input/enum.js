@@ -131,6 +131,7 @@ module.exports = exports = memoize(function (Type) {
 		defineProperty(Type, 'chooseLabel', d("Choose:"));
 		defineProperty(Type.$getOwn('chooseLabel'), 'required', d(true));
 	}
+	return Type;
 });
 
 exports.Select = Select;
