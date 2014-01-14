@@ -15,7 +15,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	_render: d(function (options) {
 		var el = this.make, desc = options.dbOptions
 		  , triggers = resolveTriggers(desc._value_)
-		  , object = this.observable.object;
+		  , object = options.observable.object;
 
 		this.dom = el('div', sepItems.call(triggers.map(function (name) {
 			return this._get(name);
