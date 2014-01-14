@@ -41,6 +41,7 @@ Object.defineProperties(PropObserv.prototype, {
 		if (options.multiple == null) options.multiple = desc.multiple;
 		if (options.name == null) options.name = this.dbId;
 		options.dbOptions = desc;
+		options.observable = this;
 
 		// Initialize input
 		type = desc.type;
