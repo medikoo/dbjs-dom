@@ -150,8 +150,8 @@ Object.defineProperties(PropObserv.prototype, {
 			object = this.object;
 			sKey = this.__sKey__;
 			this.on('change', cb = function () {
-				dom.classList[object._hasOwn_(sKey) ? 'add' :
-						'remove']('dbjs-undefined');
+				dom.classList[object._hasOwn_(sKey) ? 'remove' :
+						'add']('dbjs-undefined');
 			});
 			cb();
 			input.on('destroy', function (cb) {
