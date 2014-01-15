@@ -11,7 +11,7 @@ var assign         = require('es5-ext/object/assign')
 
 common = {
 	assignDOMText: d(function (text/*, options*/) {
-		var listener, options = Object(arguments[1]), value;
+		var listener, value;
 		text.dismiss();
 		this.on('change', listener = function (event) {
 			var value = event.newValue;
