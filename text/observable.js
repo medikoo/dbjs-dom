@@ -15,11 +15,15 @@ common = {
 		text.dismiss();
 		this.on('change', listener = function (event) {
 			var value = event.newValue;
-			if (value != null) value = value.toString();
+			if (value != null) {
+				value = this.descriptor.type.prototype.toString.call(value);
+			}
 			text.value = value;
 		});
 		value = this.value;
-		if (value != null) value = value.toString();
+		if (value != null) {
+			value = this.descriptor.type.prototype.toString.call(value);
+		}
 		text.value = value;
 		text.dismiss = this.off.bind(this, 'change', listener);
 		return text;
