@@ -1,7 +1,6 @@
 'use strict';
 
 var clear          = require('es5-ext/array/#/clear')
-  , contains       = require('es5-ext/array/#/contains')
   , assign         = require('es5-ext/object/assign-multiple')
   , d              = require('d/d')
   , autoBind       = require('d/auto-bind')
@@ -51,7 +50,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 		this._value = value;
 		this.allItems.forEach(function (item) {
 			var obj = this.type.fromInputValue(item.control.value);
-			item.value = contains.call(value, obj) ? obj : null;
+			item.value = value.has(obj) ? obj : null;
 		}, this);
 		this.onChange();
 	}),
