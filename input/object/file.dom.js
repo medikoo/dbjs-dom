@@ -136,8 +136,10 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			value = null;
 		} else if (this.multiple) {
 			value = toArray(value);
+			if (value.length) {
+				value = compact.call(value.map(this.type.toInputValue, this.type));
+			}
 			if (!value.length) value = null;
-			else value = compact.call(value.map(this.type.toInputValue, this.type));
 		} else {
 			value = this.type.toInputValue(value);
 		}
