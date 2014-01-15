@@ -50,9 +50,14 @@ Select = function (document, type/*, options*/) {
 Select.prototype = Object.create(DOMSelect.prototype, assign({
 	constructor: d(Select),
 	createOption: d(function (obj) {
-		return createOption.call(this, obj.__id__,
-			this.property ? obj._get(this.property).toDOM(this.document) :
-					this.document.createTextNode(obj));
+		var value;
+		if (this.property) {
+			value = obj._get(this.property);
+			if (isObservable(value)) value = value.toDOM(this.document);
+		} else {
+			value = this.document.createTextNode(obj);
+		}
+		return createOption.call(this, obj.__id__, value);
 	})
 }, autoBind({
 	reload: d(function () {
