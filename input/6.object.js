@@ -189,12 +189,9 @@ module.exports = exports = function (db) {
 			return this.getById(value);
 		}),
 		toInputValue: d(function (value) {
-			var id;
 			if (value == null) return null;
-			id = value.__id__;
-			if (!this.propertyIsEnumerable(id)) return null;
-			if (this[id] !== value) return null;
-			return id;
+			if (!this.is(value)) return null;
+			return value.__id__;
 		}),
 		DOMRadio: d(Radio),
 		DOMSelect: d(Select),
