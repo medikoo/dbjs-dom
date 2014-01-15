@@ -54,12 +54,12 @@ module.exports = exports = function (db) {
 
 	defineProperties(db.Base.prototype, {
 		toDOMText: d(function (document/*, options*/) {
-			var text = this.type.toDOMText(document, arguments[1]);
+			var text = this.constructor.toDOMText(document, arguments[1]);
 			text.value = this;
 			return text;
 		}),
 		toDOMAttrBox: d(function (element, name/*, options*/) {
-			var text = this.type.toDOMAttrBox(element, name, arguments[2]);
+			var text = this.constructor.toDOMAttrBox(element, name, arguments[2]);
 			text.value = this;
 			return text;
 		}),
