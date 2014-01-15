@@ -194,9 +194,7 @@ module.exports = memoize(function (db) {
 			if (isObject(value)) return value;
 			value = value.trim();
 			if (!value) return null;
-			if (!this.propertyIsEnumerable(value)) return null;
-			if (this[value].__id__ !== value) return null;
-			return this[value];
+			return this.getById(value);
 		}),
 		DOMInput: d(Input),
 		toDOMInput: d(function (document/*, options*/) {
