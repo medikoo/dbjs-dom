@@ -18,6 +18,9 @@ defineProperties(Attr.prototype, {
 				this.element.removeAttribute(this.name);
 				return;
 			}
+			if (this.type.__id__ !== 'Base') {
+				value = this.type.prototype.toString.call(value);
+			}
 			this.element.setAttribute(this.name, value);
 		}),
 	dismiss: d(function () {})
@@ -34,6 +37,9 @@ Object.defineProperties(Text.prototype, {
 		if (value == null) {
 			this.dom.data = '';
 			return;
+		}
+		if (this.type.__id__ !== 'Base') {
+			value = this.type.prototype.toString.call(value);
 		}
 		this.dom.data = value;
 	}),
