@@ -39,11 +39,11 @@ render = function (options) {
 
 renderItem = function (file) {
 	var el = this.make, data = {};
-	data.dom = el(this.multiple ? 'li' : 'span', { 'data-id': file._id_ });
+	data.dom = el(this.multiple ? 'li' : 'span', { 'data-id': file.__id__ });
 	append.call(data.dom,
 		el('a', { href: file._url, target: '_blank' }, file._name), " ",
 		data.control = el('input', { type: 'hidden', name: this.name,
-			value: file._id_ }),
+			value: file.__id__ }),
 		el('a', { class: 'clear', onclick: this.removeItem.bind(this, data.dom) },
 			"x"));
 	return data;
