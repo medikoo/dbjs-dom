@@ -30,10 +30,18 @@ common = {
 	}),
 	toDOM: d(function (document/*, options*/) {
 		var options = arguments[1];
-		if (!isFunction(options)) return this.toDOMText(document, options).dom;
+		if (!isFunction(options)) {
+			if (this.value && this.value.toDOM) {
+				return this.value.toDOM(document, options);
+			}
+			return this.toDOMText(document, options).dom;
+		}
 		return (new DOMValue(document, this, options)).toDOM();
 	}),
 	toDOMAttr: d(function (element/*, name, options*/) {
+		if (this.value && this.value.toDOMAttr) {
+			return this.value.toDOMAttr(element, arguments[1], arguments[2]);
+		}
 		return this.toDOMAttrBox(element, arguments[1], arguments[2]).dom;
 	}),
 	lastModifiedDOM: d(function (document) {
