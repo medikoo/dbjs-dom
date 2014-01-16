@@ -153,6 +153,7 @@ Object.defineProperties(PropObserv.prototype, {
 				dom.classList[object._hasOwn_(sKey) ? 'remove' :
 						'add']('dbjs-undefined');
 			});
+			this.ownDescriptor._history_.on('change', cb);
 			cb();
 			input.on('destroy', function (cb) {
 				this.off('selfupdate', cb);
