@@ -80,6 +80,7 @@ Object.defineProperties(PropObserv.prototype, {
 		  , defined, updateDefinedStatus, object, sKey, desc = this.descriptor;
 
 		inputOptions = filter(options, function (value, name) {
+			if (name === 'render') return false;
 			return !htmlAttributes[name];
 		});
 		if (options.input) {
