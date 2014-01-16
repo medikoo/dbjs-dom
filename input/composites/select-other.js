@@ -15,7 +15,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 Input.prototype = Object.create(DOMInput.prototype, {
 	_render: d(function (options) {
 		var el = this.make, desc = options.dbOptions
-		  , data = getFields(this.observable.object, desc,
+		  , data = getFields(options.observable.object, desc,
 				{ selectField: desc.database.StringLine,
 					otherField: desc.database.String })
 		  , selectInput, other, label;
