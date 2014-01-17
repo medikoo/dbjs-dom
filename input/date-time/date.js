@@ -6,6 +6,7 @@ var memoize  = require('memoizee/lib/regular')
   , DOMInput = require('../5.date-time').Input
 
   , defineProperties = Object.defineProperties
+  , re = /^(\d{4})-(\d{2})-(\d{2})$/
   , Input;
 
 Input = function (document, type/*, options*/) {
@@ -22,6 +23,16 @@ Input.prototype = Object.create(DOMInput.prototype, {
 
 module.exports = exports = memoize(function (db) {
 	defineProperties(setup(db).Date, {
+		fromInputValue: d(function (value) {
+			var match;
+			if (value == null) return null;
+			value = value.trim();
+			if (!value) return null;
+			match = value.match(re);
+			if (!match) return null;
+			return this.normalize(new Date(Date.UTC(Number(match[1]),
+				Number(match[2]) - 1, Number(match[3]))));
+		}),
 		toInputValue: d(function (value) {
 			return (value == null) ? null : value.toISOString().slice(0, 10);
 		}),
