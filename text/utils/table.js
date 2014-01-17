@@ -11,8 +11,10 @@ var aFrom          = require('es5-ext/array/from')
   , validSet       = require('es6-set/valid-set')
   , d              = require('d/d')
   , autoBind       = require('d/auto-bind')
+  , lazy           = require('d/lazy')
   , memoize        = require('memoizee/lib/regular')
   , memPrimitive   = require('memoizee/lib/primitive')
+  , nextTickOnce   = require('next-tick/lib/once')
   , ee             = require('event-emitter/lib/core')
   , isNode         = require('dom-ext/node/is-node')
   , validDocument  = require('dom-ext/document/valid-document')
@@ -190,8 +192,8 @@ ee(Object.defineProperties(Table.prototype, assign({
 		if ((this.list === list) && (this.reverse === reverse)) return;
 		this.emit('change');
 		if (this.list !== list) {
-			if (this.list) this.list.off('change', this.reload);
-			list.on('change', this.reload);
+			if (this.list) this.list.off('change', this.onChange);
+			list.on('change', this.onChange);
 		}
 		this.list = list;
 		this.reverse = reverse;
@@ -203,7 +205,9 @@ ee(Object.defineProperties(Table.prototype, assign({
 		return this.emptyRow;
 	}),
 	toDOM: d(function () { return this.dom; })
-}, memoize(function (item) {
+}, lazy({
+	onChange: d(function () { return nextTickOnce(this.reload); })
+}), memoize(function (item) {
 	return makeElement.call(this.document, 'tr',
 		this.cellRenderers.map(function (render) {
 			return this.cellRender(render, item);
