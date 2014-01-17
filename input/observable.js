@@ -13,7 +13,7 @@ var copy              = require('es5-ext/object/copy')
   , htmlAttributes    = require('./_html-attributes')
 
   , keys = Object.keys, toDOM = function () { return this.dom; }
-  , componentRender;
+  , componentRender, hasOwn;
 
 componentRender = function (input, options) {
 	var el = makeElement.bind(input.document);
@@ -27,6 +27,12 @@ componentRender = function (input, options) {
 			input._name.replace(/[:#\/]/g, '-') }),
 		// hint
 		options.hint && el('span', { 'class': 'hint' }, options.hint));
+};
+
+hasOwn = function (obj, desc, sKey) {
+	if (!desc.multiple) return obj._hasOwn_(sKey);
+	if (desc._resolveValueGetter_()) return (desc.object === obj);
+	return obj._hasOwnMultiple_(sKey);
 };
 
 Object.defineProperties(PropObserv.prototype, {
@@ -134,13 +140,14 @@ Object.defineProperties(PropObserv.prototype, {
 						'add']('dbjs-undefined');
 			};
 			forEach(input.items, function (input) {
-				var observable = input.observable, cb, object, sKey;
+				var observable = input.observable, cb, object, sKey, desc;
 				if (!observable) return;
 				object = observable.object;
+				desc = observable.descriptor;
 				sKey = observable.__sKey__;
-				if (object._hasOwn_(sKey)) defined[sKey] = true;
+				if (hasOwn(object, desc, sKey)) defined[sKey] = true;
 				observable.on('change', cb = function (event) {
-					if (object._hasOwn_(sKey)) defined[sKey] = true;
+					if (hasOwn(object, desc, sKey)) defined[sKey] = true;
 					else delete defined[sKey];
 					updateDefinedStatus();
 				});
@@ -151,7 +158,7 @@ Object.defineProperties(PropObserv.prototype, {
 			object = this.object;
 			sKey = this.__sKey__;
 			this.on('change', cb = function () {
-				dom.classList[object._hasOwn_(sKey) ? 'remove' :
+				dom.classList[hasOwn(object, desc, sKey) ? 'remove' :
 						'add']('dbjs-undefined');
 			});
 			this.ownDescriptor._history_.on('change', cb);
