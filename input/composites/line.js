@@ -1,11 +1,20 @@
 'use strict';
 
-var sepItems        = require('es5-ext/array/#/sep-items')
-  , d               = require('d/d')
-  , DOMInput        = require('./_observable')
-  , resolveTriggers = require('dbjs/_setup/utils/resolve-static-triggers')
+var sepItems     = require('es5-ext/array/#/sep-items')
+  , d            = require('d/d')
+  , memoize      = require('memoizee/lib/primitive')
+  , DOMInput     = require('./_observable')
+  , resolveProps = require('esniff/accessed-properties')('this')
 
-  , Input;
+  , re = new RegExp('^\\s*function\\s*(?:[\\0-\'\\)-\\uffff]+)*\\s*\\(\\s*' +
+	'(_observe[\\/*\\s]*)?\\)\\s*\\{([\\0-\\uffff]*)\\}\\s*$')
+  , Input, resolve;
+
+resolve = memoize(function (fn) {
+	return resolveProps(String(fn).match(re)[2]).map(function (data) {
+		return data.name;
+	});
+});
 
 module.exports = Input = function (document, ns/*, options*/) {
 	DOMInput.apply(this, arguments);
@@ -14,7 +23,7 @@ module.exports = Input = function (document, ns/*, options*/) {
 Input.prototype = Object.create(DOMInput.prototype, {
 	_render: d(function (options) {
 		var el = this.make, desc = options.dbOptions
-		  , triggers = resolveTriggers(desc._value_)
+		  , triggers = resolve(desc._value_)
 		  , object = options.observable.object;
 
 		this.dom = el('div', sepItems.call(triggers.map(function (name) {
