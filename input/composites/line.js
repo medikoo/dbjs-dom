@@ -1,6 +1,7 @@
 'use strict';
 
 var sepItems     = require('es5-ext/array/#/sep-items')
+  , uniq         = require('es5-ext/array/#/uniq')
   , d            = require('d/d')
   , memoize      = require('memoizee/lib/primitive')
   , DOMInput     = require('./_observable')
@@ -11,9 +12,9 @@ var sepItems     = require('es5-ext/array/#/sep-items')
   , Input, resolve;
 
 resolve = memoize(function (fn) {
-	return resolveProps(String(fn).match(re)[2]).map(function (data) {
+	return uniq.call(resolveProps(String(fn).match(re)[2]).map(function (data) {
 		return data.name;
-	});
+	}));
 });
 
 module.exports = Input = function (document, ns/*, options*/) {
