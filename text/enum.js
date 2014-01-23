@@ -21,12 +21,16 @@ Text = function (document, type) {
 Text.prototype = Object.create(DOMText.prototype, {
 	constructor: d(Text),
 	value: d.gs(getValue, setValue = function (value) {
+		var meta;
 		this.box.dismiss();
 		if (value == null) {
 			this.box.value = value;
 			return;
 		}
-		this.box.value = this.type.meta.get(value).label;
+		meta = this.type.meta;
+		if (typeof meta.get === 'function') value = meta.get(value).label;
+		else value = (meta[value] && meta[value].label);
+		this.box.value = value;
 	})
 });
 
