@@ -3,6 +3,7 @@
 var assign         = require('es5-ext/object/assign')
   , forEach        = require('es5-ext/object/for-each')
   , startsWith     = require('es5-ext/string/#/starts-with')
+  , toArray        = require('es6-iterator/to-array')
   , d              = require('d/d')
   , autoBind       = require('d/auto-bind')
   , memoize        = require('memoizee/lib/regular')
@@ -112,10 +113,12 @@ module.exports = exports = memoize(function (db) {
 	defineProperty(db.Base, 'DOMFieldset', d(Fieldset));
 
 	defineProperty(proto, 'toDOMFieldset', d(function (document/*, options*/) {
-		var options = Object(arguments[1]), data;
+		var options = Object(arguments[1]), data, names;
 
 		if (options.names != null) {
-			data = options.names.map(getObservable, this);
+			names = options.names;
+			if (!names.map) names = toArray(names);
+			data = names.map(getObservable, this);
 		} else {
 			data = this.toSet('key').toArray().map(getObservable, this);
 		}
