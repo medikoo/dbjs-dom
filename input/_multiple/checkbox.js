@@ -4,6 +4,7 @@ var clear          = require('es5-ext/array/#/clear')
   , assign         = require('es5-ext/object/assign-multiple')
   , d              = require('d/d')
   , autoBind       = require('d/auto-bind')
+  , lazy           = require('d/lazy')
   , memoize        = require('memoizee/lib/primitive')
   , memDesc        = require('memoizee/lib/d')(memoize)
   , replaceContent = require('dom-ext/element/#/replace-content')
@@ -44,7 +45,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 	}),
 	inputValue: d.gs(function () {
 		return this.items.map(function (item) { return item.value; })
-			.filter(function (value) { return value != null; });
+			.filter(Boolean);
 	}, function (value) {
 		if (value == null) value = [];
 		this._value = value;
@@ -61,14 +62,19 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 	safeRemoveItem: d(notSupported),
 	addItem: d(notSupported),
 	removeItem: d(notSupported)
-}, autoBind({
+}, lazy({
+	markEmpty: d(function () {
+		return this.make('input', { type: 'hidden', value: '', name: this.name });
+	})
+}), autoBind({
 	reload: d(function () {
 		clear.call(this.items);
 		replaceContent.call(this.dom, map.call(this.dbList, function (item) {
 			var data = this.renderItem(item.value, item.label);
 			this.items.push(data.input);
 			return data.dom;
-		}, this));
+		}, this), this.markEmpty);
+		this.items.push(this.markEmpty);
 	})
 }), memDesc({
 	renderItem: d(function (value, label) {
