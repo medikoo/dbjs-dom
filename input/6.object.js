@@ -4,6 +4,7 @@ var sepItems       = require('es5-ext/array/#/sep-items')
   , assign         = require('es5-ext/object/assign')
   , forEach        = require('es5-ext/object/for-each')
   , isPlainObject  = require('es5-ext/object/is-plain-object')
+  , callable       = require('es5-ext/object/valid-callable')
   , d              = require('d/d')
   , autoBind       = require('d/auto-bind')
   , isObservable   = require('observable-value/is-observable')
@@ -11,6 +12,7 @@ var sepItems       = require('es5-ext/array/#/sep-items')
   , include        = require('dom-ext/element/#/include')
   , replace        = require('dom-ext/element/#/replace')
   , replaceContent = require('dom-ext/element/#/replace-content')
+  , isNested       = require('dbjs/is-dbjs-nested-object')
   , DOMInput       = require('./_controls/input')
   , DOMRadio       = require('./_controls/radio')
   , DOMSelect      = require('./_controls/select')
@@ -85,7 +87,10 @@ Radio.prototype = Object.create(DOMRadio.prototype, assign({
 })));
 
 Edit = function (document, type/*, options*/) {
-	DOMComposite.apply(this, arguments);
+	var options = Object(arguments[2]);
+	if (options.render) this._render = callable(options.render);
+	DOMComposite.call(this, document, type, options);
+	if (options.render) delete this._render;
 	this.objInput = this.dom.appendChild(this.make('input', { type: 'hidden' }));
 	exclude.call(this.objInput);
 };
