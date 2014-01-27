@@ -139,7 +139,7 @@ Edit.prototype = Object.create(DOMComposite.prototype, {
 			if (!value) nuInput.name = this.name + '.' + name;
 			this.addItem(nuInput, name);
 		}, this);
-		if (value) {
+		if (value && !isNested(value)) {
 			this.objInput.setAttribute('value', value.__id__);
 			include.call(this.objInput);
 		} else {
