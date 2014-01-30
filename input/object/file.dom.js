@@ -83,8 +83,8 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		var value;
 		if (!this.multiple) {
 			if (this.control.files[0]) return this.control.files[0];
-			if (!this.valueDOM.firstChild) return null;
-			return this.valueDOM.firstChild.getAttribute('data-id');
+			if (!this.valueDOM.firstElementChild) return null;
+			return this.valueDOM.firstElementChild.getAttribute('data-id');
 		}
 		value = map.call(this.valueDOM.childNodes, function (node) {
 			var id = node.getAttribute('data-id');
