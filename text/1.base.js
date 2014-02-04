@@ -1,6 +1,7 @@
 'use strict';
 
-var d            = require('d/d')
+var isObject     = require('es5-ext/object/is-object')
+  , d            = require('d/d')
   , validElement = require('dom-ext/element/valid-element')
 
   , defineProperties = Object.defineProperties
@@ -18,8 +19,8 @@ defineProperties(Attr.prototype, {
 				this.element.removeAttribute(this.name);
 				return;
 			}
-			if (this.type.__id__ !== 'Base') {
-				value = this.type.prototype.toString.call(value);
+			if ((this.type.__id__ !== 'Base') && !isObject(value)) {
+				value = new this.type(value);
 			}
 			this.element.setAttribute(this.name, value);
 		}),
@@ -38,8 +39,8 @@ Object.defineProperties(Text.prototype, {
 			this.dom.data = '';
 			return;
 		}
-		if (this.type.__id__ !== 'Base') {
-			value = this.type.prototype.toString.call(value);
+		if ((this.type.__id__ !== 'Base') && !isObject(value)) {
+			value = new this.type(value);
 		}
 		this.dom.data = value;
 	}),
