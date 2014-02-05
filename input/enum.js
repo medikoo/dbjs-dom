@@ -42,7 +42,7 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 }, memPrimitive(function (name) {
 	var item = this.type.meta[name];
 	return createOption.call(this, name,
-		this.customLabels[name] || item.label || name);
+		this.customLabels[name] || (item && item.label) || name);
 }, { method: 'createOption' }), memPrimitive(function (name) {
 	var el = this.document.createElement('optgroup');
 	el.setAttribute('label', this.group.set[name].label);
@@ -88,7 +88,7 @@ Radio.prototype = Object.create(DOMRadio.prototype, assign({
 	createOption: d(function (name) {
 		var item = this.type.meta[name];
 		return createRadio.call(this, name,
-			this.customLabels[name] || item.label || name);
+			this.customLabels[name] || (item && item.label) || name);
 	})
 }, autoBind({
 	reload: d(function () { replaceContent.call(this.dom, this.dbOptions); })
@@ -98,7 +98,8 @@ Multiple = function (document, type/*, options*/) {
 	var meta = type.meta;
 	this.dbList = [];
 	type.members.forEach(function (name) {
-		this.push({ label: meta[name].label, value: name });
+		var item = meta[name];
+		this.push({ label: (item && item.label) || name, value: name });
 	}, this.dbList);
 	DOMMultipleChBox.apply(this, arguments);
 };
