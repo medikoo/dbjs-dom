@@ -206,3 +206,5 @@ module.exports = memoize(function (db) {
 		})
 	});
 });
+
+exports.Input = Input;
