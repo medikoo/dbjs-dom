@@ -21,11 +21,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.document = document;
 	this.type = type;
 	this.onChange = nextTickOnce(onChange);
-	this._render(options);
-	this.dom._dbjsInput = this;
-	if (options.name) this.name = options.name;
 	options.dbOptions = Object(options.dbOptions);
-	if (options.dbOptions.required) this.required = true;
 	forEach(this.dbAttributes, function (name, dbName) {
 		var value;
 		if (!name) return;
@@ -38,8 +34,13 @@ module.exports = Input = function (document, type/*, options*/) {
 			if (type[dbName] != null) value = type[dbName];
 			else return;
 		}
-		this.castControlAttribute(name, value);
+		options[name] = value;
 	}, this);
+
+	this._render(options);
+	this.dom._dbjsInput = this;
+	if (options.name) this.name = options.name;
+	if (options.dbOptions.required) this.required = true;
 	forEach(options, function (value, name) {
 		if (name === 'class') {
 			mergeClass.call(this.dom, value);
