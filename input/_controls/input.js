@@ -133,7 +133,7 @@ ee(Object.defineProperties(Input.prototype, assign({
 		if (name === 'class') {
 			mergeClass.call(this.control, value);
 		} else if (!this.controlAttributes[name] && !htmlAttrs[name] &&
-			!startsWith.call(name, 'data-')) {
+				!startsWith.call(name, 'data-')) {
 			return;
 		}
 		if (isRegExp(value)) value = value.source.slice(1, -1);
