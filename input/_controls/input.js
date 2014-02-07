@@ -29,6 +29,8 @@ module.exports = Input = function (document, type/*, options*/) {
 		if (options[name] != null) return;
 		if (options.dbOptions[dbName] != null) {
 			value = options.dbOptions[dbName];
+		} else if (type[dbName] != null) {
+			value = type[dbName];
 		} else {
 			if (dbName === 'required') return;
 			if (type[dbName] != null) value = type[dbName];
