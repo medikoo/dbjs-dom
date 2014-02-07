@@ -14,6 +14,7 @@ var assign       = require('es5-ext/object/assign')
   , htmlAttrs    = require('../_html-attributes')
   , eventOpts    = require('../_event-options')
 
+  , defineProperty = Object.defineProperty
   , Input;
 
 module.exports = Input = function (document, type/*, options*/) {
@@ -21,24 +22,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.document = document;
 	this.type = type;
 	this.onChange = nextTickOnce(onChange);
-	options.dbOptions = Object(options.dbOptions);
-	forEach(this.dbAttributes, function (name, dbName) {
-		var value;
-		if (!name) return;
-		if (name === true) name = dbName;
-		if (options[name] != null) return;
-		if (options.dbOptions[dbName] != null) {
-			value = options.dbOptions[dbName];
-		} else if (type[dbName] != null) {
-			value = type[dbName];
-		} else {
-			if (dbName === 'required') return;
-			if (type[dbName] != null) value = type[dbName];
-			else return;
-		}
-		options[name] = value;
-	}, this);
-
+	this._resolveDbAttributes(options);
 	this._render(options);
 	this.dom._dbjsInput = this;
 	if (options.name) this.name = options.name;
@@ -66,6 +50,27 @@ module.exports = Input = function (document, type/*, options*/) {
 ee(Object.defineProperties(Input.prototype, assign({
 	_value: d(''),
 	_name: d(''),
+	_resolveDbAttributes: d(function (options) {
+		if (this._dbAttributesResolved) return;
+		options.dbOptions = Object(options.dbOptions);
+		forEach(this.dbAttributes, function (name, dbName) {
+			var value;
+			if (!name) return;
+			if (name === true) name = dbName;
+			if (options[name] != null) return;
+			if (options.dbOptions[dbName] != null) {
+				value = options.dbOptions[dbName];
+			} else if (this.type[dbName] != null) {
+				value = this.type[dbName];
+			} else {
+				if (dbName === 'required') return;
+				if (this.type[dbName] != null) value = this.type[dbName];
+				else return;
+			}
+			options[name] = value;
+		}, this);
+		defineProperty(this, '_dbAttributesResolved', d(true));
+	}),
 	controlAttributes: d({ autofocus: true, disabled: true, tabindex: true }),
 	dbAttributes: d({}),
 	changed: d(false),
@@ -128,7 +133,7 @@ ee(Object.defineProperties(Input.prototype, assign({
 		if (name === 'class') {
 			mergeClass.call(this.control, value);
 		} else if (!this.controlAttributes[name] && !htmlAttrs[name] &&
-				!startsWith.call(name, 'data-')) {
+			!startsWith.call(name, 'data-')) {
 			return;
 		}
 		if (isRegExp(value)) value = value.source.slice(1, -1);
