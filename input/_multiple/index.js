@@ -31,8 +31,11 @@ module.exports = Input = function (document, type/*, options*/) {
 		delete options.minInputsCount;
 	}
 	if (options.addLabel) {
-		this.addLabel = options.addLabel;
+		this.addLabel = (typeof options.addLabel === 'function')
+			? options.addLabel() : options.addLabel;
 		delete options.addLabel;
+	} else if (typeof this.addLabel === 'function') {
+		this.addLabel = this.addLabel();
 	}
 	if (options.deleteLabel) {
 		this.deleteLabel = (typeof options.deleteLabel === 'function') ?
