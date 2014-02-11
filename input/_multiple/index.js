@@ -4,7 +4,6 @@ var contains      = require('es5-ext/array/#/contains')
   , uniq          = require('es5-ext/array/#/uniq')
   , remove        = require('es5-ext/array/#/remove')
   , k             = require('es5-ext/function/k')
-  , copy          = require('es5-ext/object/copy')
   , assign        = require('es5-ext/object/assign')
   , Set           = require('es6-set')
   , d             = require('d/d')
@@ -21,10 +20,12 @@ var contains      = require('es5-ext/array/#/contains')
   , Input;
 
 module.exports = Input = function (document, type/*, options*/) {
-	var options = copy(Object(arguments[2]));
+	var options = arguments[2];
 	this.items = [];
 	this.removeButtons = [];
 	this.make = makeElement.bind(document);
+	this.type = type;
+	options = this._resolveOptions(options);
 	delete options.multiple;
 	if (options.minInputsCount) {
 		this.minInputsCount = options.minInputsCount >>> 0;

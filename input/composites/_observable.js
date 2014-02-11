@@ -10,7 +10,9 @@ var noop     = require('es5-ext/function/noop')
   , Input;
 
 module.exports = Input = function (document, type/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = arguments[2];
+	this.type = type;
+	options = this._resolveOptions(options);
 	options.dbOptions = Object(options.dbOptions);
 	this.getValue = callable(options.dbOptions._value_);
 	DOMInput.call(this, document, type, options);

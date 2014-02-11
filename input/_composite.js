@@ -13,8 +13,10 @@ var noop        = require('es5-ext/function/noop')
   , Input;
 
 module.exports = Input = function (document, type/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = arguments[2];
 	this.items = {};
+	this.type = type;
+	options = this._resolveOptions(options);
 	this.options = Object(options.item);
 	this.options.control = assign(Object(options.control),
 		Object(this.options.control));

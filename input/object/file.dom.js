@@ -50,9 +50,11 @@ renderItem = function (file) {
 };
 
 Input = function (document, type/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = arguments[2];
 	this.make = makeEl.bind(document);
 	this.controls = [];
+	this.type = type;
+	options = this._resolveOptions(options);
 	if (options.multiple) this.multiple = true;
 	((options.render == null) || callable(options.render));
 	defineProperty(this, 'renderItem', d((options.renderItem == null) ?

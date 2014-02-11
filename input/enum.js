@@ -23,7 +23,9 @@ var assign           = require('es5-ext/object/assign-multiple')
   , Radio, Select, Multiple;
 
 Select = function (document, type/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = arguments[2];
+	this.type = type;
+	options = this._resolveOptions(options);
 	DOMSelect.call(this, document, type, options);
 	this.customLabels = Object(options.labels);
 	if (options.group) {
@@ -76,7 +78,9 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 })));
 
 Radio = function (document, type/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = arguments[2];
+	this.type = type;
+	options = this._resolveOptions(options);
 	DOMRadio.call(this, document, type, options);
 	this.dom.classList.add('enum');
 	this.customLabels = Object(options.labels);

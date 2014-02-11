@@ -43,7 +43,9 @@ resolveDbOptions = function (type, options) {
 };
 
 Select = function (document, type/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = arguments[2];
+	this.type = type;
+	options = this._resolveOptions(options);
 	DOMSelect.call(this, document, type, options);
 	this.property = options.property;
 	resolveDbOptions.call(this, type, options);
@@ -68,7 +70,9 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 })));
 
 Radio = function (document, type/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = arguments[2];
+	this.type = type;
+	options = this._resolveOptions(options);
 	DOMRadio.call(this, document, type, options);
 	this.dom.classList.add('object-list');
 	this.property = options.property;
@@ -87,7 +91,9 @@ Radio.prototype = Object.create(DOMRadio.prototype, assign({
 })));
 
 Edit = function (document, type/*, options*/) {
-	var options = Object(arguments[2]);
+	var options = arguments[2];
+	this.type = type;
+	options = this._resolveOptions(options);
 	if (options.render) this._render = callable(options.render);
 	DOMComposite.call(this, document, type, options);
 	if (options.render) delete this._render;
@@ -152,8 +158,10 @@ Edit.prototype = Object.create(DOMComposite.prototype, {
 });
 
 Multiple = function (document, type/*, options*/) {
-	var options = Object(arguments[2]), getLabel, list, toData;
+	var options = arguments[2], getLabel, list, toData;
 
+	this.type = type;
+	options = this._resolveOptions(options);
 	getLabel = function (obj) {
 		var label = options.itemLabel;
 		if (typeof label === 'function') return label(obj);

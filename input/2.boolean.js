@@ -24,7 +24,9 @@ getLabel = function (name, options, type) {
 };
 
 Radio = function (document, type/*, options*/) {
-	var tOption, fOption, options = Object(arguments[2]), reverse;
+	var tOption, fOption, options = arguments[2], reverse;
+	this.type = type;
+	options = this._resolveOptions(options);
 	DOMRadio.call(this, document, type, options);
 	tOption = this.createOption('1', getLabel('true', options, type));
 	fOption = this.createOption('0', getLabel('false', options, type));

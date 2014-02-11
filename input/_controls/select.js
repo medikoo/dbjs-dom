@@ -13,8 +13,10 @@ var copy        = require('es5-ext/object/copy')
   , Input;
 
 module.exports = Input = function (document, type/*, options*/) {
-	var options = Object(arguments[2]), chooseLabel;
+	var options = arguments[2], chooseLabel;
 	this.items = {};
+	this.type = type;
+	options = this._resolveOptions(options);
 	DOMInput.call(this, document, type, options);
 	if (options.chooseLabel != null) {
 		chooseLabel = options.chooseLabel;
