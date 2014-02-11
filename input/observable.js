@@ -79,6 +79,9 @@ Object.defineProperties(PropObserv.prototype, {
 			if (isSet(value)) value.off('change', onChange);
 			this.off('change', onChange);
 		}.bind(this));
+
+		type.emit('dominput', input);
+		desc.emit('dominput', input);
 		return input;
 	}),
 	toDOMInputComponent: d(function (document/*, options*/) {
@@ -198,6 +201,9 @@ module.exports = Object.defineProperties(DescPropObserv.prototype, {
 			delete input.observable;
 			this.off('change', onChange);
 		}.bind(this));
+
+		type.emit('dominput', input);
+		descDesc.emit('dominput', input);
 		return input;
 	})
 });
