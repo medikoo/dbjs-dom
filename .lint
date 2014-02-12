@@ -12,7 +12,6 @@ newcap
 nomen
 plusplus
 
-./input/components
 predef+ setTimeout
 
 ./input/_controls/input.js
