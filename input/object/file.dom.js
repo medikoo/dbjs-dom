@@ -57,8 +57,8 @@ Input = function (document, type/*, options*/) {
 	options = this._resolveOptions(options);
 	if (options.multiple) this.multiple = true;
 	((options.render == null) || callable(options.render));
-	defineProperty(this, 'renderItem', d((options.renderItem == null) ?
-			renderItem : callable(options.renderItem)));
+	defineProperty(this, 'renderItem', d((options.renderItem == null)
+		? renderItem : callable(options.renderItem)));
 	DOMInput.call(this, document, type, options);
 	if (this.multiple) this.control.setAttribute('multiple', 'multiple');
 	this.control.setAttribute('accept', toArray(type.accept).join(','));
@@ -151,8 +151,8 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	onChange: d(function () {
 		var value, changed, valid, emitChanged, emitValid;
 		value = this.inputValue;
-		changed = (this.multiple && (this._value != null) && (value != null)) ?
-				isCopy.call(value, this._value) : (value !== this._value);
+		changed = (this.multiple && (this._value != null) && (value != null))
+			? isCopy.call(value, this._value) : (value !== this._value);
 		valid = this.required ? (value != null) : true;
 
 		if (this.changed !== changed) {
