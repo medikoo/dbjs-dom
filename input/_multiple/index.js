@@ -3,7 +3,7 @@
 var contains      = require('es5-ext/array/#/contains')
   , uniq          = require('es5-ext/array/#/uniq')
   , remove        = require('es5-ext/array/#/remove')
-  , k             = require('es5-ext/function/k')
+  , constant      = require('es5-ext/function/constant')
   , assign        = require('es5-ext/object/assign')
   , Set           = require('es6-set')
   , d             = require('d/d')
@@ -39,8 +39,8 @@ module.exports = Input = function (document, type/*, options*/) {
 		this.addLabel = this.addLabel();
 	}
 	if (options.deleteLabel) {
-		this.deleteLabel = (typeof options.deleteLabel === 'function') ?
-				options.deleteLabel : k(options.deleteLabel);
+		this.deleteLabel = (typeof options.deleteLabel === 'function')
+			? options.deleteLabel : constant(options.deleteLabel);
 		delete options.deleteLabel;
 	}
 
@@ -117,7 +117,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		}
 	}),
 	addLabel: d('Add'),
-	deleteLabel: d(k('x')),
+	deleteLabel: d(constant('x')),
 	_render: d(function () {
 		var el = this.make;
 		this.domList = el('ul');
