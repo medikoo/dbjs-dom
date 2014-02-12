@@ -25,9 +25,17 @@ var aFrom        = require('es5-ext/array/from')
   , defineProperty = Object.defineProperty
   , defineProperties = Object.defineProperties
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
-  , Input, render, renderItem;
+  , Input, render, renderItem, getTempForm;
 
 require('memoizee/lib/ext/method');
+
+getTempForm = memoize(function (document) {
+	var form = document.createElement('form');
+	form.setAttribute('method', 'post');
+	form.setAttribute('enctype', 'multipart/form-data');
+	form.setAttribute('style', 'display: none');
+	return form;
+});
 
 render = function (options) {
 	var el = this.make;
@@ -50,7 +58,7 @@ renderItem = function (file) {
 };
 
 Input = function (document, type/*, options*/) {
-	var options = arguments[2];
+	var options = arguments[2], action;
 	this.make = makeEl.bind(document);
 	this.controls = [];
 	this.type = type;
@@ -62,6 +70,23 @@ Input = function (document, type/*, options*/) {
 	DOMInput.call(this, document, type, options);
 	if (this.multiple) this.control.setAttribute('multiple', 'multiple');
 	this.control.setAttribute('accept', toArray(type.accept).join(','));
+
+	if (options.autoSubmit != null) {
+		action = options.autoSubmit;
+		this.on('change', function () {
+			var form, parent, sibling;
+			if (!this.changed) return;
+			form = getTempForm(document);
+			parent = this.dom.parentNode;
+			sibling = this.dom.nextSibling;
+			form.setAttribute('action', action);
+			document.body.appendChild(form);
+			form.appendChild(this.dom);
+			dispatchEvnt.call(form, 'submit');
+			parent.insertBefore(this.dom, sibling);
+			if (form.parentNode) form.parentNode.removeChild(form);
+		});
+	}
 };
 
 Input.prototype = Object.create(DOMInput.prototype, assign({
