@@ -129,18 +129,22 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 				if (!old || !isCopy.call(nu, old)) {
 					this.control.value = null;
 					replaceCont.call(this.valueDOM, nu.map(this._renderItem));
+					if (this._required) this.castControlAttribute('required', false);
 					changed = true;
 				}
 			} else {
 				clear.call(this.valueDOM);
+				if (this._required) this.castControlAttribute('required', true);
 			}
 		} else if (nu !== old) {
 			this.control.value = null;
 			if (nu) {
 				replaceCont.call(this.valueDOM, this._renderItem(nu));
+				if (this._required) this.castControlAttribute('required', false);
 				this.dom.classList.add('filled');
 			} else {
 				clear.call(this.valueDOM);
+				if (this._required) this.castControlAttribute('required', true);
 				this.dom.classList.remove('filled');
 			}
 			changed = true;
