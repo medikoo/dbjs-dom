@@ -1,6 +1,6 @@
 'use strict';
 
-var sepItems     = require('es5-ext/array/#/sep-items')
+var separate     = require('es5-ext/array/#/separate')
   , uniq         = require('es5-ext/array/#/uniq')
   , d            = require('d/d')
   , memoize      = require('memoizee/lib/primitive')
@@ -27,7 +27,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		  , triggers = resolve(desc._value_)
 		  , object = options.observable.object;
 
-		this.dom = el('div', sepItems.call(triggers.map(function (name) {
+		this.dom = el('div', separate.call(triggers.map(function (name) {
 			return this._get(name);
 		}, object).map(function (observable) {
 			var desc = observable.descriptor, opts = this.getOptions(desc);
