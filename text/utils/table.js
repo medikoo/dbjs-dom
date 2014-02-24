@@ -14,7 +14,7 @@ var aFrom          = require('es5-ext/array/from')
   , lazy           = require('d/lazy')
   , memoize        = require('memoizee/lib/regular')
   , memPrimitive   = require('memoizee/lib/primitive')
-  , nextTickOnce   = require('next-tick/lib/once')
+  , once           = require('timers-ext/once')
   , ee             = require('event-emitter/lib/core')
   , isNode         = require('dom-ext/node/is-node')
   , validDocument  = require('dom-ext/document/valid-document')
@@ -206,7 +206,7 @@ ee(Object.defineProperties(Table.prototype, assign({
 	}),
 	toDOM: d(function () { return this.dom; })
 }, lazy({
-	onChange: d(function () { return nextTickOnce(this.reload); })
+	onChange: d(function () { return once(this.reload); })
 }), memoize(function (item) {
 	return makeElement.call(this.document, 'tr',
 		this.cellRenderers.map(function (render) {

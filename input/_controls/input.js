@@ -11,7 +11,7 @@ var assign           = require('es5-ext/object/assign')
   , castAttr         = require('dom-ext/element/#/cast-attribute')
   , dispatchEvt      = require('dom-ext/html-element/#/dispatch-event-2')
   , mergeClass       = require('dom-ext/html-element/#/merge-class')
-  , nextTickOnce     = require('next-tick/lib/once')
+  , once             = require('timers-ext/once')
   , htmlAttrs        = require('../_html-attributes')
   , eventOpts        = require('../_event-options')
 
@@ -23,7 +23,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.document = document;
 	this.type = type;
 	options = this._resolveOptions(options);
-	this.onChange = nextTickOnce(onChange);
+	this.onChange = once(onChange);
 	this._resolveDbAttributes(options);
 	this._render(options);
 	this.dom._dbjsInput = this;

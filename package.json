@@ -27,7 +27,7 @@
     "dom-ext": "git://github.com/medikoo/dom-ext.git",
     "event-emitter": "git://github.com/medikoo/event-emitter.git",
     "memoizee": "git://github.com/medikoo/memoizee.git",
-    "next-tick": "git://github.com/medikoo/next-tick.git",
+    "timers-ext": "git://github.com/medikoo/timers-ext.git",
     "observable-value": "git://github.com/medikoo/observable-value.git"
   },
   "devDependencies": {
