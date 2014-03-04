@@ -25,9 +25,19 @@ var aFrom        = require('es5-ext/array/from')
   , defineProperty = Object.defineProperty
   , defineProperties = Object.defineProperties
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
-  , Input, render, renderItem, getTempForm;
+  , Input, render, renderItem, getTempForm, getForceReset;
 
 require('memoizee/lib/ext/method');
+
+getForceReset = memoize(function (document) {
+	var form = document.createElement('form');
+	return function (input) {
+		var parent = input.parentNode, nextSibling = input.nextSibling;
+		form.appendChild(input);
+		form.reset();
+		parent.insertBefore(input, nextSibling);
+	};
+});
 
 getTempForm = memoize(function (document) {
 	var form = document.createElement('form');
@@ -128,6 +138,10 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			if (nu) {
 				if (!old || !isCopy.call(nu, old)) {
 					this.control.value = null;
+					if (this.control.files && this.control.files.length) {
+						// In Opera control is not reset properly, force it with hack
+						getForceReset(this.document)(this.control);
+					}
 					replaceCont.call(this.valueDOM, nu.map(this._renderItem));
 					if (this._required) this.castControlAttribute('required', false);
 					changed = true;
