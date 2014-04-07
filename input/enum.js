@@ -85,7 +85,11 @@ Radio = function (document, type/*, options*/) {
 	DOMRadio.call(this, document, type, options);
 	this.dom.classList.add('enum');
 	this.customLabels = Object(options.labels);
-	this.dbOptions = toArray(type.members).map(this.createOption, this);
+	this.dbOptions = toArray(type.members);
+	if (options.only) {
+		this.onlyFilter = options.only;
+		if (this.onlyFilter.on) this.onlyFilter.on('change', this.reload);
+	}
 	this.reload();
 };
 Radio.prototype = Object.create(DOMRadio.prototype, assign({
@@ -96,7 +100,13 @@ Radio.prototype = Object.create(DOMRadio.prototype, assign({
 			this.customLabels[name] || (item && item.label) || name);
 	})
 }, autoBind({
-	reload: d(function () { replaceContent.call(this.dom, this.dbOptions); })
+	reload: d(function () {
+		var options = this.dbOptions;
+		if (this.onlyFilter) {
+			options = options.filter(this.onlyFilter.has, this.onlyFilter);
+		}
+		replaceContent.call(this.dom, options.map(this.createOption, this));
+	})
 })));
 
 Multiple = function (document, type/*, options*/) {
