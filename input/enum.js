@@ -37,6 +37,7 @@ Select = function (document, type/*, options*/) {
 		this.onlyFilter = options.only;
 		if (this.onlyFilter.on) this.onlyFilter.on('change', this.reload);
 	}
+	this.append = options.append;
 	this.reload();
 };
 Select.prototype = Object.create(DOMSelect.prototype, assign({
@@ -73,7 +74,7 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 		} else {
 			els = options.map(this.createOption);
 		}
-		replaceContent.call(this.dom, this.chooseOption, els);
+		replaceContent.call(this.dom, this.chooseOption, els, this.append);
 	})
 })));
 
