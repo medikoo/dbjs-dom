@@ -12,13 +12,20 @@ var assign         = require('es5-ext/object/assign')
   , castAttribute  = require('dom-ext/element/#/cast-attribute')
   , replaceContent = require('dom-ext/element/#/replace-content')
   , getId          = require('dom-ext/html-element/#/get-id')
+  , nested         = require('dbjs/valid-dbjs-nested-object')
   , DOMComposite   = require('../_composite')
   , htmlAttributes = require('../_html-attributes')
   , setup          = require('../')
 
   , defineProperty = Object.defineProperty
-  , getObservable = function (name) { return this._get(name); }
-  , Fieldset, renderRow, renderRowSpan;
+  , getObservable, Fieldset, renderRow, renderRowSpan;
+
+getObservable = function (name) {
+	var current = this;
+	name = String(name).split('/');
+	while (name.length > 1) current = nested(this[name.shift()]);
+	return current._get(name[0]);
+};
 
 renderRow = function (input, options) {
 	var el = makeElement.bind(input.document)
