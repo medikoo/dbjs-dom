@@ -1,7 +1,7 @@
 'use strict';
 
 var clear          = require('es5-ext/array/#/clear')
-  , assign         = require('es5-ext/object/assign-multiple')
+  , assign         = require('es5-ext/object/assign')
   , d              = require('d/d')
   , autoBind       = require('d/auto-bind')
   , lazy           = require('d/lazy')
