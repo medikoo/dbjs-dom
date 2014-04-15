@@ -29,8 +29,9 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		input.setAttribute('type', 'datetime-local');
 	}),
 	castControlAttribute: d(function (name, value) {
-		if (this.dateAttributes[name] && isDate(value)) {
-			value = this.type.toInputValue(value);
+		if (this.dateAttributes[name]) {
+			if (isDate(value)) value = this.type.toInputValue(value);
+			else if (!isFinite(value)) value = null;
 		}
 		castControlAttribute.call(this, name, value);
 	})
