@@ -6,8 +6,9 @@ var isDate   = require('es5-ext/date/is-date')
   , d        = require('d/d')
   , DOMInput = require('./_controls/input')
 
-  , defineProperties = Object.defineProperties
+  , defineProperties = Object.defineProperties, round = Math.round
   , re = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/
+  , dayStep = 1000 * 60 * 60 * 24
   , castControlAttribute = DOMInput.prototype.castControlAttribute
   , Input;
 
@@ -32,6 +33,10 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		if (this.dateAttributes[name]) {
 			if (isDate(value)) value = this.type.toInputValue(value);
 			else if (!isFinite(value)) value = null;
+		}
+		if ((name === 'step') && value && isFinite(value)) {
+			value = round(value / dayStep);
+			if (value === 1) value = null;
 		}
 		castControlAttribute.call(this, name, value);
 	})
