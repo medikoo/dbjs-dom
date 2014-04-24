@@ -1,6 +1,6 @@
 'use strict';
 
-var d     = require('d/d')
+var d     = require('d')
   , Table = require('../../text/utils/table').Table
 
   , cellRender = Table.prototype.cellRender

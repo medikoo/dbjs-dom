@@ -1,6 +1,6 @@
 'use strict';
 
-var d       = require('d/d')
+var d       = require('d')
   , memoize = require('memoizee/lib/regular')
   , base    = require('./3.object')
   , setup   = require('./')

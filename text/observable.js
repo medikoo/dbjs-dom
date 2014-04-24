@@ -2,7 +2,7 @@
 
 var assign         = require('es5-ext/object/assign')
   , isFunction     = require('es5-ext/function/is-function')
-  , d              = require('d/d')
+  , d              = require('d')
   , DOMValue       = require('./utils/rel-value')
   , PropObserv     = require('dbjs/_setup/1.property/observable')
   , DescPropObserv = require('dbjs/_setup/3.descriptor-property/observable')

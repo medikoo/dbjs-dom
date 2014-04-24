@@ -1,6 +1,6 @@
 'use strict';
 
-var d           = require('d/d')
+var d           = require('d')
   , include     = require('dom-ext/element/#/include')
   , exclude     = require('dom-ext/element/#/exclude')
   , DOMInput    = require('./_observable')

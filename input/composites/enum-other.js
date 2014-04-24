@@ -1,7 +1,7 @@
 'use strict';
 
 var customError = require('es5-ext/error/custom')
-  , d           = require('d/d')
+  , d           = require('d')
   , DOMInput    = require('./_observable')
   , getFields   = require('./_get-fields')
 

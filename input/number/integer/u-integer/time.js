@@ -2,7 +2,7 @@
 
 var pad      = require('es5-ext/number/#/pad')
   , memoize  = require('memoizee/lib/regular')
-  , d        = require('d/d')
+  , d        = require('d')
   , setup    = require('../../../')
   , DOMInput = require('../../../5.date-time').Input
   , PreInput = require('../../../_controls/input')

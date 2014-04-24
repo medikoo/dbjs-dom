@@ -1,7 +1,7 @@
 'use strict';
 
 var memoize  = require('memoizee/lib/regular')
-  , d        = require('d/d')
+  , d        = require('d')
   , setup    = require('../')
   , DOMInput = require('../5.date-time').Input
 

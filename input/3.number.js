@@ -2,7 +2,7 @@
 
 var copy     = require('es5-ext/object/copy')
   , assign   = require('es5-ext/object/assign')
-  , d        = require('d/d')
+  , d        = require('d')
   , DOMInput = require('./_controls/input')
 
   , defineProperties = Object.defineProperties

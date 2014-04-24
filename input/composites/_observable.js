@@ -2,7 +2,7 @@
 
 var noop     = require('es5-ext/function/noop')
   , callable = require('es5-ext/object/valid-callable')
-  , d        = require('d/d')
+  , d        = require('d')
   , DOMInput = require('../_composite')
 
   , getInputValue =

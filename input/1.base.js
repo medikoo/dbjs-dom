@@ -1,6 +1,6 @@
 'use strict';
 
-var d              = require('d/d')
+var d              = require('d')
   , Input          = require('./_controls/input')
   , Checkbox       = require('./_controls/checkbox')
   , Radio          = require('./_controls/radio')

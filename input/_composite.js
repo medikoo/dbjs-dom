@@ -6,7 +6,7 @@ var noop        = require('es5-ext/function/noop')
   , every       = require('es5-ext/object/every')
   , map         = require('es5-ext/object/map')
   , some        = require('es5-ext/object/some')
-  , d           = require('d/d')
+  , d           = require('d')
   , makeElement = require('dom-ext/document/#/make-element')
   , DOMInput    = require('./_controls/input')
 

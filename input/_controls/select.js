@@ -2,7 +2,7 @@
 
 var copy        = require('es5-ext/object/copy')
   , assign      = require('es5-ext/object/assign')
-  , d           = require('d/d')
+  , d           = require('d')
   , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
   , extend      = require('dom-ext/element/#/extend')
   , DOMInput    = require('./input')

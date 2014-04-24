@@ -1,6 +1,6 @@
 'use strict';
 
-var d           = require('d/d')
+var d           = require('d')
   , DOMTextarea = require('./_controls/textarea')
 
   , defineProperty = Object.defineProperty;

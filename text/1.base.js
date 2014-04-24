@@ -1,7 +1,7 @@
 'use strict';
 
 var isObject     = require('es5-ext/object/is-object')
-  , d            = require('d/d')
+  , d            = require('d')
   , validElement = require('dom-ext/element/valid-element')
 
   , defineProperties = Object.defineProperties

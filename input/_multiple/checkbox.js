@@ -2,7 +2,7 @@
 
 var clear          = require('es5-ext/array/#/clear')
   , assign         = require('es5-ext/object/assign')
-  , d              = require('d/d')
+  , d              = require('d')
   , autoBind       = require('d/auto-bind')
   , lazy           = require('d/lazy')
   , memoize        = require('memoizee/lib/primitive')

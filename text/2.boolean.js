@@ -1,6 +1,6 @@
 'use strict';
 
-var d    = require('d/d')
+var d    = require('d')
   , base = require('./1.base')
 
   , defineProperties = Object.defineProperties
