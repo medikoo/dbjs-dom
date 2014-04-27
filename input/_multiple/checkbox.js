@@ -5,8 +5,7 @@ var clear          = require('es5-ext/array/#/clear')
   , d              = require('d')
   , autoBind       = require('d/auto-bind')
   , lazy           = require('d/lazy')
-  , memoize        = require('memoizee/lib/primitive')
-  , memDesc        = require('memoizee/lib/d')(memoize)
+  , memoizeMethods = require('memoizee/methods-plain')
   , replaceContent = require('dom-ext/element/#/replace-content')
   , DOMCheckbox    = require('../_controls/checkbox')
   , DOMInput       = require('./')
@@ -76,7 +75,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 		}, this), this.markEmpty);
 		this.items.push(this.markEmpty);
 	})
-}), memDesc({
+}), memoizeMethods({
 	renderItem: d(function (value, label) {
 		var el = this.make, input, dom;
 		input = new DOMCheckbox(this.document, this.type, this.options);
@@ -89,5 +88,5 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 		input.on('change', this.onChange);
 		this.allItems.push(input);
 		return { dom: dom, input: input };
-	}, { length: 1 })
+	})
 })));

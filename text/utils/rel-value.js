@@ -1,14 +1,12 @@
 'use strict';
 
-var assign  = require('es5-ext/object/assign')
-  , d       = require('d')
-  , memoize = require('memoizee/lib/regular')
-  , remove  = require('dom-ext/element/#/remove')
+var assign         = require('es5-ext/object/assign')
+  , d              = require('d')
+  , memoizeMethods = require('memoizee/methods-plain')
+  , remove         = require('dom-ext/element/#/remove')
 
   , isArray = Array.isArray
   , DOM;
-
-require('memoizee/lib/ext/method');
 
 DOM = module.exports = function (document, observable, cb) {
 	var value;
@@ -54,5 +52,7 @@ Object.defineProperties(DOM.prototype, assign({
 		df.appendChild(this.location);
 		return df;
 	})
-}, memoize(function (value) { return this.cb(value); },
-		{ method: 'render' })));
+}, memoizeMethods({
+	render: d(function (value) { return this.cb(value); },
+		{ getNormalizer: require('memoizee/normalizers/get-1') })
+})));

@@ -1,7 +1,7 @@
 'use strict';
 
 var d       = require('d')
-  , memoize = require('memoizee/lib/regular')
+  , memoize = require('memoizee/plain')
   , base    = require('./3.object')
   , setup   = require('./')
 
@@ -51,7 +51,7 @@ module.exports = exports = memoize(function (EnumType) {
 		DOMText: d(Text),
 		DOMAttr: d(Attr)
 	});
-});
+}, { getNormalizer: require('memoizee/normalizers/get-1') });
 
 exports.Text = Text;
 exports.Attr = Attr;

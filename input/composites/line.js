@@ -3,7 +3,7 @@
 var separate     = require('es5-ext/array/#/separate')
   , uniq         = require('es5-ext/array/#/uniq')
   , d            = require('d')
-  , memoize      = require('memoizee/lib/primitive')
+  , memoize      = require('memoizee/plain')
   , DOMInput     = require('./_observable')
   , resolveProps = require('esniff/accessed-properties')('this')
 

@@ -1,6 +1,6 @@
 'use strict';
 
-var memoize      = require('memoizee/lib/regular')
+var memoize      = require('memoizee/plain')
   , text         = require('../text')
   , baseType     = require('./1.base')
   , booleanType  = require('./2.boolean')
@@ -20,4 +20,4 @@ module.exports = memoize(function (db) {
 	dateTimeType(db);
 	objectType(db);
 	return db;
-});
+}, { normalizer: require('memoizee/normalizers/get-1')() });

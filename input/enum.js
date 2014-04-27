@@ -5,8 +5,9 @@ var assign           = require('es5-ext/object/assign')
   , d                = require('d')
   , autoBind         = require('d/auto-bind')
   , toArray          = require('es6-iterator/to-array')
-  , memoize          = require('memoizee/lib/regular')
-  , memPrimitive     = require('memoizee/lib/primitive')
+  , memoize          = require('memoizee/plain')
+  , memoizeMethods   = require('memoizee/methods-plain')
+  , getNormalizer    = require('memoizee/normalizers/get-1')
   , clear            = require('dom-ext/element/#/clear')
   , replaceContent   = require('dom-ext/element/#/replace-content')
   , DOMRadio         = require('./_controls/radio')
@@ -42,15 +43,18 @@ Select = function (document, type/*, options*/) {
 };
 Select.prototype = Object.create(DOMSelect.prototype, assign({
 	constructor: d(Select)
-}, memPrimitive(function (name) {
-	var item = this.type.meta[name];
-	return createOption.call(this, name,
-		this.customLabels[name] || (item && item.label) || name);
-}, { method: 'createOption' }), memPrimitive(function (name) {
-	var el = this.document.createElement('optgroup');
-	el.setAttribute('label', this.group.set[name].label);
-	return el;
-}, { method: 'createOptgroup' }), autoBind({
+}, memoizeMethods({
+	createOption: d(function (name) {
+		var item = this.type.meta[name];
+		return createOption.call(this, name,
+			this.customLabels[name] || (item && item.label) || name);
+	}),
+	createOptgroup: d(function (name) {
+		var el = this.document.createElement('optgroup');
+		el.setAttribute('label', this.group.set[name].label);
+		return el;
+	})
+}), autoBind({
 	reload: d(function () {
 		var options = this.dbOptions, els, done;
 		if (this.onlyFilter) {
@@ -148,7 +152,7 @@ module.exports = exports = memoize(function (Type) {
 		defineProperty(Type.$getOwn('chooseLabel'), 'required', d(true));
 	}
 	return Type;
-});
+}, { normalizer: getNormalizer() });
 
 exports.Select = Select;
 exports.Radio = Radio;

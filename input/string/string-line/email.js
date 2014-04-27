@@ -3,7 +3,7 @@
 var copy     = require('es5-ext/object/copy')
   , assign   = require('es5-ext/object/assign')
   , d        = require('d')
-  , memoize  = require('memoizee/lib/regular')
+  , memoize  = require('memoizee/plain')
   , DOMInput = require('../string-line').Input
   , setup    = require('../../')
 
@@ -35,6 +35,6 @@ module.exports = exports = memoize(function (db) {
 		}),
 		DOMInput: d(Input)
 	});
-});
+}, { normalizer: require('memoizee/normalizers/get-1')() });
 
 exports.Input = Input;

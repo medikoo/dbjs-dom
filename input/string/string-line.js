@@ -3,7 +3,7 @@
 var copy     = require('es5-ext/object/copy')
   , assign   = require('es5-ext/object/assign')
   , d        = require('d')
-  , memoize  = require('memoizee/lib/regular')
+  , memoize  = require('memoizee/plain')
   , DOMInput = require('../_controls/input')
   , setup    = require('../')
 
@@ -33,6 +33,6 @@ Input.prototype = Object.create(DOMInput.prototype, {
 
 module.exports = exports = memoize(function (db) {
 	defineProperty(setup(db).StringLine, 'DOMInput', d(Input));
-});
+}, { normalizer: require('memoizee/normalizers/get-1')() });
 
 exports.Input = Input;

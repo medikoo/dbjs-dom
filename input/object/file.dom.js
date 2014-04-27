@@ -1,33 +1,32 @@
 'use strict';
 
-var aFrom        = require('es5-ext/array/from')
-  , compact      = require('es5-ext/array/#/compact')
-  , isCopy       = require('es5-ext/array/#/is-copy')
-  , copy         = require('es5-ext/object/copy')
-  , assign       = require('es5-ext/object/assign')
-  , isObject     = require('es5-ext/object/is-object')
-  , callable     = require('es5-ext/object/valid-callable')
-  , toArray      = require('es6-iterator/to-array')
-  , d            = require('d')
-  , memoize      = require('memoizee/lib/regular')
-  , memPrimitive = require('memoizee/lib/primitive')
-  , makeEl       = require('dom-ext/document/#/make-element')
-  , append       = require('dom-ext/element/#/append')
-  , clear        = require('dom-ext/element/#/clear')
-  , remove       = require('dom-ext/element/#/remove')
-  , replaceCont  = require('dom-ext/element/#/replace-content')
-  , dispatchEvnt = require('dom-ext/html-element/#/dispatch-event-2')
-  , DOMInput     = require('../_controls/input')
-  , eventOpts    = require('../_event-options')
-  , setup        = require('../')
+var aFrom          = require('es5-ext/array/from')
+  , compact        = require('es5-ext/array/#/compact')
+  , isCopy         = require('es5-ext/array/#/is-copy')
+  , copy           = require('es5-ext/object/copy')
+  , assign         = require('es5-ext/object/assign')
+  , isObject       = require('es5-ext/object/is-object')
+  , callable       = require('es5-ext/object/valid-callable')
+  , toArray        = require('es6-iterator/to-array')
+  , d              = require('d')
+  , memoize        = require('memoizee/plain')
+  , memoizeMethods = require('memoizee/methods-plain')
+  , getNormalizer  = require('memoizee/normalizers/get-1')
+  , makeEl         = require('dom-ext/document/#/make-element')
+  , append         = require('dom-ext/element/#/append')
+  , clear          = require('dom-ext/element/#/clear')
+  , remove         = require('dom-ext/element/#/remove')
+  , replaceCont    = require('dom-ext/element/#/replace-content')
+  , dispatchEvnt   = require('dom-ext/html-element/#/dispatch-event-2')
+  , DOMInput       = require('../_controls/input')
+  , eventOpts      = require('../_event-options')
+  , setup          = require('../')
 
   , isArray = Array.isArray, map = Array.prototype.map
   , defineProperty = Object.defineProperty
   , defineProperties = Object.defineProperties
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , Input, render, renderItem, getTempForm, getForceReset;
-
-require('memoizee/lib/ext/method');
 
 getForceReset = memoize(function (document) {
 	var form = document.createElement('form');
@@ -37,7 +36,7 @@ getForceReset = memoize(function (document) {
 		form.reset();
 		parent.insertBefore(input, nextSibling);
 	};
-});
+}, { normalizer: getNormalizer() });
 
 getTempForm = memoize(function (document) {
 	var form = document.createElement('form');
@@ -45,7 +44,7 @@ getTempForm = memoize(function (document) {
 	form.setAttribute('enctype', 'multipart/form-data');
 	form.setAttribute('style', 'display: none');
 	return form;
-});
+}, { normalizer: getNormalizer() });
 
 render = function (options) {
 	var el = this.make;
@@ -216,13 +215,15 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		if (!this.multiple) this.dom.classList.remove('filled');
 		dispatchEvnt.call(this.control, 'change', eventOpts);
 	})
-}, memPrimitive(function (file) {
-	var data;
-	file = this.type.getById(file);
-	data = this.renderItem(file);
-	this.controls.push(data.control);
-	return data.dom;
-}, { method: '_renderItem' })));
+}, memoizeMethods({
+	_renderItem: d(function (file) {
+		var data;
+		file = this.type.getById(file);
+		data = this.renderItem(file);
+		this.controls.push(data.control);
+		return data.dom;
+	})
+})));
 
 module.exports = memoize(function (db) {
 	defineProperties(setup(db).File, {
@@ -250,6 +251,6 @@ module.exports = memoize(function (db) {
 			return db.Object.toDOMInput(document, options);
 		})
 	});
-});
+}, { normalizers: getNormalizer() });
 
 exports.Input = Input;

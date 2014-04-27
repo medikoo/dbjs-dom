@@ -1,6 +1,6 @@
 'use strict';
 
-var memoize     = require('memoizee/lib/regular')
+var memoize     = require('memoizee/plain')
   , validDb     = require('dbjs/valid-dbjs')
   , baseType    = require('./1.base')
   , booleanType = require('./2.boolean')
@@ -12,4 +12,4 @@ module.exports = memoize(function (db) {
 	baseType(validDb(db));
 	booleanType(db);
 	objectType(db);
-});
+}, { normalizer: require('memoizee/normalizers/get-1')() });

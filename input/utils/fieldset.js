@@ -6,7 +6,7 @@ var assign         = require('es5-ext/object/assign')
   , toArray        = require('es6-iterator/to-array')
   , d              = require('d')
   , autoBind       = require('d/auto-bind')
-  , memoize        = require('memoizee/lib/regular')
+  , memoize        = require('memoizee/plain')
   , isObservable   = require('observable-value/is-observable')
   , makeElement    = require('dom-ext/document/#/make-element')
   , castAttribute  = require('dom-ext/element/#/cast-attribute')
@@ -136,6 +136,6 @@ module.exports = exports = memoize(function (db) {
 
 		return new db.Base.DOMFieldset(document, data, options);
 	}));
-});
+}, { normalizer: require('memoizee/normalizers/get-1')() });
 
 exports.Fieldset = Fieldset;

@@ -1,6 +1,6 @@
 'use strict';
 
-var memoize  = require('memoizee/lib/regular')
+var memoize  = require('memoizee/plain')
   , d        = require('d')
   , setup    = require('../')
   , DOMInput = require('../5.date-time').Input
@@ -38,6 +38,6 @@ module.exports = exports = memoize(function (db) {
 		}),
 		DOMInput: d(Input)
 	});
-});
+}, { normalizer: require('memoizee/normalizers/get-1')() });
 
 exports.Input = Input;

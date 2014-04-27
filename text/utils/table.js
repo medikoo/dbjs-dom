@@ -12,8 +12,9 @@ var aFrom          = require('es5-ext/array/from')
   , d              = require('d')
   , autoBind       = require('d/auto-bind')
   , lazy           = require('d/lazy')
-  , memoize        = require('memoizee/lib/regular')
-  , memPrimitive   = require('memoizee/lib/primitive')
+  , memoize        = require('memoizee/plain')
+  , memoizeMethods = require('memoizee/methods-plain')
+  , getNormalizer  = require('memoizee/normalizers/get-1')
   , once           = require('timers-ext/once')
   , ee             = require('event-emitter')
   , isNode         = require('dom-ext/node/is-node')
@@ -29,9 +30,7 @@ var aFrom          = require('es5-ext/array/from')
   , cellName = { td: true, th: true }
   , sortByProperty, Table;
 
-require('memoizee/lib/ext/method');
-
-sortByProperty = memPrimitive(function (name) {
+sortByProperty = memoize(function (name) {
 	return function (a, b) {
 		return String(a[name]).localeCompare(String(b[name]));
 	};
@@ -144,12 +143,13 @@ ee(Object.defineProperties(Table.prototype, assign({
 		if (typeof data === 'string') {
 			getList = memoize(function (set) {
 				return set.toArray(sortByProperty(data));
-			});
+			}, { normalizer: getNormalizer() });
 		} else if (isFunction(data)) {
 			if (data.length === 1) {
-				getList = memoize(data);
+				getList = memoize(data, { normalizer: getNormalizer() });
 			} else {
-				getList = memoize(function (set) { return set.toArray(data); });
+				getList = memoize(function (set) { return set.toArray(data); },
+					{ normalizer: getNormalizer() });
 			}
 		}
 		return (this.sortMethods[name] = {
@@ -207,12 +207,14 @@ ee(Object.defineProperties(Table.prototype, assign({
 	toDOM: d(function () { return this.dom; })
 }, lazy({
 	onChange: d(function () { return once(this.reload); })
-}), memoize(function (item) {
-	return makeElement.call(this.document, 'tr',
-		this.cellRenderers.map(function (render) {
-			return this.cellRender(render, item);
-		}, this));
-}, { method: 'rowRender' }), autoBind({
+}), memoizeMethods({
+	rowRender: d(function (item) {
+		return makeElement.call(this.document, 'tr',
+			this.cellRenderers.map(function (render) {
+				return this.cellRender(render, item);
+			}, this));
+	}, { getNormalizer: getNormalizer })
+}), autoBind({
 	reload: d(function () {
 		var list;
 		if (this.list.length) {
@@ -230,6 +232,6 @@ module.exports = exports = memoize(function (db) {
 	defineProperty(db.Object, 'toDOMTable', d(function (document/*, options*/) {
 		return new this.DOMTable(document, this.instances, arguments[1]);
 	}));
-});
+}, { normalizer: getNormalizer() });
 
 exports.Table = Table;
