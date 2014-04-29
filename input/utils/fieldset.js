@@ -23,7 +23,7 @@ var assign         = require('es5-ext/object/assign')
 getObservable = function (name) {
 	var current = this;
 	name = String(name).split('/');
-	while (name.length > 1) current = nested(this[name.shift()]);
+	while (name.length > 1) current = nested(current[name.shift()]);
 	return current._get(name[0]);
 };
 
