@@ -3,7 +3,7 @@
 var assign         = require('es5-ext/object/assign')
   , forEach        = require('es5-ext/object/for-each')
   , startsWith     = require('es5-ext/string/#/starts-with')
-  , toArray        = require('es6-iterator/to-array')
+  , toArray        = require('es5-ext/array/to-array')
   , d              = require('d')
   , autoBind       = require('d/auto-bind')
   , memoize        = require('memoizee/plain')
