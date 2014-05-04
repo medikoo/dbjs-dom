@@ -12,4 +12,5 @@ module.exports = memoize(function (db) {
 	baseType(validDb(db));
 	booleanType(db);
 	objectType(db);
+	return db;
 }, { normalizer: require('memoizee/normalizers/get-1')() });
