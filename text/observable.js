@@ -23,9 +23,6 @@ common = {
 	toDOM: d(function (document/*, options*/) {
 		var options = arguments[1];
 		if (!isFunction(options)) {
-			if (this.value && this.value.toDOM) {
-				return this.value.toDOM(document, options);
-			}
 			return this.toDOMText(document, options).dom;
 		}
 		return (new DOMValue(document, this, options)).toDOM();
