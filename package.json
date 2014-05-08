@@ -1,6 +1,6 @@
 {
   "name": "dbjs-dom",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Mariusz Nowak <medyk@medikoo.com> (http://www.medikoo.com/)",
   "description": "dbjs DOM bindings",
   "keywords": [
@@ -19,19 +19,19 @@
     "url": "git@github.com:medikoo/dbjs-dom.git"
   },
   "dependencies": {
-    "d": "git://github.com/medikoo/d.git",
-    "es5-ext": "git://github.com/medikoo/es5-ext.git",
-    "es6-iterator": "git://github.com/medikoo/es6-iterator.git",
-    "es6-set": "git://github.com/medikoo/es6-set.git",
-    "dbjs": "git://github.com/medikoo/dbjs.git",
-    "dom-ext": "git://github.com/medikoo/dom-ext.git",
-    "event-emitter": "git://github.com/medikoo/event-emitter.git",
-    "memoizee": "git://github.com/medikoo/memoizee.git",
-    "timers-ext": "git://github.com/medikoo/timers-ext.git",
-    "observable-value": "git://github.com/medikoo/observable-value.git"
+    "d": "0.1.1",
+    "es5-ext": "~0.10.4",
+    "es6-iterator": "~0.1.1",
+    "es6-set": "0.1.x",
+    "dbjs": "0.0.1",
+    "dom-ext": "0.0.1",
+    "event-emitter": "~0.3.1",
+    "memoizee": "~0.3.2",
+    "timers-ext": "0.1.x",
+    "observable-value": "0.0.2"
   },
   "devDependencies": {
-    "tad": "~0.1.20"
+    "tad": "0.2.x"
   },
   "license": "MIT"
 }
