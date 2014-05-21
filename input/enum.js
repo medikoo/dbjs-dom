@@ -64,10 +64,18 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 			els = [];
 			done = {};
 			options.forEach(function (name) {
-				var item = this.type.meta[name]
-				  , group = item[this.group.name]
-				  , optgroup = this.createOptgroup(group)
-				  , option = this.createOption(name);
+				var meta = this.type.meta[name], group, optgroup, option;
+				if (!meta) {
+					console.warn("No meta found for", name);
+					return;
+				}
+				group = meta[this.group.name];
+				if (!group) {
+					console.warn("No group found for", name);
+					return;
+				}
+				optgroup = this.createOptgroup(group);
+				option = this.createOption(name);
 				if (!done.hasOwnProperty(group)) {
 					clear.call(optgroup);
 					done[group] = true;

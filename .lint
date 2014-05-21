@@ -12,7 +12,7 @@ newcap
 nomen
 plusplus
 
-predef+ setTimeout
+predef+ console, setTimeout
 
 ./input/_controls/input.js
 ./input/_composite.js
