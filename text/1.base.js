@@ -19,9 +19,7 @@ defineProperties(Attr.prototype, {
 				this.element.removeAttribute(this.name);
 				return;
 			}
-			if ((this.type.__id__ !== 'Base') && !isObject(value)) {
-				value = new this.type(value);
-			}
+			if ((this.type.__id__ !== 'Base') && !isObject(value)) value = new this.type(value);
 			this.element.setAttribute(this.name, value);
 		}),
 	dismiss: d(function () {})
@@ -39,9 +37,7 @@ Object.defineProperties(Text.prototype, {
 			this.dom.data = '';
 			return;
 		}
-		if ((this.type.__id__ !== 'Base') && !isObject(value)) {
-			value = new this.type(value);
-		}
+		if ((this.type.__id__ !== 'Base') && !isObject(value)) value = new this.type(value);
 		this.dom.data = value;
 	}),
 	dismiss: d(function () {})
