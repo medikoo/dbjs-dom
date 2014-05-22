@@ -7,8 +7,10 @@ var isObject     = require('es5-ext/object/is-object')
   , defineProperties = Object.defineProperties
   , Attr, Text;
 
-Attr = function (element, name, type) {
+Attr = function (element, name, type/*, options*/) {
+	var options = Object(arguments[3]);
 	this.element = validElement(element);
+	this.observable = options.observable;
 	this.name = name;
 	this.type = type;
 };
@@ -19,15 +21,20 @@ defineProperties(Attr.prototype, {
 				this.element.removeAttribute(this.name);
 				return;
 			}
-			if ((this.type.__id__ !== 'Base') && !isObject(value)) value = new this.type(value);
+			if ((this.type.__id__ !== 'Base') && !isObject(value)) {
+				value = new this.type(value);
+				value = value.toString(this.observable && this.observable.descriptor);
+			}
 			this.element.setAttribute(this.name, value);
 		}),
 	dismiss: d(function () {})
 });
 
-Text = function (document, type) {
+Text = function (document, type/*, options*/) {
+	var options = Object(arguments[2]);
 	this.document = document;
 	this.type = type;
+	this.observable = options.observable;
 	this.dom = document.createTextNode('');
 };
 Object.defineProperties(Text.prototype, {
@@ -37,7 +44,10 @@ Object.defineProperties(Text.prototype, {
 			this.dom.data = '';
 			return;
 		}
-		if ((this.type.__id__ !== 'Base') && !isObject(value)) value = new this.type(value);
+		if ((this.type.__id__ !== 'Base') && !isObject(value)) {
+			value = new this.type(value);
+			value = value.toString(this.observable && this.observable.descriptor);
+		}
 		this.dom.data = value;
 	}),
 	dismiss: d(function () {})
