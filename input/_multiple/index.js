@@ -48,7 +48,6 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.options.dbOptions = options.dbOptions;
 	this.options.control = Object(this.options.control);
 	DOMInput.call(this, document, type, options);
-	document.addEventListener('reset', this._onReset, false);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, assign({
@@ -56,7 +55,17 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	controlAttributes: d({}),
 	minInputsCount: d(0),
 	onChange: d(function () {
-		var value, changed, valid, emitChanged, emitValid;
+		var value, changed, valid, emitChanged, emitValid, form;
+		if (this.items[0]) {
+			form = this.items[0].form;
+			if (form) {
+				if (this.form !== form) {
+					if (this.form) this.form.removeEventListener('reset', this._onReset, false);
+					this.form = form;
+					this.form.addEventListener('reset', this._onReset, false);
+				}
+			}
+		}
 		value = this.value;
 		changed = this.items.some(function (item) { return item.changed; });
 		valid = this.items.every(function (item) { return item.valid;  });
@@ -177,7 +186,6 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		if (!control) control = this.dom.getElementsByTagName('select')[0];
 		if (!control) control = this.dom.getElementsByTagName('textarea')[0];
 		if (!control) return;
-		if (e.target !== control.form) return;
 		this.inputValue = this._value;
 	})
 })));

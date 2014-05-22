@@ -43,10 +43,7 @@ module.exports = Input = function (document, type/*, options*/) {
 		}
 	}, this);
 	onChange();
-	if (this.control) {
-		document.addEventListener('reset', this._onReset, false);
-		this.control.addEventListener('change', this.onChange, false);
-	}
+	if (this.control) this.control.addEventListener('change', this.onChange, false);
 };
 
 ee(Object.defineProperties(Input.prototype, assign({
@@ -149,11 +146,21 @@ ee(Object.defineProperties(Input.prototype, assign({
 		castAttr.call(this.control, name, value);
 	}),
 	destroy: d(function () {
-		this.document.removeEventListener('reset', this._onReset, false);
+		if (this.form) this.form.removeEventListener('reset', this._onReset, false);
 		this.emit('destroy');
 	}),
 	onChange: d(function () {
-		var value, inputValue, changed, valid, emitChanged, emitValid;
+		var value, inputValue, changed, valid, emitChanged, emitValid, control;
+		control = this.control || (this.controls ? this.controls[Object.keys(this.controls)[0]] : null);
+		if (control) {
+			if (control.form) {
+				if (this.form !== control.form) {
+					if (this.form) this.form.removeEventListener('reset', this._onReset, false);
+					this.form = control.form;
+					this.form.addEventListener('reset', this._onReset, false);
+				}
+			}
+		}
 		inputValue = this.inputValue;
 		value = this.value;
 		changed = (inputValue !== this._value);
@@ -175,8 +182,5 @@ ee(Object.defineProperties(Input.prototype, assign({
 		if (emitValid) this.emit('change:valid', this.valid);
 	})
 }, autoBind({
-	_onReset: d(function (e) {
-		if (e.target !== this.control.form) return;
-		this.inputValue = this._value;
-	})
+	_onReset: d(function (e) { this.inputValue = this._value; })
 }))));

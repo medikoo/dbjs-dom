@@ -26,7 +26,6 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.listItems = {};
 	this.attributes = {};
 	DOMInput.apply(this, arguments);
-	document.addEventListener('reset', this._onReset, false);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, assign({
@@ -120,10 +119,8 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	})
 }, autoBind({
 	_onReset: d(function (e) {
-		var key = keys(this.controls)[0], control;
+		var key = keys(this.controls)[0];
 		if (!key) return;
-		control = this.controls[key];
-		if (e.target !== control.form) return;
 		this.inputValue = this._value;
 	})
 })));
