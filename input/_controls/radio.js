@@ -47,8 +47,8 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			else input.removeAttribute('name');
 		});
 	}),
-	createOption: d(function (value, labelTextDOM) {
-		var dom, label, input;
+	createOption: d(function (value, labelTextDOM, attrs) {
+		var dom, label, input, cast;
 		dom = this.listItems[value] = this.document.createElement('li');
 		label = dom.appendChild(this.document.createElement('label'));
 		input = this.items[value] =
@@ -57,9 +57,8 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		input.setAttribute('type', 'radio');
 		input.setAttribute('value', value);
 		if (this.name) input.setAttribute('name', this.name);
-		forEach(this.attributes, function (value, name) {
-			castAttr.call(input, name, value);
-		}, this);
+		forEach(this.attributes, cast = function (value, name) { castAttr.call(input, name, value); });
+		if (attrs) forEach(attrs, cast);
 		label.appendChild(this.document.createTextNode(' '));
 		extend.call(label, labelTextDOM);
 		input.addEventListener('change', this.onChange, false);
