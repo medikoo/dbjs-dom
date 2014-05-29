@@ -8,6 +8,7 @@ var copy     = require('es5-ext/object/copy')
   , setup    = require('../')
 
   , defineProperty = Object.defineProperty
+  , castControlAttribute = DOMInput.prototype.castControlAttribute
   , Input;
 
 Input = function (document, type/*, options*/) {
@@ -25,9 +26,20 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	dbAttributes: d(assign(copy(DOMInput.prototype.dbAttributes),
 		{ max: 'maxlength', pattern: true, inputPlaceholder: 'placeholder',
 			required: true })),
+	numberAttributes: d({ maxlength: true }),
 	_render: d(function () {
 		var input = this.control = this.dom = this.document.createElement('input');
 		input.setAttribute('type', 'text');
+	}),
+	castControlAttribute: d(function (name, value) {
+		if (this.numberAttributes[name]) {
+			if (value && value.toDOMAttr) {
+				value.toDOMAttr(this.control, name, { bare: true });
+				return;
+			}
+			if (!isFinite(value)) value = null;
+		}
+		castControlAttribute.call(this, name, value);
 	})
 });
 
