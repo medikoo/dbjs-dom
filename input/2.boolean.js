@@ -28,8 +28,10 @@ Radio = function (document, type/*, options*/) {
 	this.type = type;
 	options = this._resolveOptions(options);
 	DOMRadio.call(this, document, type, options);
-	tOption = this.createOption('1', getLabel('true', options, type));
-	fOption = this.createOption('0', getLabel('false', options, type));
+	tOption = this.createOption('1', getLabel('true', options, type),
+		options.controls && options.controls[1]);
+	fOption = this.createOption('0', getLabel('false', options, type),
+		options.controls && options.controls[0]);
 	this.items['1'].setAttribute('data-type', 'boolean');
 	this.items['0'].setAttribute('data-type', 'boolean');
 
