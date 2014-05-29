@@ -7,8 +7,8 @@ var copy        = require('es5-ext/object/copy')
   , DOMInput    = require('./input')
   , eventOpts   = require('../_event-options')
 
-  , getInputValue =
-	Object.getOwnPropertyDescriptor(DOMInput.prototype, 'inputValue').get
+  , getInputValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'inputValue').get
+  , castControlAttribute = DOMInput.prototype.castControlAttribute
   , Input;
 
 module.exports = Input = function (document, type/*, options*/) {
@@ -23,9 +23,20 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			readonly: true, required: true, rows: true, wrap: true })),
 	dbAttributes: d(assign(copy(DOMInput.prototype.dbAttributes),
 		{ max: 'maxlength', inputPlaceholder: 'placeholder', required: true })),
+	numberAttributes: d({ maxlength: true }),
 	_render: d(function () {
 		this.control = this.dom = this.document.createElement('textarea');
 		this.dom.appendChild(this.document.createTextNode(''));
+	}),
+	castControlAttribute: d(function (name, value) {
+		if (this.numberAttributes[name]) {
+			if (value && value.toDOMAttr) {
+				value.toDOMAttr(this.control, name, { bare: true });
+				return;
+			}
+			if (!isFinite(value)) value = null;
+		}
+		castControlAttribute.call(this, name, value);
 	}),
 	inputValue: d.gs(getInputValue, function (nu) {
 		var old = this.inputValue;
