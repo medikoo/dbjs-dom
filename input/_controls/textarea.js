@@ -22,7 +22,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		{ cols: true, inputmode: true, maxlength: true, placeholder: true,
 			readonly: true, required: true, rows: true, wrap: true })),
 	dbAttributes: d(assign(copy(DOMInput.prototype.dbAttributes),
-		{ max: 'maxlength', inputPlaceholder: 'placeholder', required: true })),
+		{ inputRows: 'rows', max: 'maxlength', inputPlaceholder: 'placeholder', required: true })),
 	numberAttributes: d({ maxlength: true }),
 	_render: d(function () {
 		this.control = this.dom = this.document.createElement('textarea');
