@@ -165,7 +165,7 @@ ee(Object.defineProperties(Input.prototype, assign({
 		inputValue = this.inputValue;
 		value = this.value;
 		changed = (inputValue !== this._value);
-		if (value != null) valid = true;
+		if (value != null) valid = this.type.is(value, this.observable && this.observable.descriptor);
 		else if (this.required) valid = false;
 		else valid = ((inputValue == null) || !inputValue.trim());
 
