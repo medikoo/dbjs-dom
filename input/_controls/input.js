@@ -23,6 +23,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.document = document;
 	this.type = type;
 	options = this._resolveOptions(options);
+	if (options.observable) this.observable = options.observable;
 	this.onChange = once(onChange);
 	this._resolveDbAttributes(options);
 	this._render(options);
