@@ -29,7 +29,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	this._render(options);
 	this.dom._dbjsInput = this;
 	if (options.name) this.name = options.name;
-	if (options.dbOptions.required) this.required = true;
+	if (options.required || options.dbOptions.required) this.required = true;
 	forEach(options, function (value, name) {
 		if (name === 'class') {
 			mergeClass.call(this.dom, value);
