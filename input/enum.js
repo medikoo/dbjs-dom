@@ -94,6 +94,7 @@ Radio = function (document, type/*, options*/) {
 	var options = arguments[2];
 	this.type = type;
 	options = this._resolveOptions(options);
+	this.controlOptions = Object(options.controls);
 	DOMRadio.call(this, document, type, options);
 	this.dom.classList.add('enum');
 	this.customLabels = Object(options.labels);
@@ -109,7 +110,7 @@ Radio.prototype = Object.create(DOMRadio.prototype, assign({
 	createOption: d(function (name) {
 		var item = this.type.meta[name];
 		return createRadio.call(this, name,
-			this.customLabels[name] || (item && item.label) || name);
+			this.customLabels[name] || (item && item.label) || name, this.controlOptions[name]);
 	})
 }, autoBind({
 	reload: d(function () {
