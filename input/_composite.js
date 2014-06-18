@@ -61,8 +61,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		if (this.customOptions[desc.key]) {
 			assign(options, this.customOptions[desc.key]);
 		}
-		if (this.customOptions[desc.__id__]) {
-			assign(options, this.customOptions[desc.__id__]);
+		if (this.customOptions[desc.__valueId__]) {
+			assign(options, this.customOptions[desc.__valueId__]);
 		}
 		return options;
 	}),
