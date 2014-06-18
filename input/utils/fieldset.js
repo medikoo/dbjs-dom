@@ -100,7 +100,7 @@ Object.defineProperties(Fieldset.prototype, assign({
 			this.domItems = el('tbody')));
 	}),
 	renderItem: d(function (observable) {
-		var options = this.getOptions(observable.descriptor);
+		var options = this.getOptions(observable.ownDescriptor);
 		if (options.render == null) options.render = renderRow;
 		else if (options.render === 'span') options.render = renderRowSpan;
 		return (this.items[observable.dbId] =
