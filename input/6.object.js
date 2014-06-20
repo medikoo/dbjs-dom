@@ -1,40 +1,52 @@
 'use strict';
 
-var separate       = require('es5-ext/array/#/separate')
-  , assign         = require('es5-ext/object/assign')
-  , forEach        = require('es5-ext/object/for-each')
-  , isPlainObject  = require('es5-ext/object/is-plain-object')
-  , callable       = require('es5-ext/object/valid-callable')
-  , d              = require('d')
-  , autoBind       = require('d/auto-bind')
-  , isObservable   = require('observable-value/is-observable')
-  , exclude        = require('dom-ext/element/#/exclude')
-  , include        = require('dom-ext/element/#/include')
-  , replace        = require('dom-ext/element/#/replace')
-  , replaceContent = require('dom-ext/element/#/replace-content')
-  , isNested       = require('dbjs/is-dbjs-nested-object')
-  , DOMInput       = require('./_controls/input')
-  , DOMRadio       = require('./_controls/radio')
-  , DOMSelect      = require('./_controls/select')
-  , DOMMultiple    = require('./_multiple/checkbox')
-  , DOMComposite   = require('./_composite')
+var separate          = require('es5-ext/array/#/separate')
+  , assign            = require('es5-ext/object/assign')
+  , forEach           = require('es5-ext/object/for-each')
+  , isPlainObject     = require('es5-ext/object/is-plain-object')
+  , callable          = require('es5-ext/object/valid-callable')
+  , memoize           = require('memoizee/plain')
+  , getNormalizer     = require('memoizee/normalizers/get-1')
+  , d                 = require('d')
+  , autoBind          = require('d/auto-bind')
+  , isObservable      = require('observable-value/is-observable')
+  , isObservableArray = require('observable-set/is-observable-array')
+  , isObservableSet   = require('observable-set/is-observable-set')
+  , exclude           = require('dom-ext/element/#/exclude')
+  , include           = require('dom-ext/element/#/include')
+  , replace           = require('dom-ext/element/#/replace')
+  , replaceContent    = require('dom-ext/element/#/replace-content')
+  , isNested          = require('dbjs/is-dbjs-nested-object')
+  , DOMInput          = require('./_controls/input')
+  , DOMRadio          = require('./_controls/radio')
+  , DOMSelect         = require('./_controls/select')
+  , DOMMultiple       = require('./_multiple/checkbox')
+  , DOMComposite      = require('./_composite')
 
   , map = Array.prototype.map, defineProperties = Object.defineProperties
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , createOption = DOMSelect.prototype.createOption
   , createRadio = DOMRadio.prototype.createOption
 
-  , Radio, Select, Edit, Multiple, resolveDbOptions;
+  , Radio, Select, Edit, Multiple, resolveDbOptions, getResolver;
+
+getResolver = memoize(function (type) {
+	return function (obj) {
+		if (!obj || (obj.constructor !== type)) throw new TypeError(obj + " is not a " + type.__id__);
+		return this.createOption(obj);
+	};
+}, { normalizer: getNormalizer() });
 
 resolveDbOptions = function (type, options) {
 	var list;
 	if (options.list != null) {
-		this.dbOptions = map.call(options.list, function (obj) {
-			if (!obj || (obj.constructor !== type)) {
-				throw new TypeError(obj + " is not a " + type.__id__);
-			}
-			return this.createOption(obj);
-		}, this);
+		if (isObservableSet(options.list)) {
+			this.dbOptions = options.list.toArray().map(getResolver(type), this);
+		} else if (isObservableArray(options.list)) {
+			this.dbOptions = options.list.map(getResolver(type), this);
+		} else {
+			this.dbOptions = map.call(options.list, getResolver(type), this);
+		}
 	} else {
 		list = type.instances.toArray(options.compare);
 		this.dbOptions = list.map(this.createOption, this);
