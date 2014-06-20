@@ -72,7 +72,7 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 	createOption: d(function (obj) {
 		var value;
 		if (this.getOptionLabel) {
-			value = this.getOptionLabel(this);
+			value = this.getOptionLabel(obj);
 			if (isObservable(value)) value = value.toDOM(this.document);
 		} else if (this.property) {
 			value = obj._get(this.property);
