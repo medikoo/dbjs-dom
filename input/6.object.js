@@ -32,7 +32,9 @@ var separate          = require('es5-ext/array/#/separate')
 
 getResolver = memoize(function (type) {
 	return function (obj) {
-		if (!obj || (obj.constructor !== type)) throw new TypeError(obj + " is not a " + type.__id__);
+		if (!obj || ((obj.constructor !== type) && !type.isPrototypeOf(obj.constructor))) {
+			throw new TypeError(obj + " is not a " + type.__id__);
+		}
 		return this.createOption(obj);
 	};
 }, { normalizer: getNormalizer() });
