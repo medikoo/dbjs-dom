@@ -58,9 +58,7 @@ Object.defineProperties(PropObserv.prototype, {
 
 		// Set input value
 		value = this.value;
-		if (isSet(value) && !options.multiple) {
-			value = value.values().next().value || null;
-		}
+		if (isSet(value) && !options.multiple) value = value.values().next().value || null;
 		input.value = value;
 
 		// Attach listeners
