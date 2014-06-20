@@ -62,7 +62,8 @@ Select = function (document, type/*, options*/) {
 	this.type = type;
 	options = this._resolveOptions(options);
 	DOMSelect.call(this, document, type, options);
-	this.property = options.property;
+	if (options.getOptionLabel != null) this.getOptionLabel = callable(options.getOptionLabel);
+	else this.property = options.property;
 	resolveDbOptions.call(this, type, options);
 	this.reload();
 };
@@ -70,7 +71,10 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 	constructor: d(Select),
 	createOption: d(function (obj) {
 		var value;
-		if (this.property) {
+		if (this.getOptionLabel) {
+			value = this.getOptionLabel(this);
+			if (isObservable(value)) value = value.toDOM(this.document);
+		} else if (this.property) {
 			value = obj._get(this.property);
 			if (isObservable(value)) value = value.toDOM(this.document);
 		} else {
