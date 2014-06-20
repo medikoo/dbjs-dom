@@ -48,12 +48,13 @@ resolveDbOptions = function (type, options) {
 			this.dbOptions = options.list.map(getResolver(type), this);
 		} else {
 			this.dbOptions = map.call(options.list, getResolver(type), this);
+			return;
 		}
 	} else {
 		list = type.instances.toArray(options.compare);
 		this.dbOptions = list.map(this.createOption, this);
-		this.dbOptions.on('change', this.reload);
 	}
+	this.dbOptions.on('change', this.reload);
 };
 
 Select = function (document, type/*, options*/) {
