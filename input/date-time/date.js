@@ -22,7 +22,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 });
 
 module.exports = exports = memoize(function (db) {
-	defineProperties(setup(db).Date, {
+	var DateType = setup(db).Date;
+	defineProperties(DateType, {
 		fromInputValue: d(function (value) {
 			var match;
 			if (value == null) return null;
@@ -30,8 +31,7 @@ module.exports = exports = memoize(function (db) {
 			if (!value) return null;
 			match = value.match(re);
 			if (!match) return null;
-			return this.normalize(new Date(Date.UTC(Number(match[1]),
-				Number(match[2]) - 1, Number(match[3]))));
+			return new DateType(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 		}),
 		toInputValue: d(function (value) {
 			return (value == null) ? null : value.toISOString().slice(0, 10);
