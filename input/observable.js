@@ -12,8 +12,7 @@ var copy              = require('es5-ext/object/copy')
   , DescPropObserv    = require('dbjs/_setup/3.descriptor-property/observable')
   , htmlAttributes    = require('./_html-attributes')
 
-  , keys = Object.keys, toDOM = function () { return this.dom; }
-  , componentRender, hasOwn;
+  , toDOM = function () { return this.dom; }, componentRender;
 
 componentRender = function (input, options) {
 	var el = makeElement.bind(input.document);
@@ -27,12 +26,6 @@ componentRender = function (input, options) {
 			input._name.replace(/[:#\/]/g, '-') }),
 		// hint
 		options.hint && el('span', { 'class': 'hint' }, options.hint));
-};
-
-hasOwn = function (obj, desc, sKey) {
-	if (!desc.multiple) return obj._hasOwn_(sKey);
-	if (desc._resolveValueGetter_()) return (desc.object === obj);
-	return obj._hasOwnMultiple_(sKey);
 };
 
 Object.defineProperties(PropObserv.prototype, {
@@ -84,8 +77,7 @@ Object.defineProperties(PropObserv.prototype, {
 		return input;
 	}),
 	toDOMInputComponent: d(function (document/*, options*/) {
-		var options = copy(Object(arguments[1])), input, inputOptions, dom, cb
-		  , defined, updateDefinedStatus, object, sKey, desc = this.descriptor;
+		var options = copy(Object(arguments[1])), input, inputOptions, dom, cb, desc = this.descriptor;
 
 		inputOptions = filter(options, function (value, name) {
 			if (name === 'render') return false;
@@ -109,66 +101,37 @@ Object.defineProperties(PropObserv.prototype, {
 		dom.classList.add('dbjs-input-component');
 
 		// Required
-		dom.classList[input.required ? 'add' : 'remove']('dbjs-required');
+		dom.classList[input.required ? 'add' : 'remove']('required');
+		dom.classList[input.required ? 'remove' : 'add']('optional');
 
 		// Changed
 		input.on('change:changed', cb = function (value) {
 			dom.classList[value ? 'add' : 'remove']('changed');
+			dom.classList[value ? 'remove' : 'add']('not-changed');
 		});
 		cb(input.changed);
 
 		// Valid
 		input.on('change:valid', cb = function (value) {
 			dom.classList[value ? 'add' : 'remove']('valid');
+			dom.classList[value ? 'remove' : 'add']('invalid');
 		});
 		cb(input.valid);
 
-		// DBJS Invalid
+		// DBJS valid/invalid & empty/filled
 		this.on('change', cb = function () {
 			var desc = this.descriptor, value;
 			value = desc.required && (this.value == null);
 			dom.classList[value ? 'add' : 'remove']('dbjs-invalid');
+			dom.classList[value ? 'remove' : 'add']('dbjs-valid');
+			dom.classList[this.value == null ? 'add' : 'remove']('dbjs-empty');
+			dom.classList[this.value == null ? 'remove' : 'add']('dbjs-filled');
 		});
 		cb.call(this);
 		input.on('destroy', function (cb) {
 			this.off('change', cb);
 		}.bind(this, cb));
 
-		// DBJS Undefined
-		if (input.isComposite) {
-			defined = {};
-			updateDefinedStatus = function () {
-				dom.classList[keys(defined).length ? 'remove' :
-						'add']('dbjs-undefined');
-			};
-			forEach(input.items, function (input) {
-				var observable = input.observable, cb, object, sKey, desc;
-				if (!observable) return;
-				object = observable.object;
-				desc = observable.descriptor;
-				sKey = observable.__sKey__;
-				if (hasOwn(object, desc, sKey)) defined[sKey] = true;
-				observable.on('change', cb = function (event) {
-					if (hasOwn(object, desc, sKey)) defined[sKey] = true;
-					else delete defined[sKey];
-					updateDefinedStatus();
-				});
-				input.on('destroy', function () { observable.off('change', cb); });
-			});
-			updateDefinedStatus();
-		} else {
-			object = this.object;
-			sKey = this.__sKey__;
-			this.on('change', cb = function () {
-				dom.classList[hasOwn(object, desc, sKey) ? 'remove' :
-						'add']('dbjs-undefined');
-			});
-			this.ownDescriptor._history_.on('change', cb);
-			cb();
-			input.on('destroy', function (cb) {
-				this.off('selfupdate', cb);
-			}.bind(this, cb));
-		}
 		return { dom: dom, input: input, toDOM: toDOM };
 	})
 });
