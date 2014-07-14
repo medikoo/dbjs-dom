@@ -5,13 +5,17 @@ var separate          = require('es5-ext/array/#/separate')
   , forEach           = require('es5-ext/object/for-each')
   , isPlainObject     = require('es5-ext/object/is-plain-object')
   , callable          = require('es5-ext/object/valid-callable')
+  , validObject       = require('es5-ext/object/valid-object')
+  , validValue        = require('es5-ext/object/valid-value')
   , memoize           = require('memoizee/plain')
+  , memoizeMethods    = require('memoizee/methods-plain')
   , getNormalizer     = require('memoizee/normalizers/get-1')
   , d                 = require('d')
   , autoBind          = require('d/auto-bind')
   , isObservable      = require('observable-value/is-observable')
   , isObservableArray = require('observable-array/is-observable-array')
   , isObservableSet   = require('observable-set/is-observable-set')
+  , clear             = require('dom-ext/element/#/clear')
   , exclude           = require('dom-ext/element/#/exclude')
   , include           = require('dom-ext/element/#/include')
   , replace           = require('dom-ext/element/#/replace')
@@ -23,10 +27,11 @@ var separate          = require('es5-ext/array/#/separate')
   , DOMMultiple       = require('./_multiple/checkbox')
   , DOMComposite      = require('./_composite')
 
-  , map = Array.prototype.map, defineProperties = Object.defineProperties
+  , map = Array.prototype.map, create = Object.create, defineProperties = Object.defineProperties
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , createOption = DOMSelect.prototype.createOption
   , createRadio = DOMRadio.prototype.createOption
+  , getId = function (args) { return args[0].__id__; }
 
   , Radio, Select, Edit, Multiple, resolveDbOptions, getResolver;
 
@@ -35,12 +40,11 @@ getResolver = memoize(function (type) {
 		if (!obj || ((obj.constructor !== type) && !type.isPrototypeOf(obj.constructor))) {
 			throw new TypeError(obj + " is not a " + type.__id__);
 		}
-		return this.createOption(obj);
+		return obj;
 	};
 }, { normalizer: getNormalizer() });
 
 resolveDbOptions = function (type, options) {
-	var list;
 	if (options.list != null) {
 		if (isObservableSet(options.list)) {
 			this.dbOptions = options.list.toArray().map(getResolver(type), this);
@@ -51,8 +55,7 @@ resolveDbOptions = function (type, options) {
 			return;
 		}
 	} else {
-		list = type.instances.toArray(options.compare);
-		this.dbOptions = list.map(this.createOption, this);
+		this.dbOptions = type.instances.toArray(options.compare);
 	}
 	this.dbOptions.on('change', this.reload);
 };
@@ -65,10 +68,15 @@ Select = function (document, type/*, options*/) {
 	if (options.getOptionLabel != null) this.getOptionLabel = callable(options.getOptionLabel);
 	else this.property = options.property;
 	resolveDbOptions.call(this, type, options);
+	if (options.group != null) {
+		this.group = validObject(options.group);
+		validValue(this.group.propertyName);
+	}
 	this.reload();
 };
 Select.prototype = Object.create(DOMSelect.prototype, assign({
-	constructor: d(Select),
+	constructor: d(Select)
+}, memoizeMethods({
 	createOption: d(function (obj) {
 		var value;
 		if (this.getOptionLabel) {
@@ -81,10 +89,43 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 			value = this.document.createTextNode(obj);
 		}
 		return createOption.call(this, obj.__id__, value);
-	})
-}, autoBind({
+	}, { normalizer: getId }),
+	createOptgroup: d(function (obj) {
+		var el = this.document.createElement('optgroup'), value;
+		if (this.group.labelPropertyName) {
+			value = obj._get(this.group.labelPropertyName);
+			if (isObservable(value)) value = value.toDOMAttr(el, 'label');
+			else el.setAttribute('label', value);
+		} else {
+			el.setAttribute('label', value);
+		}
+		return el;
+	}, { normalizer: getId })
+}), autoBind({
 	reload: d(function () {
-		replaceContent.call(this.control, this.chooseOption, this.dbOptions);
+		var els, done, options = this.dbOptions;
+		if (this.group) {
+			els = [];
+			done = create(null);
+			options.forEach(function (obj) {
+				var group = obj[this.group.propertyName], optgroup, option;
+				if (!group) {
+					console.warn("No group found for", obj.__id__, "searched by", this.group.propertyName);
+					return;
+				}
+				optgroup = this.createOptgroup(group);
+				option = this.createOption(obj);
+				if (!done[group.__id__]) {
+					clear.call(optgroup);
+					done[group.__id__] = true;
+					els.push(optgroup);
+				}
+				optgroup.appendChild(option);
+			}, this);
+		} else {
+			els = options.map(this.createOption, this);
+		}
+		replaceContent.call(this.control, this.chooseOption, els);
 	})
 })));
 
