@@ -114,6 +114,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		this.inputValue = value;
 	}),
 	castControlAttribute: d(function (name, value) {
+		if (name === 'required') return;
 		this.options.control[name] = value;
 		this.items.forEach(function (input) {
 			input.castControlAttribute(name, value);
