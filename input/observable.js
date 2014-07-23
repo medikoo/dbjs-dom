@@ -16,7 +16,8 @@ var copy              = require('es5-ext/object/copy')
 
 componentRender = function (input, options) {
 	var el = makeElement.bind(input.document);
-	return el('label', (options.label && [options.label, ': ']) || null, input,
+	return el('label',
+		(options.label && [el('span', { class: 'label' }, options.label, ':'), ' ']) || null, input,
 		// required mark
 		el('span', { class: 'required-status' }, '*'),
 		// validation status mark
