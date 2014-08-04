@@ -2,6 +2,7 @@
 
 var clear          = require('es5-ext/array/#/clear')
   , assign         = require('es5-ext/object/assign')
+  , Set            = require('es6-set')
   , d              = require('d')
   , autoBind       = require('d/auto-bind')
   , lazy           = require('d/lazy')
@@ -46,7 +47,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 		return this.items.map(function (item) { return item.value; })
 			.filter(Boolean);
 	}, function (value) {
-		if (value == null) value = [];
+		if (value == null) value = new Set();
 		this._value = value;
 		this.allItems.forEach(function (item) {
 			var obj = this.type.fromInputValue(item.control.value);
