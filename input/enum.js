@@ -1,6 +1,7 @@
 'use strict';
 
 var assign           = require('es5-ext/object/assign')
+  , callable         = require('es5-ext/object/valid-callable')
   , validValue       = require('es5-ext/object/valid-value')
   , d                = require('d')
   , autoBind         = require('d/auto-bind')
@@ -123,13 +124,16 @@ Radio.prototype = Object.create(DOMRadio.prototype, assign({
 })));
 
 Multiple = function (document, type/*, options*/) {
-	var meta = type.meta;
+	var meta = type.meta, options = Object(arguments[2]), filter;
 	this.dbList = [];
+	if (options.filter != null) filter = callable(options.filter);
 	type.members.forEach(function (name) {
-		var item = meta[name];
+		var item;
+		if (filter && !filter(name)) return;
+		item  = meta[name];
 		this.push({ label: (item && item.label) || name, value: name });
 	}, this.dbList);
-	DOMMultipleChBox.apply(this, arguments);
+	DOMMultipleChBox.call(this, document, type, options);
 };
 
 Multiple.prototype = Object.create(DOMMultipleChBox.prototype, {
