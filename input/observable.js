@@ -129,9 +129,7 @@ Object.defineProperties(PropObserv.prototype, {
 			dom.classList[this.value == null ? 'remove' : 'add']('dbjs-filled');
 		});
 		cb.call(this);
-		input.on('destroy', function (cb) {
-			this.off('change', cb);
-		}.bind(this, cb));
+		input.on('destroy', function (cb) { this.off('change', cb); }.bind(this, cb));
 
 		return { dom: dom, input: input, toDOM: toDOM };
 	})
