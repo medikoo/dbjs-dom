@@ -16,17 +16,18 @@ var copy              = require('es5-ext/object/copy')
 
 componentRender = function (input, options) {
 	var el = makeElement.bind(input.document);
-	return el('label',
-		(options.label && [el('span', { class: 'label' }, options.label, ':'), ' ']) || null, input,
-		// required mark
-		el('span', { class: 'required-status' }, '*'),
-		// validation status mark
-		el('span', { class: 'validation-status' }, '✓'),
-		// error message
-		el('span', { class: 'error-message error-message-' +
-			input._name.replace(/[:#\/]/g, '-') }),
-		// hint
-		options.hint && el('span', { 'class': 'hint' }, options.hint));
+	return el('label', { class: 'main-label' },
+		(options.label && [el('span', { class: 'label' }, options.label, ':'), ' ']) || null,
+		el('span', { class: 'control' }, input,
+			// required mark
+			el('span', { class: 'required-status' }, '*'),
+			// validation status mark
+			el('span', { class: 'validation-status' }, '✓'),
+			// error message
+			el('span', { class: 'error-message error-message-' +
+				input._name.replace(/[:#\/]/g, '-') }),
+			// hint
+			options.hint && el('span', { 'class': 'hint' }, options.hint)));
 };
 
 Object.defineProperties(PropObserv.prototype, {
