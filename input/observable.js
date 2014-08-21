@@ -31,7 +31,7 @@ componentRender = function (input, options) {
 			el('span', { class: 'error-message error-message-' +
 				input._name.replace(/[:#\/]/g, '-') }),
 			// hint
-			options.hint && el('span', { 'class': 'hint' }, options.hint)));
+			options.hint && el('span', { class: 'hint' }, options.hint)));
 };
 
 Object.defineProperties(PropObserv.prototype, {

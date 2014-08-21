@@ -45,7 +45,7 @@ renderRow = function (input, options) {
 			el('span', { class: 'error-message error-message-' +
 				input._name.replace(/[:#\/]/g, '-') }),
 			// hint
-			options.hint && el('p', { 'class': 'hint' }, options.hint)));
+			options.hint && el('p', { class: 'hint' }, options.hint)));
 };
 
 renderRowSpan = function (input, options) {
@@ -65,7 +65,7 @@ renderRowSpan = function (input, options) {
 				el('span', { class: 'error-message error-message-' +
 					input._name.replace(/[:#]/g, '-') }),
 				// hint
-				options.hint && el('p', { 'class': 'hint' }, options.hint))));
+				options.hint && el('p', { class: 'hint' }, options.hint))));
 };
 
 Fieldset = function (document, list/*, options*/) {
