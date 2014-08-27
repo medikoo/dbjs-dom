@@ -5,16 +5,22 @@ var noop     = require('es5-ext/function/noop')
   , d        = require('d')
   , DOMInput = require('../_composite')
 
-  , getInputValue =
-	Object.getOwnPropertyDescriptor(DOMInput.prototype, 'inputValue').get
+  , getPrototypeOf = Object.getPrototypeOf
+  , getInputValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'inputValue').get
   , Input;
 
 module.exports = Input = function (document, type/*, options*/) {
-	var options = arguments[2];
+	var options = arguments[2], fn, proto;
 	this.type = type;
 	options = this._resolveOptions(options);
 	options.dbOptions = Object(options.dbOptions);
-	this.getValue = callable(options.dbOptions._value_);
+	proto = options.dbOptions;
+	fn = proto._value_;
+	while ((fn !== undefined) && (typeof fn !== 'function')) {
+		proto = getPrototypeOf(proto);
+		fn = proto._value_;
+	}
+	this.getValue = callable(fn);
 	DOMInput.call(this, document, type, options);
 };
 
