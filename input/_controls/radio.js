@@ -1,6 +1,7 @@
 'use strict';
 
 var copy        = require('es5-ext/object/copy')
+  , callable    = require('es5-ext/object/valid-callable')
   , assign      = require('es5-ext/object/assign')
   , forEach     = require('es5-ext/object/for-each')
   , some        = require('es5-ext/object/some')
@@ -22,10 +23,12 @@ var copy        = require('es5-ext/object/copy')
   , Input;
 
 module.exports = Input = function (document, type/*, options*/) {
+	var options = this._resolveOptions(arguments[2]);
 	this.controls = this.items = {};
 	this.listItems = {};
 	this.attributes = {};
-	DOMInput.apply(this, arguments);
+	if (options.renderOption != null) this.renderOption = callable(options.renderOption);
+	DOMInput.call(this, document, type, options);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, assign({
@@ -47,22 +50,27 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			else input.removeAttribute('name');
 		});
 	}),
-	createOption: d(function (value, labelTextDOM, attrs) {
-		var dom, label, input, cast;
-		dom = this.listItems[value] = this.document.createElement('li');
+	renderOption: d(function (labelTextDOM) {
+		var dom, label, input;
+		dom = this.document.createElement('li');
 		label = dom.appendChild(this.document.createElement('label'));
-		input = this.items[value] =
-			label.appendChild(this.document.createElement('input'));
+		input = label.appendChild(this.document.createElement('input'));
+		label.appendChild(this.document.createTextNode(' '));
+		extend.call(label, labelTextDOM);
+		return { dom: dom, input: input };
+	}),
+	createOption: d(function (value, labelTextDOM, attrs) {
+		var data = this.renderOption(labelTextDOM), input = data.input, cast;
+		this.listItems[value] = data.dom;
+		this.items[value] = input;
 		input._dbjsInput = this;
 		input.setAttribute('type', 'radio');
 		input.setAttribute('value', value);
-		if (this.name) input.setAttribute('name', this.name);
+		if (this.name) data.input.setAttribute('name', this.name);
 		forEach(this.attributes, cast = function (value, name) { castAttr.call(input, name, value); });
 		if (attrs) forEach(attrs, cast);
-		label.appendChild(this.document.createTextNode(' '));
-		extend.call(label, labelTextDOM);
 		input.addEventListener('change', this.onChange, false);
-		return dom;
+		return data.dom;
 	}),
 	castControlAttribute: d(function (name, value) {
 		if (!this.controlAttributes[name] && !htmlAttrs[name] &&
