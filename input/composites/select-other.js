@@ -18,14 +18,16 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		  , data = getFields(options.observable.object, desc,
 				{ selectField: desc.database.StringLine,
 					otherField: desc.database.String })
-		  , selectInput, other, label;
+		  , selectInput, other, label, observable;
 
+		observable = data.observables[data.names.selectField];
 		this.addItem(selectInput =
 			data.observables[data.names.selectField].toDOMInput(this.document,
-				this.getOptions(data.observables[data.names.selectField])), 'select');
+				this.getOptions(observable)), observable.dbId);
+		observable = data.observables[data.names.otherField];
 		this.addItem(other =
 			data.observables[data.names.otherField].toDOMInput(this.document,
-				this.getOptions(data.observables[data.names.otherField])), 'other');
+				this.getOptions(data.observables[data.names.otherField])), observable.dbId);
 
 		selectInput.on('change', function () {
 			((selectInput.value === 'other') ? include : exclude).call(label);
