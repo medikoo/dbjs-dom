@@ -33,6 +33,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	name: d.gs(noop, noop),
 	inputValue: d.gs(function () {
 		var state = mapKeys(getInputValue.call(this), mapKey);
+		if (!state.database) state.database = this.type.database;
 		return this.getValue.call(state);
 	}, noop)
 });
