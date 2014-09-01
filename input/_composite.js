@@ -3,7 +3,6 @@
 var noop        = require('es5-ext/function/noop')
   , copy        = require('es5-ext/object/copy')
   , assign      = require('es5-ext/object/assign')
-  , every       = require('es5-ext/object/every')
   , map         = require('es5-ext/object/map')
   , some        = require('es5-ext/object/some')
   , d           = require('d')
@@ -35,8 +34,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		var value, changed, valid, emitChanged, emitValid;
 		value = this.value;
 		changed = some(this.items, function (item) { return item.changed; });
-		valid = every(this.items, function (item) { return item.valid; });
-		if (valid && this.required) valid = (value != null);
+		if (this.required) valid = (value != null);
 
 		if (this.changed !== changed) {
 			this.changed = changed;
