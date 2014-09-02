@@ -1,30 +1,27 @@
 'use strict';
 
-var assign         = require('es5-ext/object/assign')
-  , forEach        = require('es5-ext/object/for-each')
-  , startsWith     = require('es5-ext/string/#/starts-with')
-  , toArray        = require('es5-ext/array/to-array')
-  , d              = require('d')
-  , autoBind       = require('d/auto-bind')
-  , memoize        = require('memoizee/plain')
-  , isObservable   = require('observable-value/is-observable')
-  , makeElement    = require('dom-ext/document/#/make-element')
-  , castAttribute  = require('dom-ext/element/#/cast-attribute')
-  , replaceContent = require('dom-ext/element/#/replace-content')
-  , getId          = require('dom-ext/html-element/#/get-id')
-  , nested         = require('dbjs/valid-dbjs-nested-object')
-  , DOMComposite   = require('../_composite')
-  , htmlAttributes = require('../_html-attributes')
-  , setup          = require('../')
+var assign            = require('es5-ext/object/assign')
+  , forEach           = require('es5-ext/object/for-each')
+  , startsWith        = require('es5-ext/string/#/starts-with')
+  , toArray           = require('es5-ext/array/to-array')
+  , d                 = require('d')
+  , autoBind          = require('d/auto-bind')
+  , memoize           = require('memoizee/plain')
+  , isObservable      = require('observable-value/is-observable')
+  , makeElement       = require('dom-ext/document/#/make-element')
+  , castAttribute     = require('dom-ext/element/#/cast-attribute')
+  , replaceContent    = require('dom-ext/element/#/replace-content')
+  , getId             = require('dom-ext/html-element/#/get-id')
+  , resolveObservable = require('./resolve-observable')
+  , DOMComposite      = require('../_composite')
+  , htmlAttributes    = require('../_html-attributes')
+  , setup             = require('../')
 
   , defineProperty = Object.defineProperty
   , getObservable, Fieldset, renderRow, renderRowSpan;
 
 getObservable = function (name) {
-	var current = this;
-	name = String(name).split('/');
-	while (name.length > 1) current = nested(current[name.shift()]);
-	return current._get(name[0]);
+	return resolveObservable(this, name);
 };
 
 renderRow = function (input, options) {
