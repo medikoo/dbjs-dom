@@ -128,10 +128,10 @@ Object.defineProperties(PropObserv.prototype, {
 
 		// DBJS valid/invalid & empty/filled
 		this.on('change', cb = function () {
-			var desc = this.descriptor, value;
-			value = desc.required && (this.value == null);
-			dom.classList[value ? 'add' : 'remove']('dbjs-invalid');
-			dom.classList[value ? 'remove' : 'add']('dbjs-valid');
+			var desc = this.descriptor, isInvalid;
+			isInvalid = desc.required && (this.value == null);
+			dom.classList[isInvalid ? 'add' : 'remove']('dbjs-invalid');
+			dom.classList[isInvalid ? 'remove' : 'add']('dbjs-valid');
 			dom.classList[this.value == null ? 'add' : 'remove']('dbjs-empty');
 			dom.classList[this.value == null ? 'remove' : 'add']('dbjs-filled');
 		});
