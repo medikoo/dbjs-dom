@@ -135,7 +135,8 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		if (isAnchor(this.addButton)) {
 			castAttribute.call(this.addButton, 'onclick', this.addItem);
 		} else {
-			this.addButton = el('a', { onclick: this.addItem }, this.addButton);
+			this.addButton = el('a', { class: 'dbjs-multiple-button-add', onclick: this.addItem },
+				this.addButton);
 		}
 		this.dom = el('div', { class: 'dbjs multiple' }, this.domList,
 			el('div', { class: 'controls' }, this.addButton));
@@ -161,7 +162,8 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			castAttribute.call(removeButton, 'onclick',
 				this.safeRemoveItem.bind(this, input));
 		} else {
-			removeButton = el('a', { onclick: this.safeRemoveItem.bind(this, input) },
+			removeButton = el('a', { class: 'dbjs-multiple-button-remove',
+				onclick: this.safeRemoveItem.bind(this, input) },
 				removeButton);
 		}
 		extend.call(dom, input, removeButton);
