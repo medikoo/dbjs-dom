@@ -128,12 +128,18 @@ Object.defineProperties(PropObserv.prototype, {
 
 		// DBJS valid/invalid & empty/filled
 		this.on('change', cb = function () {
-			var desc = this.descriptor, isInvalid;
+			var desc = this.descriptor, isInvalid, value;
 			isInvalid = desc.required && (this.value == null);
 			dom.classList[isInvalid ? 'add' : 'remove']('dbjs-invalid');
 			dom.classList[isInvalid ? 'remove' : 'add']('dbjs-valid');
-			dom.classList[this.value == null ? 'add' : 'remove']('dbjs-empty');
-			dom.classList[this.value == null ? 'remove' : 'add']('dbjs-filled');
+			value = this.value;
+			if (isSet(value)) {
+				dom.classList[value.size ? 'remove' : 'add']('dbjs-empty');
+				dom.classList[value.size ? 'add' : 'remove']('dbjs-filled');
+			} else {
+				dom.classList[value == null ? 'add' : 'remove']('dbjs-empty');
+				dom.classList[value == null ? 'remove' : 'add']('dbjs-filled');
+			}
 		});
 		cb.call(this);
 		input.on('destroy', function (cb) { this.off('change', cb); }.bind(this, cb));
