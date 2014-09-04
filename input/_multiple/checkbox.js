@@ -10,6 +10,7 @@ var clear          = require('es5-ext/array/#/clear')
   , memoizeMethods = require('memoizee/methods-plain')
   , replaceContent = require('dom-ext/element/#/replace-content')
   , DOMCheckbox    = require('../_controls/checkbox')
+  , toIdent        = require('../utils/to-ident')
   , DOMInput       = require('./')
 
   , map = Array.prototype.map
@@ -21,6 +22,7 @@ module.exports = DOMMultiple = function (document, type/*, options*/) {
 	var options = Object(arguments[2]);
 	DOMInput.call(this, document, type, options);
 	this.itemOptions = Object(options.items);
+	this.listItemIdPrefix = options.listItemIdPrefix;
 	this.allItems = [];
 	this.reload();
 };
@@ -81,11 +83,12 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 	})
 }), memoizeMethods({
 	renderItem: d(function (value, label) {
-		var el = this.make, input, dom, options;
+		var el = this.make, input, dom, options, itemAttrs;
 		options = this.itemOptions[value]
 			? normalizeOpts(this.options, this.itemOptions[value]) : this.options;
 		input = new DOMCheckbox(this.document, this.type, options);
-		dom = el('li', el('label', input, ' ', label));
+		if (this.listItemIdPrefix) itemAttrs = { id: this.listItemIdPrefix + toIdent(value) };
+		dom = el('li', itemAttrs, el('label', input, ' ', label));
 
 		if (this.name) input.name = this.name;
 		input.parent = this;
