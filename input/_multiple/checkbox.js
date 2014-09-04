@@ -2,6 +2,7 @@
 
 var clear          = require('es5-ext/array/#/clear')
   , assign         = require('es5-ext/object/assign')
+  , normalizeOpts  = require('es5-ext/object/normalize-options')
   , Set            = require('es6-set')
   , d              = require('d')
   , autoBind       = require('d/auto-bind')
@@ -17,7 +18,9 @@ var clear          = require('es5-ext/array/#/clear')
   , DOMMultiple;
 
 module.exports = DOMMultiple = function (document, type/*, options*/) {
-	DOMInput.apply(this, arguments);
+	var options = Object(arguments[2]);
+	DOMInput.call(this, document, type, options);
+	this.itemOptions = Object(options.items);
 	this.allItems = [];
 	this.reload();
 };
@@ -78,8 +81,10 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 	})
 }), memoizeMethods({
 	renderItem: d(function (value, label) {
-		var el = this.make, input, dom;
-		input = new DOMCheckbox(this.document, this.type, this.options);
+		var el = this.make, input, dom, options;
+		options = this.itemOptions[value]
+			? normalizeOpts(this.options, this.itemOptions[value]) : this.options;
+		input = new DOMCheckbox(this.document, this.type, options);
 		dom = el('li', el('label', input, ' ', label));
 
 		if (this.name) input.name = this.name;
