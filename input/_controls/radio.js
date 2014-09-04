@@ -14,6 +14,7 @@ var copy        = require('es5-ext/object/copy')
   , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
   , extend      = require('dom-ext/element/#/extend')
   , DOMInput    = require('./input')
+  , toIdent     = require('../utils/to-ident')
   , htmlAttrs   = require('../_html-attributes')
   , eventOpts   = require('../_event-options')
 
@@ -28,6 +29,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.listItems = {};
 	this.attributes = {};
 	if (options.renderOption != null) this.renderOption = callable(options.renderOption);
+	this.listItemIdPrefix = options.listItemIdPrefix;
 	DOMInput.call(this, document, type, options);
 };
 
@@ -61,6 +63,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	}),
 	createOption: d(function (value, labelTextDOM, attrs) {
 		var data = this.renderOption(labelTextDOM), input = data.input, cast;
+		if (this.listItemIdPrefix) data.dom.id = this.listItemIdPrefix + toIdent(value);
 		this.listItems[value] = data.dom;
 		this.items[value] = input;
 		input._dbjsInput = this;
