@@ -5,8 +5,8 @@ var separate     = require('es5-ext/array/#/separate')
   , callable     = require('es5-ext/object/valid-callable')
   , d            = require('d')
   , memoize      = require('memoizee/plain')
-  , DOMInput     = require('./_observable')
   , resolveProps = require('esniff/accessed-properties')('this')
+  , DOMInput     = require('./_observable')
 
   , getPrototypeOf = Object.getPrototypeOf
   , re = new RegExp('^\\s*function\\s*(?:[\\0-\'\\)-\\uffff]+)*\\s*\\(\\s*' +
