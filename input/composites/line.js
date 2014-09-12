@@ -1,11 +1,13 @@
 'use strict';
 
-var separate     = require('es5-ext/array/#/separate')
+var compact      = require('es5-ext/array/#/compact')
+  , separate     = require('es5-ext/array/#/separate')
   , uniq         = require('es5-ext/array/#/uniq')
   , callable     = require('es5-ext/object/valid-callable')
   , d            = require('d')
   , memoize      = require('memoizee/plain')
   , resolveProps = require('esniff/accessed-properties')('this')
+  , metaNames    = require('dbjs/_setup/utils/meta-property-names')
   , DOMInput     = require('./_observable')
 
   , getPrototypeOf = Object.getPrototypeOf
@@ -34,9 +36,10 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		triggers = resolve(callable(fn));
 
 		this.dom = el('div', options.prepend,
-			separate.call(triggers.map(function (name) {
+			separate.call(compact.call(triggers.map(function (name) {
+				if (metaNames[name]) return;
 				return this._get(name);
-			}, object).map(function (observable) {
+			}, object)).map(function (observable) {
 				var desc = observable.descriptor, opts = this.getOptions(desc);
 				if ((opts.placeholder == null) && desc.label) {
 					opts.placeholder = desc.label;
