@@ -22,7 +22,9 @@ resolve = memoize(function (fn) {
 });
 
 module.exports = Input = function (document, ns/*, options*/) {
-	DOMInput.apply(this, arguments);
+	var options = Object(arguments[2]);
+	if (options.render != null) this._render = callable(options.render);
+	DOMInput.call(this, document, ns, options);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
