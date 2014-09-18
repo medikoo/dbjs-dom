@@ -21,10 +21,12 @@ resolve = memoize(function (fn) {
 	}));
 });
 
-module.exports = Input = function (document, ns/*, options*/) {
-	var options = Object(arguments[2]);
+module.exports = Input = function (document, type/*, options*/) {
+	var options = arguments[2];
+	this.type = type;
+	options = this._resolveOptions(options);
 	if (options.render != null) this._render = callable(options.render);
-	DOMInput.call(this, document, ns, options);
+	DOMInput.call(this, document, type, options);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
