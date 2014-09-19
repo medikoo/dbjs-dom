@@ -251,6 +251,6 @@ module.exports = memoize(function (db) {
 			return db.Object.toDOMInput(document, options);
 		})
 	});
-}, { normalizers: getNormalizer() });
+}, { normalizer: getNormalizer() });
 
 exports.Input = Input;
