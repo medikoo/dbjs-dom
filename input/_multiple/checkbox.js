@@ -1,6 +1,7 @@
 'use strict';
 
 var clear          = require('es5-ext/array/#/clear')
+  , callable       = require('es5-ext/object/valid-callable')
   , assign         = require('es5-ext/object/assign')
   , normalizeOpts  = require('es5-ext/object/normalize-options')
   , Set            = require('es6-set')
@@ -22,6 +23,7 @@ module.exports = DOMMultiple = function (document, type/*, options*/) {
 	var options = Object(arguments[2]);
 	DOMInput.call(this, document, type, options);
 	this.itemOptions = Object(options.items);
+	if (options.renderItem !== undefined) this.customRenderItem = callable(options.renderItem);
 	this.listItemIdPrefix = options.listItemIdPrefix;
 	this.allItems = [];
 	this.reload();
@@ -87,8 +89,13 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 		options = this.itemOptions[value]
 			? normalizeOpts(this.options, this.itemOptions[value]) : this.options;
 		input = new DOMCheckbox(this.document, this.type, options);
-		if (this.listItemIdPrefix) itemAttrs = { id: this.listItemIdPrefix + toIdent(value) };
-		dom = el('li', itemAttrs, el('label', input, " ", label));
+		if (this.customRenderItem) {
+			dom = this.customRenderItem(input);
+			if (this.listItemIdPrefix) dom.id = this.listItemIdPrefix + toIdent(value);
+		} else {
+			if (this.listItemIdPrefix) itemAttrs = { id: this.listItemIdPrefix + toIdent(value) };
+			dom = el('li', itemAttrs, el('label', input, " ", label));
+		}
 
 		if (this.name) input.name = this.name;
 		input.parent = this;
