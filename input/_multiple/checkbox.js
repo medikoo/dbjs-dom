@@ -88,7 +88,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 			? normalizeOpts(this.options, this.itemOptions[value]) : this.options;
 		input = new DOMCheckbox(this.document, this.type, options);
 		if (this.listItemIdPrefix) itemAttrs = { id: this.listItemIdPrefix + toIdent(value) };
-		dom = el('li', itemAttrs, el('label', input, ' ', label));
+		dom = el('li', itemAttrs, el('label', input, " ", label));
 
 		if (this.name) input.name = this.name;
 		input.parent = this;
