@@ -51,6 +51,7 @@ module.exports = Input = function (document, type/*, options*/) {
 };
 
 Input.prototype = Object.create(DOMInput.prototype, assign({
+	constructor: d(Input),
 	_value: d(null),
 	controlAttributes: d({}),
 	minInputsCount: d(0),
