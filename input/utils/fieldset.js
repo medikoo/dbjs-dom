@@ -87,6 +87,7 @@ Fieldset = function (document, list/*, options*/) {
 		castAttribute.call(this.dom, name, value);
 	}, this);
 	this.dom.classList.add('dbjs');
+	this.dom._dbjsFieldset = this;
 
 	this.reload();
 };
