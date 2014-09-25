@@ -11,16 +11,60 @@ var assign            = require('es5-ext/object/assign')
   , makeElement       = require('dom-ext/document/#/make-element')
   , castAttribute     = require('dom-ext/element/#/cast-attribute')
   , replaceContent    = require('dom-ext/element/#/replace-content')
+  , getId             = require('dom-ext/html-element/#/get-id')
   , resolveObservable = require('./resolve-observable')
   , DOMComposite      = require('../_composite')
   , htmlAttributes    = require('../_html-attributes')
   , setup             = require('../')
 
   , defineProperty = Object.defineProperty
-  , getObservable, Fieldset;
+  , getObservable, Fieldset, renderRow, renderRowSpan;
 
 getObservable = function (name) {
 	return resolveObservable(this, name);
+};
+
+renderRow = function (input, options) {
+	var el = makeElement.bind(input.document)
+	  , id = getId.call(input.control || input.dom);
+	return el('tr',
+		// label
+		el('th', el('label', { for: id }, options.label, options.label ? ':' : '')),
+		// input
+		el('td', input,
+			// required mark
+			(options.missingStatus !== false)
+			? el('span', { class: 'status-missing' }, '★') : null,
+			// validation status mark
+			(options.okStatus !== false)
+			? el('span', { class: 'status-ok' }, '✓') : null,
+			(options.errorStatus !== false)
+			? el('span', { class: 'status-error' }, '✕') : null,
+			// error message
+			el('span', { class: 'error-message error-message-' +
+				input._name.replace(/[:#\/]/g, '-') }),
+			// hint
+			options.hint && el('p', { class: 'hint' }, options.hint)));
+};
+
+renderRowSpan = function (input, options) {
+	var el = makeElement.bind(input.document)
+	  , id = getId.call(input.control || input.dom);
+	return el('tr',
+		// label
+		el('td', { colspan: 2 },
+			el('p', el('label', { for: id }, options.label ? ':' : '')),
+			// input
+			el('div', input,
+				// required mark
+				el('span', { class: 'required-status' }, '*'),
+				// validation status mark
+				el('span', { class: 'validation-status' }, '✓'),
+				// error message
+				el('span', { class: 'error-message error-message-' +
+					input._name.replace(/[:#]/g, '-') }),
+				// hint
+				options.hint && el('p', { class: 'hint' }, options.hint))));
 };
 
 Fieldset = function (document, list/*, options*/) {
@@ -47,14 +91,18 @@ Fieldset = function (document, list/*, options*/) {
 
 	this.reload();
 };
+Object.defineProperty(Fieldset, 'renderRow', d(renderRow));
 
 Object.defineProperties(Fieldset.prototype, assign({
 	render: d(function () {
 		var el = makeElement.bind(this.document);
-		this.dom = el('fieldset', this.domItems = el('ul'));
+		this.dom = el('fieldset', el('table',
+			this.domItems = el('tbody')));
 	}),
 	renderItem: d(function (observable) {
 		var options = this.getOptions(observable.ownDescriptor);
+		if (options.render == null) options.render = renderRow;
+		else if (options.render === 'span') options.render = renderRowSpan;
 		return (this.items[observable.dbId] =
 			observable.toDOMInputComponent(this.document, options));
 	}),
