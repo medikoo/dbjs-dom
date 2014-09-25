@@ -54,9 +54,14 @@ Object.defineProperties(Fieldset.prototype, assign({
 		this.dom = el('fieldset', this.domItems = el('ul'));
 	}),
 	renderItem: d(function (observable) {
-		var options = this.getOptions(observable.ownDescriptor);
-		return (this.items[observable.dbId] =
-			observable.toDOMInputComponent(this.document, options));
+		var options = this.getOptions(observable.ownDescriptor), field, dom, li;
+		field = observable.toDOMInputComponent(this.document, options);
+		this.items[observable.dbId] = field;
+		dom = field.toDOM(this.document);
+		if (dom.nodeName.toLowerCase() === 'li') return dom;
+		li = this.document.createElement('li');
+		li.appendChild(dom);
+		return li;
 	}),
 	toDOM: d(function () { return this.dom; }),
 	getOptions: d(DOMComposite.prototype.getOptions)
