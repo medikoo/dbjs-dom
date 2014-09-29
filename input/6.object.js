@@ -52,11 +52,12 @@ resolveDbOptions = function (type, options) {
 			this.dbOptions = options.list.map(getResolver(type), this);
 		} else {
 			this.dbOptions = map.call(options.list, getResolver(type), this);
-			return;
 		}
 	} else {
 		this.dbOptions = type.instances.toArray(options.compare);
 	}
+	if (!this.group) this.dbOptions = this.dbOptions.map(this.createOption, this);
+	if (typeof this.dbOptions.on !== 'function') return;
 	this.dbOptions.on('change', this.reload);
 };
 
@@ -67,11 +68,11 @@ Select = function (document, type/*, options*/) {
 	DOMSelect.call(this, document, type, options);
 	if (options.getOptionLabel != null) this.getOptionLabel = callable(options.getOptionLabel);
 	else this.property = options.property;
-	resolveDbOptions.call(this, type, options);
 	if (options.group != null) {
 		this.group = validObject(options.group);
 		validValue(this.group.propertyName);
 	}
+	resolveDbOptions.call(this, type, options);
 	this.reload();
 };
 Select.prototype = Object.create(DOMSelect.prototype, assign({
@@ -123,7 +124,7 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 				optgroup.appendChild(option);
 			}, this);
 		} else {
-			els = options.map(this.createOption, this);
+			els = options;
 		}
 		replaceContent.call(this.control, this.chooseOption, els);
 	})
