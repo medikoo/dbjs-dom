@@ -62,7 +62,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		return { dom: dom, input: input };
 	}),
 	createOption: d(function (value, labelTextDOM, attrs) {
-		var data = this.renderOption(labelTextDOM), input = data.input, cast;
+		var data = this.renderOption(labelTextDOM, value), input = data.input, cast;
 		if (this.listItemIdPrefix) data.dom.id = this.listItemIdPrefix + toIdent(value);
 		this.listItems[value] = data.dom;
 		this.items[value] = input;
