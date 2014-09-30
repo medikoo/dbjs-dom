@@ -39,7 +39,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		}
 		triggers = resolve(callable(fn));
 
-		this.dom = el('div', options.prepend,
+		this.dom = el('div', { class: 'controls' },  options.prepend,
 			separate.call(compact.call(triggers.map(function (name) {
 				if (metaNames[name]) return;
 				return this._get(name);

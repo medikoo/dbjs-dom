@@ -33,7 +33,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			((selectInput.value === 'other') ? include : exclude).call(label);
 		});
 
-		this.dom = el('div', selectInput, label = el('label',
+		this.dom = el('div', { class: 'controls' }, selectInput, label = el('label',
 			data.observables[data.names.otherField].label, other));
 	})
 });

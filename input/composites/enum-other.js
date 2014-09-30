@@ -35,6 +35,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		enumInput.on('change', function () { other.control.disabled = (enumInput.value !== 'other'); });
 
 		this.dom = this.document.createElement('div');
+		this.dom.className = 'controls';
 		this.dom.appendChild(enumInput.dom);
 	})
 });
