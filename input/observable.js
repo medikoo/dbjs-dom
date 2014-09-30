@@ -24,11 +24,12 @@ componentRender = function (input, options) {
 			options.label, ':', ' ')]) || null,
 		el('div', { class: 'control' }, input,
 			// required mark
-			el('span', { class: 'status-missing' }, '★'),
-			// validation status mark
-			el('span', { class: 'status-ok' }, '✓'),
-			// validation status mark
-			el('span', { class: 'status-error' }, '✕'),
+			el('span', { class: 'statuses' },
+				el('span', { class: 'status-missing' }, '★'),
+				// validation status mark
+				el('span', { class: 'status-ok' }, '✓'),
+				// validation status mark
+				el('span', { class: 'status-error' }, '✕')),
 			// error message
 			el('span', { class: 'error-message error-message-' +
 				input._name.replace(/[:#\/]/g, '-') }),

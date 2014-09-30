@@ -33,13 +33,14 @@ renderRow = function (input, options) {
 		// input
 		el('td', input,
 			// required mark
-			(options.missingStatus !== false)
-			? el('span', { class: 'status-missing' }, '★') : null,
-			// validation status mark
-			(options.okStatus !== false)
-			? el('span', { class: 'status-ok' }, '✓') : null,
-			(options.errorStatus !== false)
-			? el('span', { class: 'status-error' }, '✕') : null,
+			el('span', { class: 'statuses' },
+				(options.missingStatus !== false)
+				? el('span', { class: 'status-missing' }, '★') : null,
+				// validation status mark
+				(options.okStatus !== false)
+				? el('span', { class: 'status-ok' }, '✓') : null,
+				(options.errorStatus !== false)
+				? el('span', { class: 'status-error' }, '✕') : null),
 			// error message
 			el('span', { class: 'error-message error-message-' +
 				input._name.replace(/[:#\/]/g, '-') }),
@@ -56,10 +57,12 @@ renderRowSpan = function (input, options) {
 			el('p', el('label', { for: id }, options.label ? ':' : '')),
 			// input
 			el('div', input,
-				// required mark
-				el('span', { class: 'required-status' }, '*'),
-				// validation status mark
-				el('span', { class: 'validation-status' }, '✓'),
+				el('span', { class: 'statuses' },
+					// required mark
+					el('span', { class: 'status-missing' }, '★'),
+					// validation status mark
+					el('span', { class: 'status-ok' }, '✓'),
+					el('span', { class: 'status-error' }, '✕')),
 				// error message
 				el('span', { class: 'error-message error-message-' +
 					input._name.replace(/[:#]/g, '-') }),
