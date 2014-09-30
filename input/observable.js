@@ -22,7 +22,7 @@ componentRender = function (input, options) {
 		(options.label && [el('label',
 			(input.control ? { for: getId.call(input.control) } : null),
 			options.label, ':', ' ')]) || null,
-		el('div', { class: 'control' }, input,
+		el('div', { class: 'input' }, input,
 			// required mark
 			el('span', { class: 'statuses' },
 				el('span', { class: 'status-missing' }, '★'),
