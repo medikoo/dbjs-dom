@@ -51,8 +51,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 		if (emitValid) this.emit('change:valid', this.valid);
 	}),
 	inputValue: d.gs(function () {
-		return this.items.map(function (item) { return item.value; })
-			.filter(Boolean);
+		return this.items.map(function (item) { return item.value; }).filter(Boolean);
 	}, function (value) {
 		if (value == null) value = new Set();
 		this._value = value;
