@@ -64,7 +64,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 	}),
 	_render: d(function () {
 		this.dom = this.document.createElement('ul');
-		this.dom.className = 'dbjs multiple';
+		this.dom.className = 'dbjs multiple checkbox';
 	}),
 	safeRemoveItem: d(notSupported),
 	addItem: d(notSupported),
