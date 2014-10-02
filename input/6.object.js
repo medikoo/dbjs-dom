@@ -169,7 +169,7 @@ Edit.prototype = Object.create(DOMComposite.prototype, {
 		props = options.inputProperties || desc.inputProperties ||
 			this.type.inputProperties ||
 			this.type.prototype.toSet('key').toArray();
-		this.dom = el('div', separate.call(props.map(function (name) {
+		this.dom = el('div', { class: 'inputs' }, separate.call(props.map(function (name) {
 			var observable = obj._get(name);
 			return this.addItem(observable.toDOMInput(this.document,
 				this.getOptions(observable.descriptor)), name);
