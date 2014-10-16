@@ -13,7 +13,7 @@ var contains      = require('es5-ext/array/#/contains')
   , extend        = require('dom-ext/element/#/extend')
   , removeEl      = require('dom-ext/element/#/remove')
   , setPresenceEl = require('dom-ext/element/#/set-presence')
-  , isAnchor     = require('dom-ext/html-anchor-element/is-html-anchor-element')
+  , isAnchor      = require('dom-ext/html-anchor-element/is-html-anchor-element')
   , DOMInput      = require('../_controls/input')
 
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
