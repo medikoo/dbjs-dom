@@ -154,7 +154,7 @@ module.exports = exports = memoize(function (Type) {
 		DOMSelect: d(Select),
 		DOMMultipleInput: d(Multiple),
 		toDOMInput: d(function (document/*, options*/) {
-			var options = Object(arguments[1]);
+			var options = resolveOptions(arguments[1], this);
 			if (options.multiple) {
 				if (options.multiType === 'base') return new DOMMultiple(document, this, options);
 				if (options.multiType === 'select') return new MultipleSelect(document, this, options);
