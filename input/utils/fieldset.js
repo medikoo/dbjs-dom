@@ -1,26 +1,27 @@
 'use strict';
 
-var assign            = require('es5-ext/object/assign')
-  , forEach           = require('es5-ext/object/for-each')
-  , startsWith        = require('es5-ext/string/#/starts-with')
-  , toArray           = require('es5-ext/array/to-array')
-  , d                 = require('d')
-  , autoBind          = require('d/auto-bind')
-  , memoize           = require('memoizee/plain')
-  , isObservable      = require('observable-value/is-observable')
-  , makeElement       = require('dom-ext/document/#/make-element')
-  , castAttribute     = require('dom-ext/element/#/cast-attribute')
-  , replaceContent    = require('dom-ext/element/#/replace-content')
-  , resolveObservable = require('./resolve-observable')
-  , DOMComposite      = require('../_composite')
-  , htmlAttributes    = require('../_html-attributes')
-  , setup             = require('../')
+var assign          = require('es5-ext/object/assign')
+  , forEach         = require('es5-ext/object/for-each')
+  , startsWith      = require('es5-ext/string/#/starts-with')
+  , toArray         = require('es5-ext/array/to-array')
+  , d               = require('d')
+  , autoBind        = require('d/auto-bind')
+  , memoize         = require('memoizee/plain')
+  , isObservable    = require('observable-value/is-observable')
+  , makeElement     = require('dom-ext/document/#/make-element')
+  , castAttribute   = require('dom-ext/element/#/cast-attribute')
+  , replaceContent  = require('dom-ext/element/#/replace-content')
+  , resolveProperty = require('dbjs/_setup/utils/resolve-property-path')
+  , DOMComposite    = require('../_composite')
+  , htmlAttributes  = require('../_html-attributes')
+  , setup           = require('../')
 
   , defineProperty = Object.defineProperty
   , getObservable, Fieldset;
 
 getObservable = function (name) {
-	return resolveObservable(this, name);
+	var result = resolveProperty(this, name);
+	return result.object.getObservable(result.key);
 };
 
 Fieldset = function (document, list/*, options*/) {
