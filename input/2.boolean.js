@@ -110,7 +110,7 @@ module.exports = exports = function (db) {
 		DOMRadio: d(Radio),
 		DOMCheckbox: d(Checkbox),
 		toDOMInput: d(function (document/*, options*/) {
-			var options = Object(arguments[1]);
+			var options = resolveOptions(arguments[1], this);
 			if (options.multiple) {
 				return new this.DOMMultipleInput(document, this, options);
 			}
