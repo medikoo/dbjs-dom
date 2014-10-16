@@ -1,13 +1,14 @@
 'use strict';
 
-var noop        = require('es5-ext/function/noop')
-  , copy        = require('es5-ext/object/copy')
-  , assign      = require('es5-ext/object/assign')
-  , map         = require('es5-ext/object/map')
-  , some        = require('es5-ext/object/some')
-  , d           = require('d')
-  , makeElement = require('dom-ext/document/#/make-element')
-  , DOMInput    = require('./_controls/input')
+var noop           = require('es5-ext/function/noop')
+  , copy           = require('es5-ext/object/copy')
+  , assign         = require('es5-ext/object/assign')
+  , map            = require('es5-ext/object/map')
+  , some           = require('es5-ext/object/some')
+  , d              = require('d')
+  , makeElement    = require('dom-ext/document/#/make-element')
+  , resolveOptions = require('./utils/resolve-options')
+  , DOMInput       = require('./_controls/input')
 
   , Input;
 
@@ -15,7 +16,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	var options = arguments[2];
 	this.items = {};
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	this.options = Object(options.item);
 	this.options.control = assign(Object(options.control),
 		Object(this.options.control));

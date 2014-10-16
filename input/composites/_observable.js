@@ -1,12 +1,13 @@
 'use strict';
 
-var last     = require('es5-ext/array/#/last')
-  , noop     = require('es5-ext/function/noop')
-  , mapKeys  = require('es5-ext/object/map-keys')
-  , callable = require('es5-ext/object/valid-callable')
-  , d        = require('d')
-  , splitId  = require('dbjs/_setup/unserialize/id')
-  , DOMInput = require('../_composite')
+var last           = require('es5-ext/array/#/last')
+  , noop           = require('es5-ext/function/noop')
+  , mapKeys        = require('es5-ext/object/map-keys')
+  , callable       = require('es5-ext/object/valid-callable')
+  , d              = require('d')
+  , splitId        = require('dbjs/_setup/unserialize/id')
+  , resolveOptions = require('../utils/resolve-options')
+  , DOMInput       = require('../_composite')
 
   , getPrototypeOf = Object.getPrototypeOf
   , getInputValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'inputValue').get
@@ -16,7 +17,7 @@ var last     = require('es5-ext/array/#/last')
 module.exports = Input = function (document, type/*, options*/) {
 	var options = arguments[2], fn, proto;
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	options.dbOptions = Object(options.dbOptions);
 	proto = options.dbOptions;
 	fn = proto._value_;

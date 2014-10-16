@@ -18,6 +18,7 @@ var aFrom          = require('es5-ext/array/from')
   , remove         = require('dom-ext/element/#/remove')
   , replaceCont    = require('dom-ext/element/#/replace-content')
   , dispatchEvnt   = require('dom-ext/html-element/#/dispatch-event-2')
+  , resolveOptions = require('../utils/resolve-options')
   , DOMInput       = require('../_controls/input')
   , eventOpts      = require('../_event-options')
   , setup          = require('../')
@@ -71,7 +72,7 @@ Input = function (document, type/*, options*/) {
 	this.make = makeEl.bind(document);
 	this.controls = [];
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	if (options.multiple) this.multiple = true;
 	((options.render == null) || callable(options.render));
 	defineProperty(this, 'renderItem', d((options.renderItem == null)

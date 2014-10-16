@@ -1,19 +1,19 @@
 'use strict';
 
-var assign           = require('es5-ext/object/assign')
-  , normalizeOptions = require('es5-ext/object/normalize-options')
-  , forEach          = require('es5-ext/object/for-each')
-  , isRegExp         = require('es5-ext/reg-exp/is-reg-exp')
-  , startsWith       = require('es5-ext/string/#/starts-with')
-  , d                = require('d')
-  , autoBind         = require('d/auto-bind')
-  , ee               = require('event-emitter')
-  , castAttr         = require('dom-ext/element/#/cast-attribute')
-  , dispatchEvt      = require('dom-ext/html-element/#/dispatch-event-2')
-  , mergeClass       = require('dom-ext/html-element/#/merge-class')
-  , once             = require('timers-ext/once')
-  , htmlAttrs        = require('../_html-attributes')
-  , eventOpts        = require('../_event-options')
+var assign         = require('es5-ext/object/assign')
+  , forEach        = require('es5-ext/object/for-each')
+  , isRegExp       = require('es5-ext/reg-exp/is-reg-exp')
+  , startsWith     = require('es5-ext/string/#/starts-with')
+  , d              = require('d')
+  , autoBind       = require('d/auto-bind')
+  , ee             = require('event-emitter')
+  , castAttr       = require('dom-ext/element/#/cast-attribute')
+  , dispatchEvt    = require('dom-ext/html-element/#/dispatch-event-2')
+  , mergeClass     = require('dom-ext/html-element/#/merge-class')
+  , once           = require('timers-ext/once')
+  , resolveOptions = require('../utils/resolve-options')
+  , htmlAttrs      = require('../_html-attributes')
+  , eventOpts      = require('../_event-options')
 
   , defineProperty = Object.defineProperty
   , Input;
@@ -22,7 +22,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	var options = arguments[2], onChange = this.onChange.bind(this);
 	this.document = document;
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	if (options.observable) this.observable = options.observable;
 	this.onChange = once(onChange);
 	this._resolveDbAttributes(options);
@@ -50,13 +50,6 @@ module.exports = Input = function (document, type/*, options*/) {
 ee(Object.defineProperties(Input.prototype, assign({
 	_value: d(''),
 	_name: d(''),
-	_resolveOptions: d(function (options) {
-		if (this._optionsResolved) return options;
-		options = normalizeOptions(this.type.inputOptions,
-			options && options.dbOptions && options.dbOptions.inputOptions, options);
-		defineProperty(this, '_optionsResolved', d(true));
-		return options;
-	}),
 	_resolveDbAttributes: d(function (options) {
 		if (this._dbAttributesResolved) return;
 		options.dbOptions = Object(options.dbOptions);

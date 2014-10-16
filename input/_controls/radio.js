@@ -1,22 +1,23 @@
 'use strict';
 
-var copy        = require('es5-ext/object/copy')
-  , callable    = require('es5-ext/object/valid-callable')
-  , assign      = require('es5-ext/object/assign')
-  , forEach     = require('es5-ext/object/for-each')
-  , some        = require('es5-ext/object/some')
-  , isRegExp    = require('es5-ext/reg-exp/is-reg-exp')
-  , startsWith  = require('es5-ext/string/#/starts-with')
-  , d           = require('d')
-  , autoBind    = require('d/auto-bind')
-  , castAttr    = require('dom-ext/element/#/cast-attribute')
-  , mergeClass  = require('dom-ext/html-element/#/merge-class')
-  , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
-  , extend      = require('dom-ext/element/#/extend')
-  , DOMInput    = require('./input')
-  , toIdent     = require('../utils/to-ident')
-  , htmlAttrs   = require('../_html-attributes')
-  , eventOpts   = require('../_event-options')
+var copy           = require('es5-ext/object/copy')
+  , callable       = require('es5-ext/object/valid-callable')
+  , assign         = require('es5-ext/object/assign')
+  , forEach        = require('es5-ext/object/for-each')
+  , some           = require('es5-ext/object/some')
+  , isRegExp       = require('es5-ext/reg-exp/is-reg-exp')
+  , startsWith     = require('es5-ext/string/#/starts-with')
+  , d              = require('d')
+  , autoBind       = require('d/auto-bind')
+  , castAttr       = require('dom-ext/element/#/cast-attribute')
+  , mergeClass     = require('dom-ext/html-element/#/merge-class')
+  , dispatchEvt    = require('dom-ext/html-element/#/dispatch-event-2')
+  , extend         = require('dom-ext/element/#/extend')
+  , DOMInput       = require('./input')
+  , resolveOptions = require('../utils/resolve-options')
+  , toIdent        = require('../utils/to-ident')
+  , htmlAttrs      = require('../_html-attributes')
+  , eventOpts      = require('../_event-options')
 
   , keys = Object.keys
   , getValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'value').get
@@ -24,7 +25,7 @@ var copy        = require('es5-ext/object/copy')
   , Input;
 
 module.exports = Input = function (document, type/*, options*/) {
-	var options = this._resolveOptions(arguments[2]);
+	var options = resolveOptions(arguments[2], type);
 	this.controls = this.items = {};
 	this.listItems = {};
 	this.attributes = {};

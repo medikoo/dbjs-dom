@@ -1,13 +1,14 @@
 'use strict';
 
-var isCopy      = require('es5-ext/array/#/is-copy')
-  , d           = require('d')
-  , makeEl      = require('dom-ext/document/#/make-element')
-  , dispatchEvt = require('dom-ext/html-element/#/dispatch-event-2')
-  , DOMInput    = require('./_controls/input')
-  , DOMRadio    = require('./_controls/radio')
-  , DOMCheckbox = require('./_controls/checkbox')
-  , eventOpts   = require('./_event-options')
+var isCopy         = require('es5-ext/array/#/is-copy')
+  , d              = require('d')
+  , makeEl         = require('dom-ext/document/#/make-element')
+  , dispatchEvt    = require('dom-ext/html-element/#/dispatch-event-2')
+  , resolveOptions = require('./utils/resolve-options')
+  , DOMInput       = require('./_controls/input')
+  , DOMRadio       = require('./_controls/radio')
+  , DOMCheckbox    = require('./_controls/checkbox')
+  , eventOpts      = require('./_event-options')
 
   , isArray = Array.isArray, defineProperties = Object.defineProperties
   , getValue =
@@ -26,7 +27,7 @@ getLabel = function (name, options, type) {
 Radio = function (document, type/*, options*/) {
 	var tOption, fOption, options = arguments[2], reverse;
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	DOMRadio.call(this, document, type, options);
 	tOption = this.createOption('1', getLabel('true', options, type),
 		options.controls && options.controls[1]);

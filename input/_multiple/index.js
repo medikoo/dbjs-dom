@@ -1,20 +1,21 @@
 'use strict';
 
-var contains      = require('es5-ext/array/#/contains')
-  , uniq          = require('es5-ext/array/#/uniq')
-  , remove        = require('es5-ext/array/#/remove')
-  , constant      = require('es5-ext/function/constant')
-  , assign        = require('es5-ext/object/assign')
-  , Set           = require('es6-set')
-  , d             = require('d')
-  , autoBind      = require('d/auto-bind')
-  , makeElement   = require('dom-ext/document/#/make-element')
-  , castAttribute = require('dom-ext/element/#/cast-attribute')
-  , extend        = require('dom-ext/element/#/extend')
-  , removeEl      = require('dom-ext/element/#/remove')
-  , setPresenceEl = require('dom-ext/element/#/set-presence')
-  , isAnchor      = require('dom-ext/html-anchor-element/is-html-anchor-element')
-  , DOMInput      = require('../_controls/input')
+var contains       = require('es5-ext/array/#/contains')
+  , uniq           = require('es5-ext/array/#/uniq')
+  , remove         = require('es5-ext/array/#/remove')
+  , constant       = require('es5-ext/function/constant')
+  , assign         = require('es5-ext/object/assign')
+  , Set            = require('es6-set')
+  , d              = require('d')
+  , autoBind       = require('d/auto-bind')
+  , makeElement    = require('dom-ext/document/#/make-element')
+  , castAttribute  = require('dom-ext/element/#/cast-attribute')
+  , extend         = require('dom-ext/element/#/extend')
+  , removeEl       = require('dom-ext/element/#/remove')
+  , setPresenceEl  = require('dom-ext/element/#/set-presence')
+  , isAnchor       = require('dom-ext/html-anchor-element/is-html-anchor-element')
+  , resolveOptions = require('../utils/resolve-options')
+  , DOMInput       = require('../_controls/input')
 
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , Input;
@@ -25,7 +26,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.removeButtons = [];
 	this.make = makeElement.bind(document);
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	delete options.multiple;
 	if (options.minInputsCount) {
 		this.minInputsCount = options.minInputsCount >>> 0;

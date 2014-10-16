@@ -21,6 +21,7 @@ var separate          = require('es5-ext/array/#/separate')
   , replace           = require('dom-ext/element/#/replace')
   , replaceContent    = require('dom-ext/element/#/replace-content')
   , isNested          = require('dbjs/is-dbjs-nested-object')
+  , resolveOptions    = require('./utils/resolve-options')
   , DOMInput          = require('./_controls/input')
   , DOMRadio          = require('./_controls/radio')
   , DOMSelect         = require('./_controls/select')
@@ -64,7 +65,7 @@ resolveDbOptions = function (type, options) {
 Select = function (document, type/*, options*/) {
 	var options = arguments[2];
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	DOMSelect.call(this, document, type, options);
 	if (options.getOptionLabel != null) this.getOptionLabel = callable(options.getOptionLabel);
 	else this.property = options.property;
@@ -133,7 +134,7 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 Radio = function (document, type/*, options*/) {
 	var options = arguments[2];
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	DOMRadio.call(this, document, type, options);
 	this.dom.classList.add('object-list');
 	this.property = options.property;
@@ -154,7 +155,7 @@ Radio.prototype = Object.create(DOMRadio.prototype, assign({
 Edit = function (document, type/*, options*/) {
 	var options = arguments[2];
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	if (options.render) this._render = callable(options.render);
 	DOMComposite.call(this, document, type, options);
 	if (options.render) delete this._render;
@@ -222,7 +223,7 @@ Multiple = function (document, type/*, options*/) {
 	var options = arguments[2], getLabel, list, toData;
 
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	getLabel = function (obj) {
 		var label = options.itemLabel;
 		if (typeof label === 'function') return label(obj);

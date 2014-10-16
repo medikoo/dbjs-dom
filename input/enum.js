@@ -11,6 +11,7 @@ var assign            = require('es5-ext/object/assign')
   , getNormalizer     = require('memoizee/normalizers/get-1')
   , clear             = require('dom-ext/element/#/clear')
   , replaceContent    = require('dom-ext/element/#/replace-content')
+  , resolveOptions    = require('./utils/resolve-options')
   , DOMRadio          = require('./_controls/radio')
   , DOMSelect         = require('./_controls/select')
   , DOMMultiple       = require('./_multiple')
@@ -29,7 +30,7 @@ generateSelect = function (DOMSelect) {
 	var Select = function (document, type/*, options*/) {
 		var options = arguments[2];
 		this.type = type;
-		options = this._resolveOptions(options);
+		options = resolveOptions(options, type);
 		DOMSelect.call(this, document, type, options);
 		this.customLabels = Object(options.labels);
 		if (options.group) {
@@ -99,7 +100,7 @@ Select = generateSelect(DOMSelect);
 Radio = function (document, type/*, options*/) {
 	var options = arguments[2];
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	this.controlOptions = Object(options.controls);
 	DOMRadio.call(this, document, type, options);
 	this.dom.classList.add('enum');

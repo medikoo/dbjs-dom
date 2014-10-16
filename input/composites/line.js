@@ -1,14 +1,15 @@
 'use strict';
 
-var compact      = require('es5-ext/array/#/compact')
-  , separate     = require('es5-ext/array/#/separate')
-  , uniq         = require('es5-ext/array/#/uniq')
-  , callable     = require('es5-ext/object/valid-callable')
-  , d            = require('d')
-  , memoize      = require('memoizee/plain')
-  , resolveProps = require('esniff/accessed-properties')('this')
-  , metaNames    = require('dbjs/_setup/utils/meta-property-names')
-  , DOMInput     = require('./_observable')
+var compact        = require('es5-ext/array/#/compact')
+  , separate       = require('es5-ext/array/#/separate')
+  , uniq           = require('es5-ext/array/#/uniq')
+  , callable       = require('es5-ext/object/valid-callable')
+  , d              = require('d')
+  , memoize        = require('memoizee/plain')
+  , resolveProps   = require('esniff/accessed-properties')('this')
+  , metaNames      = require('dbjs/_setup/utils/meta-property-names')
+  , resolveOptions = require('../utils/resolve-options')
+  , DOMInput       = require('./_observable')
 
   , getPrototypeOf = Object.getPrototypeOf
   , re = new RegExp('^\\s*function\\s*(?:[\\0-\'\\)-\\uffff]+)*\\s*\\(\\s*' +
@@ -24,7 +25,7 @@ resolve = memoize(function (fn) {
 module.exports = Input = function (document, type/*, options*/) {
 	var options = arguments[2];
 	this.type = type;
-	options = this._resolveOptions(options);
+	options = resolveOptions(options, type);
 	if (options.render != null) this._render = callable(options.render);
 	DOMInput.call(this, document, type, options);
 };
