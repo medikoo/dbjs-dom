@@ -7,5 +7,5 @@ var normalizeOptions = require('es5-ext/object/normalize-options')
 module.exports = function (options, type) {
 	if (options && options._optionsResolved) return options;
 	return normalizeOptions(type.inputOptions,
-		options && options.dbOptions && options.dbOptions.inputOptions, resolvedMark);
+		options && options.dbOptions && options.dbOptions.inputOptions, options, resolvedMark);
 };
