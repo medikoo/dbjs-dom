@@ -31,7 +31,12 @@ module.exports = Input = function (document, type/*, options*/) {
 
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
-	name: d.gs(noop, noop),
+	name: d.gs(function () {
+		return this._name ? (this._name + this._indexString) : '';
+	}, function (name) {
+		this._name = name;
+		name = this.name;
+	}),
 	inputValue: d.gs(function () {
 		var state = mapKeys(getInputValue.call(this), mapKey);
 		if (!state.database) state.database = this.type.database;
