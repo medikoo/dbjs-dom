@@ -1,41 +1,18 @@
 'use strict';
 
-var copy              = require('es5-ext/object/copy')
-  , assign            = require('es5-ext/object/assign')
-  , filter            = require('es5-ext/object/filter')
-  , forEach           = require('es5-ext/object/for-each')
-  , isSet             = require('es6-set/is-set')
-  , d                 = require('d')
-  , makeElement       = require('dom-ext/document/#/make-element')
-  , castAttribute     = require('dom-ext/element/#/cast-attribute')
-  , getId             = require('dom-ext/html-element/#/get-id')
-  , PropObserv        = require('dbjs/_setup/1.property/observable')
-  , DescPropObserv    = require('dbjs/_setup/3.descriptor-property/observable')
-  , htmlAttributes    = require('./_html-attributes')
+var copy            = require('es5-ext/object/copy')
+  , assign          = require('es5-ext/object/assign')
+  , filter          = require('es5-ext/object/filter')
+  , forEach         = require('es5-ext/object/for-each')
+  , isSet           = require('es6-set/is-set')
+  , d               = require('d')
+  , castAttribute   = require('dom-ext/element/#/cast-attribute')
+  , PropObserv      = require('dbjs/_setup/1.property/observable')
+  , DescPropObserv  = require('dbjs/_setup/3.descriptor-property/observable')
+  , htmlAttributes  = require('./_html-attributes')
+  , componentRender = require('./utils/get-component-render')('div')
 
-  , toDOM = function () { return this.dom; }, componentRender;
-
-componentRender = function (input, options) {
-	var el = makeElement.bind(input.document);
-
-	return el('div',
-		(options.label && [el('label',
-			(input.control ? { for: getId.call(input.control) } : null),
-			options.label, ':', ' ')]) || null,
-		el('div', { class: 'input' }, input,
-			// required mark
-			el('span', { class: 'statuses' },
-				el('span', { class: 'status-missing' }, '★'),
-				// validation status mark
-				el('span', { class: 'status-ok' }, '✓'),
-				// validation status mark
-				el('span', { class: 'status-error' }, '✕')),
-			// error message
-			el('span', { class: 'error-message error-message-' +
-				input._name.replace(/[:#\/]/g, '-') }),
-			// hint
-			options.hint && el('span', { class: 'hint' }, options.hint)));
-};
+  , toDOM = function () { return this.dom; };
 
 Object.defineProperties(PropObserv.prototype, {
 	DOMInput: d(null),
