@@ -18,6 +18,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.type = type;
 	options = resolveOptions(options, type);
 	this.options = Object(options.item);
+	if (options.required != null) this.options.required = options.required;
 	this.options.control = assign(Object(options.control),
 		Object(this.options.control));
 	this.customOptions = Object(options.items);
