@@ -3,6 +3,7 @@
 var last           = require('es5-ext/array/#/last')
   , noop           = require('es5-ext/function/noop')
   , mapKeys        = require('es5-ext/object/map-keys')
+  , setPrototypeOf = require('es5-ext/object/set-prototype-of')
   , callable       = require('es5-ext/object/valid-callable')
   , d              = require('d')
   , splitId        = require('dbjs/_setup/unserialize/id')
@@ -38,8 +39,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		name = this.name;
 	}),
 	inputValue: d.gs(function () {
-		var state = mapKeys(getInputValue.call(this), mapKey);
-		if (!state.database) state.database = this.type.database;
-		return this.getValue.call(state);
+		return this.getValue.call(setPrototypeOf(mapKeys(getInputValue.call(this), mapKey),
+			this.observable.object));
 	}, noop)
 });
