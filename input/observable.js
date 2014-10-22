@@ -149,7 +149,7 @@ Object.defineProperties(PropObserv.prototype, {
 	})
 });
 
-module.exports = Object.defineProperties(DescPropObserv.prototype, {
+Object.defineProperties(DescPropObserv.prototype, {
 	DOMInput: d(null),
 	toDOMInput: d(function (document/*, options*/) {
 		var input, initOptions = Object(arguments[1]), options = copy(initOptions)
