@@ -15,6 +15,7 @@ var assign          = require('es5-ext/object/assign')
   , DOMComposite    = require('../_composite')
   , htmlAttributes  = require('../_html-attributes')
   , setup           = require('../')
+  , componentRender = require('./get-component-render')('li')
 
   , defineProperty = Object.defineProperty
   , getObservable, Fieldset;
@@ -31,6 +32,7 @@ Fieldset = function (document, list/*, options*/) {
 	this.list = list;
 	this.items = {};
 	this.options = Object(options.control);
+	if (this.options.render == null) this.options.render = componentRender;
 	this.customOptions = Object(options.controls);
 	this.prepend = options.prepend;
 	this.append = options.append;
