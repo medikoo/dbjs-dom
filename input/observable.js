@@ -118,8 +118,9 @@ Object.defineProperties(PropObserv.prototype, {
 				dom.classList[value == null ? 'add' : 'remove']('dbjs-empty');
 				dom.classList[value == null ? 'remove' : 'add']('dbjs-filled');
 			}
-		});
-		cb.call(this);
+		}.bind(this));
+		cb();
+		if (isSet(this.value)) this.value.on('change', cb);
 		input.on('destroy', function (cb) { this.off('change', cb); }.bind(this, cb));
 
 		return { dom: dom, input: input, toDOM: toDOM };
