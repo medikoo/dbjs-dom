@@ -1,6 +1,7 @@
 'use strict';
 
 var d       = require('d')
+  , isSet   = require('es6-set/is-set')
   , memoize = require('memoizee/plain')
   , base    = require('./3.object')
   , setup   = require('./')
@@ -21,15 +22,24 @@ Text = function (document, type) {
 Text.prototype = Object.create(DOMText.prototype, {
 	constructor: d(Text),
 	value: d.gs(getValue, setValue = function (value) {
-		var meta;
+		var meta, text;
 		this.box.dismiss();
 		if (value == null) {
 			this.box.value = value;
 			return;
 		}
 		meta = this.type.meta;
-		if (typeof meta.get === 'function') value = meta.get(value).label;
-		else value = (meta[value] && meta[value].label);
+		if (isSet(value)) {
+			text = [];
+			value.forEach(function (value) {
+				if (typeof meta.get === 'function') text.push(meta.get(value).label);
+				else text.push(meta[value] && meta[value].label);
+			});
+			value = text.join(', ');
+		} else {
+			if (typeof meta.get === 'function') value = meta.get(value).label;
+			else value = (meta[value] && meta[value].label);
+		}
 		this.box.value = value;
 	})
 });
