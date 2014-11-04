@@ -36,7 +36,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		var value, changed, valid, emitChanged, emitValid;
 		value = this.value;
 		changed = some(this.items, function (item) { return item.changed; });
-		if (this.required) valid = (value != null);
+		valid = this.required ? (value != null) : true;
 
 		if (this.changed !== changed) {
 			this.changed = changed;
