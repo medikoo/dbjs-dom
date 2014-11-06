@@ -1,14 +1,14 @@
 'use strict';
 
-var noop           = require('es5-ext/function/noop')
-  , copy           = require('es5-ext/object/copy')
-  , assign         = require('es5-ext/object/assign')
-  , map            = require('es5-ext/object/map')
-  , some           = require('es5-ext/object/some')
-  , d              = require('d')
-  , makeElement    = require('dom-ext/document/#/make-element')
-  , resolveOptions = require('./utils/resolve-options')
-  , DOMInput       = require('./_controls/input')
+var noop             = require('es5-ext/function/noop')
+  , assign           = require('es5-ext/object/assign')
+  , map              = require('es5-ext/object/map')
+  , normalizeOptions = require('es5-ext/object/normalize-options')
+  , some             = require('es5-ext/object/some')
+  , d                = require('d')
+  , makeElement      = require('dom-ext/document/#/make-element')
+  , resolveOptions   = require('./utils/resolve-options')
+  , DOMInput         = require('./_controls/input')
 
   , Input;
 
@@ -57,14 +57,10 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	value: d.gs(function () { return this.inputValue; }, noop),
 	castControlAttribute: d(noop),
 	getOptions: d(function (desc) {
-		var options = copy(this.options);
-		if (this.customOptions[desc.key]) {
-			assign(options, this.customOptions[desc.key]);
-		}
-		if (this.customOptions[desc.__valueId__]) {
-			assign(options, this.customOptions[desc.__valueId__]);
-		}
-		return options;
+		var options = [this.options];
+		if (this.customOptions[desc.key]) options.push(this.customOptions[desc.key]);
+		if (this.customOptions[desc.__valueId__]) options.push(this.customOptions[desc.__valueId__]);
+		return normalizeOptions.apply(null, options);
 	}),
 	addItem: d(function (input, name) {
 		this.items[name] = input;
