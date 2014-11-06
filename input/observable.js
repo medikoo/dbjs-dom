@@ -80,6 +80,7 @@ Object.defineProperties(PropObserv.prototype, {
 		if (options.hint == null) options.hint = desc.inputHint;
 
 		dom = (options.render || componentRender)(input, options);
+		if (!dom._dbjsInput) dom._dbjsInput = input;
 		forEach(options, function (value, name) {
 			if (htmlAttributes[name]) castAttribute.call(dom, name, value);
 		}, this);
