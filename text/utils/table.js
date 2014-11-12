@@ -21,7 +21,6 @@ var aFrom          = require('es5-ext/array/from')
   , validDocument  = require('dom-ext/document/valid-document')
   , makeElement    = require('dom-ext/document/#/make-element')
   , replaceContent = require('dom-ext/element/#/replace-content')
-  , stringify      = require('querystring-x/encode')
   , validDb        = require('dbjs/valid-dbjs')
 
   , isArray = Array.isArray, map = Array.prototype.map
@@ -114,21 +113,7 @@ ee(Object.defineProperties(Table.prototype, assign({
 			this.body = el('tbody'));
 	}),
 	headCellRender: d(function (dom, options) {
-		var sortName;
 		if (isNode(dom) && (dom.nodeName.toLowerCase() === 'th')) return dom;
-		if (options.sortName != null) {
-			sortName = options.sortName;
-			this.on('change', function () {
-				var data = {};
-				if (sortName) data.sort = sortName;
-				if ((this.current.sort === sortName) && !this.current.reverse) {
-					data.reverse = true;
-				}
-				data = stringify(data);
-				dom.setAttribute('href',  data ? '?' + data : '.');
-			});
-			dom = this.el('a', dom);
-		}
 		return this.el('th', dom);
 	}),
 	cellRender: d(function (render, item) {
