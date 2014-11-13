@@ -185,8 +185,8 @@ ee(Object.defineProperties(Table.prototype, assign({
 		this.reload();
 	}),
 	emptyRow: d.gs(function () {
-		defineProperty(this, 'emptyRow', d(this.el('tr', this.el('td',
-			{ colspan: this.cellRenderers.length, class: 'empty' }, "No data"))));
+		defineProperty(this, 'emptyRow', d(this.el('tr', { class: 'empty' }, this.el('td',
+			{ colspan: this.cellRenderers.length }, "No data"))));
 		return this.emptyRow;
 	}),
 	toDOM: d(function () { return this.dom; })
