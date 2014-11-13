@@ -11,8 +11,8 @@ module.exports = function (containerName) {
 				(input.control ? { for: getId.call(input.control) } : null),
 				options.label, ':', ' ')]) || null,
 			el('div', { class: 'input' }, input,
-				// required mark
 				el('span', { class: 'statuses' },
+					// missing (required field) mark
 					el('span', { class: 'status-missing' }, '★'),
 					// validation status mark
 					el('span', { class: 'status-ok' }, '✓'),
