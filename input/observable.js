@@ -1,24 +1,25 @@
 'use strict';
 
-var copy            = require('es5-ext/object/copy')
-  , assign          = require('es5-ext/object/assign')
-  , filter          = require('es5-ext/object/filter')
-  , forEach         = require('es5-ext/object/for-each')
-  , isSet           = require('es6-set/is-set')
-  , d               = require('d')
-  , castAttribute   = require('dom-ext/element/#/cast-attribute')
-  , PropObserv      = require('dbjs/_setup/1.property/observable')
-  , DescPropObserv  = require('dbjs/_setup/3.descriptor-property/observable')
-  , htmlAttributes  = require('./_html-attributes')
-  , componentRender = require('./utils/get-component-render')('div')
+var copy             = require('es5-ext/object/copy')
+  , assign           = require('es5-ext/object/assign')
+  , filter           = require('es5-ext/object/filter')
+  , forEach          = require('es5-ext/object/for-each')
+  , normalizeOptions = require('es5-ext/object/normalize-options')
+  , isSet            = require('es6-set/is-set')
+  , d                = require('d')
+  , castAttribute    = require('dom-ext/element/#/cast-attribute')
+  , PropObserv       = require('dbjs/_setup/1.property/observable')
+  , DescPropObserv   = require('dbjs/_setup/3.descriptor-property/observable')
+  , htmlAttributes   = require('./_html-attributes')
+  , componentRender  = require('./utils/get-component-render')('div')
+  , resolveOptions   = require('./utils/resolve-options')
 
   , toDOM = function () { return this.dom; };
 
 Object.defineProperties(PropObserv.prototype, {
 	DOMInput: d(null),
 	toDOMInput: d(function (document/*, options*/) {
-		var input, initOptions = Object(arguments[1]), options = copy(initOptions)
-		  , type, value, onChange, desc;
+		var input, options = normalizeOptions(arguments[1]), type, value, onChange, desc;
 
 		desc = this.descriptor;
 
@@ -30,6 +31,7 @@ Object.defineProperties(PropObserv.prototype, {
 
 		// Initialize input
 		type = desc.type;
+		options = resolveOptions(options, type);
 		if (options.DOMInput) input = new options.DOMInput(document, type, options);
 		else if (desc.DOMInput) input = new desc.DOMInput(document, type, options);
 		else input = type.toDOMInput(document, options);
