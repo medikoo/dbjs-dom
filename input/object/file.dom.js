@@ -119,7 +119,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	inputValue: d.gs(function () {
 		var value;
 		if (!this.multiple) {
-			if (this.control.files[0]) return this.control.files[0];
+			if (this.control.files && this.control.files[0]) return this.control.files[0];
 			if (!this.valueDOM.firstElementChild) return null;
 			return this.valueDOM.firstElementChild.getAttribute('data-id');
 		}
@@ -129,7 +129,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 				throw new TypeError("Missing id (data-id attribute) on file item");
 			}
 			return id;
-		}).concat(aFrom(this.control.files));
+		}).concat(this.control.files ? aFrom(this.control.files) : []);
 		return value.length ? value : null;
 	}, function (nu) {
 		var old = this.inputValue, changed;
@@ -227,6 +227,10 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 })));
 
 module.exports = memoize(function (db) {
+	if (typeof FileList !== 'function') {
+		console.warn("FileList interface not found." +
+			" It means binding is realiable only for read-only form");
+	}
 	defineProperties(setup(db).File, {
 		fromInputValue: d(function (value) {
 			if (value == null) return null;
