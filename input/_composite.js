@@ -57,8 +57,13 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	value: d.gs(function () { return this.inputValue; }, noop),
 	castControlAttribute: d(noop),
 	getOptions: d(function (desc) {
-		var options = [this.options];
-		if (this.customOptions[desc._sKey_]) options.push(this.customOptions[desc._sKey_]);
+		var options = [this.options], object = desc.object, sKey = desc._sKey_;
+		while (true) {
+			if (this.customOptions[sKey]) options.push(this.customOptions[sKey]);
+			if (!object.owner) break;
+			sKey = object.__sKey__ + '/' + sKey;
+			object = object.owner;
+		}
 		if (this.customOptions[desc.__valueId__]) options.push(this.customOptions[desc.__valueId__]);
 		return normalizeOptions.apply(null, options);
 	}),
