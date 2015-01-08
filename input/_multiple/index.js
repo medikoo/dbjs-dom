@@ -165,14 +165,11 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		input = this.type.toDOMInput(this.document, this.options);
 		dom = el('li');
 		removeButton = this.deleteLabel();
-		if (isAnchor(removeButton)) {
-			castAttribute.call(removeButton, 'onclick',
-				this.safeRemoveItem.bind(this, input));
-		} else {
-			removeButton = el('a', { class: 'dbjs-multiple-button-remove',
-				onclick: this.safeRemoveItem.bind(this, input) },
-				removeButton);
+		if (!isAnchor(removeButton)) {
+			removeButton = el('a', { class: 'dbjs-multiple-button-remove' }, removeButton);
 		}
+		removeButton.setAttribute('onclick', 'this.parentNode.parentNode.removeChild(this.parentNode)');
+		removeButton.onclick = this.safeRemoveItem.bind(this, input);
 		extend.call(dom, input, removeButton);
 		this.removeButtons.push(removeButton);
 		if (this.options.control.disabled) setPresenceEl.call(removeButton, false);
