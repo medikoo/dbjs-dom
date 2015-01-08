@@ -58,7 +58,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	castControlAttribute: d(noop),
 	getOptions: d(function (desc) {
 		var options = [this.options];
-		if (this.customOptions[desc.key]) options.push(this.customOptions[desc.key]);
+		if (this.customOptions[desc._sKey_]) options.push(this.customOptions[desc._sKey_]);
 		if (this.customOptions[desc.__valueId__]) options.push(this.customOptions[desc.__valueId__]);
 		return normalizeOptions.apply(null, options);
 	}),
