@@ -137,9 +137,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		this.domList = el('ul');
 		this.addButton = this.addLabel;
 		template = this.renderItem().dom;
-		if (isAnchor(this.addButton)) {
-			castAttribute.call(this.addButton, 'onclick', this.addItem);
-		} else {
+		if (!isAnchor(this.addButton)) {
 			this.addButton = el('a', { class: 'dbjs-multiple-button-add' }, this.addButton);
 		}
 		this.addButton.setAttribute('onclick', 'document.getElementById(' +
