@@ -13,10 +13,12 @@ var contains       = require('es5-ext/array/#/contains')
   , extend         = require('dom-ext/element/#/extend')
   , removeEl       = require('dom-ext/element/#/remove')
   , setPresenceEl  = require('dom-ext/element/#/set-presence')
+  , getId          = require('dom-ext/html-element/#/get-id')
   , isAnchor       = require('dom-ext/html-anchor-element/is-html-anchor-element')
   , resolveOptions = require('../utils/resolve-options')
   , DOMInput       = require('../_controls/input')
 
+  , stringify = JSON.stringify
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
   , Input;
 
@@ -131,17 +133,22 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	addLabel: d('Add'),
 	deleteLabel: d(constant('x')),
 	_render: d(function () {
-		var el = this.make;
+		var el = this.make, template;
 		this.domList = el('ul');
 		this.addButton = this.addLabel;
+		template = this.renderItem().dom;
 		if (isAnchor(this.addButton)) {
 			castAttribute.call(this.addButton, 'onclick', this.addItem);
 		} else {
-			this.addButton = el('a', { class: 'dbjs-multiple-button-add', onclick: this.addItem },
-				this.addButton);
+			this.addButton = el('a', { class: 'dbjs-multiple-button-add' }, this.addButton);
 		}
+		this.addButton.setAttribute('onclick', 'document.getElementById(' +
+			stringify(getId.call(this.domList)) + ').appendChild(document.getElementById(' +
+			stringify(getId.call(template)) + ').cloneNode(true))');
+		this.addButton.onclick = this.addItem;
 		this.dom = el('div', { class: 'dbjs multiple' }, this.domList,
-			el('div', { class: 'controls' }, this.addButton));
+			el('div', { class: 'controls' }, this.addButton),
+			el('ul', { class: 'template' }, template));
 	}),
 	safeRemoveItem: d(function (input) {
 		if (this.domList.childNodes.length <= this.minInputsCount) return;
