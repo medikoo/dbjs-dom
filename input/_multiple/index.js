@@ -136,17 +136,16 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		var el = this.make, template;
 		this.domList = el('ul');
 		this.addButton = this.addLabel;
-		template = this.renderItem().dom;
+		template = el('ul', { class: 'template' }, this.renderItem().dom);
 		if (!isAnchor(this.addButton)) {
 			this.addButton = el('a', { class: 'dbjs-multiple-button-add' }, this.addButton);
 		}
 		this.addButton.setAttribute('onclick', 'document.getElementById(' +
 			stringify(getId.call(this.domList)) + ').appendChild(document.getElementById(' +
-			stringify(getId.call(template)) + ').cloneNode(true))');
+			stringify(getId.call(template)) + ').firstChild.cloneNode(true))');
 		this.addButton.onclick = this.addItem;
 		this.dom = el('div', { class: 'dbjs multiple' }, this.domList,
-			el('div', { class: 'controls' }, this.addButton),
-			el('ul', { class: 'template' }, template));
+			el('div', { class: 'controls' }, this.addButton), template);
 	}),
 	safeRemoveItem: d(function (input) {
 		if (this.domList.childNodes.length <= this.minInputsCount) return;
