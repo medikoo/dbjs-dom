@@ -141,7 +141,8 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		}
 		this.addButton.setAttribute('onclick', 'document.getElementById(' +
 			stringify(getId.call(this.domList)) + ').appendChild(document.getElementById(' +
-			stringify(getId.call(template)) + ').firstChild.cloneNode(true))');
+			stringify(getId.call(template)) + ').firstChild.cloneNode(true));' +
+			'this.className = this.className');
 		this.addButton.onclick = this.addItem;
 		this.dom = el('div', { class: 'dbjs multiple' }, this.domList,
 			el('div', { class: 'controls' }, this.addButton), template);
