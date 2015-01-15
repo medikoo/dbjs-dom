@@ -10,6 +10,7 @@ ass
 newcap
 nomen
 plusplus
+vars
 
 predef+ console, setTimeout
 
