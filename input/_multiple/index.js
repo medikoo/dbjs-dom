@@ -132,20 +132,20 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	addLabel: d('Add'),
 	deleteLabel: d(constant('x')),
 	_render: d(function () {
-		var el = this.make, template;
+		var el = this.make, templateDom;
 		this.domList = el('ul');
 		this.addButton = this.addLabel;
-		template = el('ul', { class: 'template' }, this.renderItem().dom);
+		templateDom = el('ul', { class: 'template' }, this.renderItem().dom);
 		if (!isAnchor(this.addButton)) {
 			this.addButton = el('a', { class: 'dbjs-multiple-button-add' }, this.addButton);
 		}
 		this.addButton.setAttribute('onclick', 'document.getElementById(' +
 			stringify(getId.call(this.domList)) + ').appendChild(document.getElementById(' +
-			stringify(getId.call(template)) + ').firstChild.cloneNode(true));' +
+			stringify(getId.call(templateDom)) + ').firstChild.cloneNode(true));' +
 			'this.className = this.className');
 		this.addButton.onclick = this.addItem;
 		this.dom = el('div', { class: 'dbjs multiple' }, this.domList,
-			el('div', { class: 'controls' }, this.addButton), template);
+			el('div', { class: 'controls' }, this.addButton), templateDom);
 	}),
 	safeRemoveItem: d(function (input) {
 		if (this.domList.childNodes.length <= this.minInputsCount) return;
