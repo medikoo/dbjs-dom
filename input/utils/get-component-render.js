@@ -1,11 +1,20 @@
 'use strict';
 
 var makeElement = require('dom-ext/document/#/make-element')
-  , getId       = require('dom-ext/html-element/#/get-id');
+  , getId       = require('dom-ext/html-element/#/get-id')
+  , i18nToDom   = require('i18n2-md-to-dom')
+  , memoize     = require('memoizee/weak-plain')
+
+  , mdiOptions = { inline: true };
+
+var getMdi = memoize(function (document) {
+	var mdi = i18nToDom(document);
+	return function (message) { return mdi(message, mdiOptions); };
+});
 
 module.exports = function (containerName) {
 	return function (input, options) {
-		var el = makeElement.bind(input.document);
+		var el = makeElement.bind(input.document), mdi = getMdi(input.document);
 		return el(containerName,
 			(options.label && [el('label',
 				(input.control ? { for: getId.call(input.control) } : null),
@@ -22,6 +31,7 @@ module.exports = function (containerName) {
 				el('span', { class: 'error-message error-message-' +
 					input._name.replace(/[:#\/]/g, '-') }),
 				// hint
-				options.hint && el('span', { class: 'hint' }, options.hint)));
+				options.hint && el('span', { class: 'hint' },
+					typeof options.hint === 'string' ? mdi(options.hint) : options.hint)));
 	};
 };
