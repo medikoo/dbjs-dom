@@ -132,10 +132,11 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	addLabel: d('Add'),
 	deleteLabel: d(constant('x')),
 	_render: d(function () {
-		var el = this.make, templateDom;
+		var el = this.make, templateItem, templateDom;
 		this.domList = el('ul');
 		this.addButton = this.addLabel;
-		templateDom = el('ul', { class: 'template' }, this.renderItem().dom);
+		templateItem = this.renderItem();
+		templateDom = el('ul', { class: 'template' }, templateItem.dom);
 		if (!isAnchor(this.addButton)) {
 			this.addButton = el('a', { class: 'dbjs-multiple-button-add' }, this.addButton);
 		}
