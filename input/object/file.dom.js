@@ -70,6 +70,14 @@ renderItem = function (file) {
 	return data;
 };
 
+var byNameLastModified = function (f1, f2) {
+	f1 = this.getById(f1);
+	if (f1) f1 = f1.getDescriptor('name')._lastOwnModified_;
+	f2 = this.getById(f2);
+	if (f2) f2 = f2.getDescriptor('name')._lastOwnModified_;
+	return (f1 || Infinity) - (f2 || Infinity);
+};
+
 Input = function (document, type/*, options*/) {
 	var options = arguments[2], action;
 	this.make = makeEl.bind(document);
@@ -145,7 +153,8 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 						// In Opera control is not reset properly, force it with hack
 						getForceReset(this.document)(this.control);
 					}
-					replaceCont.call(this.valueDOM, nu.map(this._renderItem));
+					replaceCont.call(this.valueDOM,
+						nu.sort(byNameLastModified.bind(this.type)).map(this._renderItem));
 					if (this._required) this.castControlAttribute('required', false);
 					changed = true;
 				}
