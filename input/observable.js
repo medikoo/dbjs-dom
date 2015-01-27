@@ -19,18 +19,26 @@ var copy             = require('es5-ext/object/copy')
 Object.defineProperties(PropObserv.prototype, {
 	DOMInput: d(null),
 	toDOMInput: d(function (document/*, options*/) {
-		var input, options = normalizeOptions(arguments[1]), type, value, onChange, desc;
+		var input, options = normalizeOptions(arguments[1]), type, value, onChange, desc, isMap = false;
 
 		desc = this.descriptor;
-
+		if (desc.nested) {
+			isMap = this.object.database.isObjectType(this.value.__descriptorPrototype__.type);
+		}
 		// Setup input options
-		if (options.multiple == null) options.multiple = desc.multiple;
+		if (options.multiple == null) {
+			if (isMap) {
+				options.multiple = true;
+			} else {
+				options.multiple = desc.multiple;
+			}
+		}
 		if (options.name == null) options.name = this.dbId;
 		options.dbOptions = desc;
 		options.observable = this;
 
 		// Initialize input
-		type = desc.type;
+		type = isMap ? this.value.__descriptorPrototype__.type : desc.type;
 		options = resolveOptions(options, type);
 		if (options.DOMInput) input = new options.DOMInput(document, type, options);
 		else if (desc.DOMInput) input = new desc.DOMInput(document, type, options);
@@ -51,7 +59,7 @@ Object.defineProperties(PropObserv.prototype, {
 			}
 			input.value = value;
 		}.bind(this);
-		if (isSet(value)) value.on('change', onChange);
+		if (isMap || isSet(value)) value.on('change', onChange);
 		else this.on('change', onChange);
 
 		input.once('destroy', function () {

@@ -3,11 +3,13 @@
 var aFrom          = require('es5-ext/array/from')
   , compact        = require('es5-ext/array/#/compact')
   , isCopy         = require('es5-ext/array/#/is-copy')
+  , pluck          = require('es5-ext/function/pluck')
   , copy           = require('es5-ext/object/copy')
   , assign         = require('es5-ext/object/assign')
   , isObject       = require('es5-ext/object/is-object')
   , callable       = require('es5-ext/object/valid-callable')
   , toArray        = require('es5-ext/array/to-array')
+  , isMap          = require('es6-map/is-map')
   , d              = require('d')
   , memoize        = require('memoizee/plain')
   , memoizeMethods = require('memoizee/methods-plain')
@@ -23,6 +25,7 @@ var aFrom          = require('es5-ext/array/from')
   , eventOpts      = require('../_event-options')
   , setup          = require('../')
 
+  , getMapValue = pluck(1)
   , isArray = Array.isArray, map = Array.prototype.map
   , defineProperty = Object.defineProperty
   , defineProperties = Object.defineProperties
@@ -180,7 +183,8 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		if (value == null) {
 			value = null;
 		} else if (this.multiple) {
-			value = toArray(value);
+			if (isMap(value)) value = toArray(value).map(getMapValue);
+			else value = toArray(value);
 			if (value.length) {
 				value = compact.call(value.map(this.type.toInputValue, this.type));
 			}
