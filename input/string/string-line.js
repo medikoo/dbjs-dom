@@ -13,8 +13,8 @@ var copy     = require('es5-ext/object/copy')
 
 Input = function (document, type/*, options*/) {
 	DOMInput.apply(this, arguments);
-	this.dom.addEventListener('input', this.onChange, false);
-	this.dom.addEventListener('keyup', this.onChange, false);
+	this.control.addEventListener('input', this.onChange, false);
+	this.control.addEventListener('keyup', this.onChange, false);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
