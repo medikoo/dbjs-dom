@@ -19,13 +19,9 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.type = type;
 	options = resolveOptions(options, type);
 	DOMInput.call(this, document, type, options);
-	if (options.chooseLabel != null) {
-		chooseLabel = options.chooseLabel;
-	} else if (options.dbOptions.chooseLabel != null) {
-		chooseLabel = options.dbOptions.chooseLabel;
-	} else {
-		chooseLabel = type.chooseLabel;
-	}
+	if (options.chooseLabel != null) chooseLabel = options.chooseLabel;
+	else if (options.dbOptions.chooseLabel != null) chooseLabel = options.dbOptions.chooseLabel;
+	else chooseLabel = type.chooseLabel;
 	if (chooseLabel) {
 		this.chooseOption = this.items[''] = this.document.createElement('option');
 		this.chooseOption.setAttribute('value', '');
@@ -37,8 +33,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	controlAttributes: d(assign(copy(DOMInput.prototype.controlAttributes),
 		{ required: true, size: true })),
-	dbAttributes: d(assign(copy(DOMInput.prototype.dbAttributes),
-		{ required: true })),
+	dbAttributes: d(assign(copy(DOMInput.prototype.dbAttributes), { required: true })),
 	_render: d(function () {
 		this.control = this.dom = this.document.createElement('select');
 	}),
@@ -55,9 +50,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			if (this.items.hasOwnProperty(this._value)) {
 				this.items[this._value].removeAttribute('selected');
 			}
-			if (this.items.hasOwnProperty(nu)) {
-				this.items[nu].setAttribute('selected', 'selected');
-			}
+			if (this.items.hasOwnProperty(nu)) this.items[nu].setAttribute('selected', 'selected');
 			this._value = nu;
 		}
 		if (nu !== old) {
