@@ -57,7 +57,6 @@ resolveDbOptions = function (type, options) {
 	} else {
 		this.dbOptions = type.instances.toArray(options.compare);
 	}
-	if (!this.group) this.dbOptions = this.dbOptions.map(this.createOption, this);
 	if (typeof this.dbOptions.on !== 'function') return;
 	this.dbOptions.on('change', this.reload);
 };
@@ -92,6 +91,24 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 		}
 		return createOption.call(this, obj.__id__, value);
 	}, { normalizer: getId }),
+	createDataListOption: d(function (obj) {
+		var label, legend, meta;
+		if (this.getDataListMeta) {
+			meta = this.getDataListMeta(obj);
+			label = meta.label;
+			legend = meta.legend;
+		} else if (this.dataListProperties) {
+			label = obj._get(this.dataListProperties.label);
+			legend = obj._get(this.dataListProperties.legend);
+		} else {
+			if (this.getOptionLabel) label = this.getOptionLabel(obj);
+			else if (this.property) label = obj._get(this.property);
+			else label = this.document.createTextNode(obj);
+		}
+		if (isObservable(label)) label = label.toDOM(this.document);
+		if (isObservable(legend)) legend = legend.toDOM(this.document);
+		return this.dataList.createOption(this, obj.__id__, label, legend);
+	}, { normalizer: getId }),
 	createOptgroup: d(function (obj) {
 		var el = this.document.createElement('optgroup'), value;
 		if (this.group.labelPropertyName) {
@@ -125,9 +142,13 @@ Select.prototype = Object.create(DOMSelect.prototype, assign({
 				optgroup.appendChild(option);
 			}, this);
 		} else {
-			els = options;
+			els = options.map(this.createOption, this);
 		}
 		replaceContent.call(this.control, this.chooseOption, els);
+		if (this.dataList) {
+			els = options.map(this.createDataListOption, this);
+			replaceContent.call(this.dataList.list, els);
+		}
 	})
 })));
 
