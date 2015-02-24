@@ -76,8 +76,8 @@ Table = function (document, set/*, options*/) {
 
 		// Cells
 		this.cellRenderers = map.call(options.columns, function (options, index) {
-			var name;
-			if (options.render != null) return callable(options.render);
+			var name, render = options.render || options.data;
+			if (render != null) return callable(render);
 			if (options.name != null) {
 				name = String(options.name);
 				return function (item) { return item._get(name); };
