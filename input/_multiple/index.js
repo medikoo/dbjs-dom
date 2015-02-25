@@ -48,6 +48,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	}
 
 	this.options = normalizeOptions(options.item);
+	this.options.required = false;
 	this.options.dbOptions = options.dbOptions;
 	this.options.control = Object(this.options.control);
 	DOMInput.call(this, document, type, options);
