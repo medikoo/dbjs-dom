@@ -1,21 +1,22 @@
 'use strict';
 
-var contains       = require('es5-ext/array/#/contains')
-  , uniq           = require('es5-ext/array/#/uniq')
-  , remove         = require('es5-ext/array/#/remove')
-  , constant       = require('es5-ext/function/constant')
-  , assign         = require('es5-ext/object/assign')
-  , Set            = require('es6-set')
-  , d              = require('d')
-  , autoBind       = require('d/auto-bind')
-  , makeElement    = require('dom-ext/document/#/make-element')
-  , extend         = require('dom-ext/element/#/extend')
-  , removeEl       = require('dom-ext/element/#/remove')
-  , setPresenceEl  = require('dom-ext/element/#/set-presence')
-  , getId          = require('dom-ext/html-element/#/get-id')
-  , isAnchor       = require('dom-ext/html-anchor-element/is-html-anchor-element')
-  , resolveOptions = require('../utils/resolve-options')
-  , DOMInput       = require('../_controls/input')
+var contains         = require('es5-ext/array/#/contains')
+  , uniq             = require('es5-ext/array/#/uniq')
+  , remove           = require('es5-ext/array/#/remove')
+  , constant         = require('es5-ext/function/constant')
+  , assign           = require('es5-ext/object/assign')
+  , normalizeOptions = require('es5-ext/object/normalize-options')
+  , Set              = require('es6-set')
+  , d                = require('d')
+  , autoBind         = require('d/auto-bind')
+  , makeElement      = require('dom-ext/document/#/make-element')
+  , extend           = require('dom-ext/element/#/extend')
+  , removeEl         = require('dom-ext/element/#/remove')
+  , setPresenceEl    = require('dom-ext/element/#/set-presence')
+  , getId            = require('dom-ext/html-element/#/get-id')
+  , isAnchor         = require('dom-ext/html-anchor-element/is-html-anchor-element')
+  , resolveOptions   = require('../utils/resolve-options')
+  , DOMInput         = require('../_controls/input')
 
   , stringify = JSON.stringify
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
@@ -46,7 +47,7 @@ module.exports = Input = function (document, type/*, options*/) {
 		delete options.deleteLabel;
 	}
 
-	this.options = Object(options.item);
+	this.options = normalizeOptions(options.item);
 	this.options.dbOptions = options.dbOptions;
 	this.options.control = Object(this.options.control);
 	DOMInput.call(this, document, type, options);
