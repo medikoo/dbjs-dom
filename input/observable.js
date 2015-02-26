@@ -62,11 +62,11 @@ Object.defineProperties(PropObserv.prototype, {
 
 		// Attach listeners
 		onChange = function () {
-			var value = this.value;
-			if (isSet(value)) {
-				if (!options.multiple) value = value.values().next().value || null;
+			var nuValue = this.value;
+			if (isSet(nuValue)) {
+				if (!options.multiple) nuValue = nuValue.values().next().value || null;
 			}
-			input.value = value;
+			input.value = nuValue;
 		}.bind(this);
 		if (isMap || isSet(value)) value.on('change', onChange);
 		else this.on('change', onChange);
