@@ -117,22 +117,22 @@ Object.defineProperties(PropObserv.prototype, {
 
 		// DBJS valid/invalid & empty/filled
 		this.on('change', cb = function () {
-			var desc = this.descriptor, isInvalid, value, isOwn;
+			var desc = this.descriptor, isInvalid, value, isEmpty, isOwn;
 			isInvalid = desc.required && (this.value == null);
 			dom.classList[isInvalid ? 'add' : 'remove']('dbjs-invalid');
 			dom.classList[isInvalid ? 'remove' : 'add']('dbjs-valid');
 			value = this.value;
 			if (isSet(value)) {
-				dom.classList[value.size ? 'remove' : 'add']('dbjs-empty');
-				dom.classList[value.size ? 'add' : 'remove']('dbjs-filled');
-				dom.classList.add('dbjs-own');
+				isEmpty = !value.size;
+				isOwn = value.dbKind !== 'computedMultiple';
 			} else {
-				dom.classList[value == null ? 'add' : 'remove']('dbjs-empty');
-				dom.classList[value == null ? 'remove' : 'add']('dbjs-filled');
+				isEmpty = value == null;
 				isOwn = desc._hasOwnValue_(this.object);
-				dom.classList[isOwn ? 'add' : 'remove']('dbjs-own');
-				dom.classList[isOwn ? 'remove' : 'add']('dbjs-not-own');
 			}
+			dom.classList[isEmpty ? 'add' : 'remove']('dbjs-empty');
+			dom.classList[isEmpty ? 'remove' : 'add']('dbjs-filled');
+			dom.classList[isOwn ? 'add' : 'remove']('dbjs-own');
+			dom.classList[isOwn ? 'remove' : 'add']('dbjs-not-own');
 		}.bind(this));
 		cb();
 		if (isSet(this.value)) this.value.on('change', cb);
