@@ -2,6 +2,7 @@
 
 var copy             = require('es5-ext/object/copy')
   , assign           = require('es5-ext/object/assign')
+  , isEmpty          = require('es5-ext/object/is-empty')
   , filter           = require('es5-ext/object/filter')
   , forEach          = require('es5-ext/object/for-each')
   , normalizeOptions = require('es5-ext/object/normalize-options')
@@ -134,11 +135,37 @@ Object.defineProperties(PropObserv.prototype, {
 			else isEmpty = value == null;
 			dom.classList[isEmpty ? 'add' : 'remove']('dbjs-empty');
 			dom.classList[isEmpty ? 'remove' : 'add']('dbjs-filled');
+			if (input.isComposite) return;
 			isOwn = hasOwn(this.object, this.descriptor, this.__sKey__);
 			dom.classList[isOwn ? 'add' : 'remove']('dbjs-own');
 			dom.classList[isOwn ? 'remove' : 'add']('dbjs-not-own');
 		}.bind(this));
 		cb();
+		if (input.isComposite) {
+			(function () {
+				var defined = {};
+				var update = function () {
+					var isOwn = !isEmpty(defined);
+					dom.classList[isOwn ? 'add' : 'remove']('dbjs-own');
+					dom.classList[isOwn ? 'remove' : 'add']('dbjs-not-own');
+				};
+				forEach(input.items, function (input) {
+					var observable = input.observable, cb, object, sKey, desc;
+					if (!observable) return;
+					object = observable.object;
+					desc = observable.descriptor;
+					sKey = observable.__sKey__;
+					if (hasOwn(object, desc, sKey)) defined[sKey] = true;
+					observable.on('change', cb = function (event) {
+						if (hasOwn(object, desc, sKey)) defined[sKey] = true;
+						else delete defined[sKey];
+						update();
+					});
+					input.on('destroy', function () { observable.off('change', cb); });
+				});
+				update();
+			}());
+		}
 		if (isSet(this.value)) this.value.on('change', cb);
 		input.on('destroy', function (cb) { this.off('change', cb); }.bind(this, cb));
 
