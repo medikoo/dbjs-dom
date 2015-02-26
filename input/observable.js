@@ -16,6 +16,14 @@ var copy             = require('es5-ext/object/copy')
 
   , toDOM = function () { return this.dom; };
 
+var hasOwn = function (obj, desc, sKey) {
+	if (desc.multiple) {
+		if (typeof desc._value_ === 'function') return false;
+		return obj._hasOwnMultiple_(sKey);
+	}
+	return obj._hasOwn_(sKey);
+};
+
 Object.defineProperties(PropObserv.prototype, {
 	DOMInput: d(null),
 	toDOMInput: d(function (document/*, options*/) {
@@ -122,15 +130,11 @@ Object.defineProperties(PropObserv.prototype, {
 			dom.classList[isInvalid ? 'add' : 'remove']('dbjs-invalid');
 			dom.classList[isInvalid ? 'remove' : 'add']('dbjs-valid');
 			value = this.value;
-			if (isSet(value)) {
-				isEmpty = !value.size;
-				isOwn = value.dbKind !== 'computedMultiple';
-			} else {
-				isEmpty = value == null;
-				isOwn = desc._hasOwnValue_(this.object);
-			}
+			if (isSet(value)) isEmpty = !value.size;
+			else isEmpty = value == null;
 			dom.classList[isEmpty ? 'add' : 'remove']('dbjs-empty');
 			dom.classList[isEmpty ? 'remove' : 'add']('dbjs-filled');
+			isOwn = hasOwn(this.object, this.descriptor, this.__sKey__);
 			dom.classList[isOwn ? 'add' : 'remove']('dbjs-own');
 			dom.classList[isOwn ? 'remove' : 'add']('dbjs-not-own');
 		}.bind(this));
