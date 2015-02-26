@@ -66,10 +66,15 @@ Object.defineProperties(PropObserv.prototype, {
 			if (isSet(nuValue)) {
 				if (!options.multiple) nuValue = nuValue.values().next().value || null;
 			}
+			if ((isMap || isSet(nuValue)) && (nuValue !== value)) {
+				if (value && (typeof value.off === 'function')) value.off('change', onChange);
+				value = nuValue;
+				nuValue.on('change', onChange);
+			}
 			input.value = nuValue;
 		}.bind(this);
+		this.on('change', onChange);
 		if (isMap || isSet(value)) value.on('change', onChange);
-		else this.on('change', onChange);
 
 		input.once('destroy', function () {
 			delete input.observable;
