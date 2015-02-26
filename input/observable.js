@@ -117,7 +117,7 @@ Object.defineProperties(PropObserv.prototype, {
 
 		// DBJS valid/invalid & empty/filled
 		this.on('change', cb = function () {
-			var desc = this.descriptor, isInvalid, value;
+			var desc = this.descriptor, isInvalid, value, isOwn;
 			isInvalid = desc.required && (this.value == null);
 			dom.classList[isInvalid ? 'add' : 'remove']('dbjs-invalid');
 			dom.classList[isInvalid ? 'remove' : 'add']('dbjs-valid');
@@ -125,9 +125,13 @@ Object.defineProperties(PropObserv.prototype, {
 			if (isSet(value)) {
 				dom.classList[value.size ? 'remove' : 'add']('dbjs-empty');
 				dom.classList[value.size ? 'add' : 'remove']('dbjs-filled');
+				dom.classList.add('dbjs-own');
 			} else {
 				dom.classList[value == null ? 'add' : 'remove']('dbjs-empty');
 				dom.classList[value == null ? 'remove' : 'add']('dbjs-filled');
+				isOwn = desc._hasOwnValue_(this.object);
+				dom.classList[isOwn ? 'add' : 'remove']('dbjs-own');
+				dom.classList[isOwn ? 'remove' : 'add']('dbjs-not-own');
 			}
 		}.bind(this));
 		cb();
