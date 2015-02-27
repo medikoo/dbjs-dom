@@ -87,7 +87,8 @@ Object.defineProperties(PropObserv.prototype, {
 		return input;
 	}),
 	toDOMInputComponent: d(function (document/*, options*/) {
-		var options = copy(Object(arguments[1])), input, inputOptions, dom, cb, desc = this.descriptor;
+		var options = copy(Object(arguments[1])), input, inputOptions, dom, cb
+		  , desc = this.ownDescriptor;
 
 		inputOptions = filter(options, function (value, name) {
 			if (name === 'render') return false;
@@ -131,7 +132,7 @@ Object.defineProperties(PropObserv.prototype, {
 
 		// DBJS valid/invalid & empty/filled
 		this.on('change', cb = function () {
-			var desc = this.descriptor, isInvalid, value, isEmpty, isOwn;
+			var isInvalid, value, isEmpty, isOwn;
 			isInvalid = desc.required && (this.value == null);
 			dom.classList[isInvalid ? 'add' : 'remove']('dbjs-invalid');
 			dom.classList[isInvalid ? 'remove' : 'add']('dbjs-valid');
@@ -145,6 +146,7 @@ Object.defineProperties(PropObserv.prototype, {
 			dom.classList[isOwn ? 'add' : 'remove']('dbjs-own');
 			dom.classList[isOwn ? 'remove' : 'add']('dbjs-not-own');
 		}.bind(this));
+		desc.on('selfupdate', cb);
 		cb();
 		if (input.isComposite) {
 			(function () {
@@ -166,7 +168,11 @@ Object.defineProperties(PropObserv.prototype, {
 						else delete defined[sKey];
 						update();
 					});
-					input.on('destroy', function () { observable.off('change', cb); });
+					observable.ownDescriptor.on('selfupdate', cb);
+					input.on('destroy', function () {
+						observable.off('change', cb);
+						observable.ownDescriptor.off('selfupdate', cb);
+					});
 				});
 				update();
 			}());
