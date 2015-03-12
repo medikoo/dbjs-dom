@@ -240,10 +240,6 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 })));
 
 module.exports = memoize(function (db) {
-	if (typeof FileList !== 'function') {
-		console.warn("FileList interface not found." +
-			" It means binding is realiable only for read-only form");
-	}
 	defineProperties(setup(db).File, {
 		fromInputValue: d(function (value) {
 			if (value == null) return null;
