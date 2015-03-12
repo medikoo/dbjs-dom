@@ -18,7 +18,7 @@ module.exports = function (containerName) {
 		return el(containerName,
 			(options.label && [el('label',
 				(input.control ? { for: getId.call(input.control) } : null),
-				options.label, ':', ' ')]) || null,
+				options.label, ' ')]) || null,
 			el('div', { class: 'input' }, input,
 				options.disabled ? null : el('span', { class: 'statuses' },
 					// missing (required field) mark
