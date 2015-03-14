@@ -234,7 +234,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		var data;
 		file = this.type.getById(file);
 		data = this.renderItem(file);
-		this.controls.push(data.control);
+		if (data.control) this.controls.push(data.control);
 		return data.dom;
 	})
 })));
@@ -243,6 +243,7 @@ module.exports = memoize(function (db) {
 	defineProperties(setup(db).File, {
 		fromInputValue: d(function (value) {
 			if (value == null) return null;
+			if (value === '') return null;
 			if (isArray(value) && (value.length === 2)) {
 				if (typeof value[0] === 'string') {
 					if (isObject(value[1])) return value[1];
