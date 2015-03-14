@@ -20,6 +20,7 @@ var aFrom          = require('es5-ext/array/from')
   , remove         = require('dom-ext/element/#/remove')
   , replaceCont    = require('dom-ext/element/#/replace-content')
   , dispatchEvnt   = require('dom-ext/html-element/#/dispatch-event-2')
+  , isNested       = require('dbjs/is-dbjs-nested-object')
   , resolveOptions = require('../utils/resolve-options')
   , DOMInput       = require('../_controls/input')
   , eventOpts      = require('../_event-options')
@@ -59,14 +60,14 @@ render = function (options) {
 };
 
 renderItem = function (file) {
-	var el = this.make, data = {};
+	var el = this.make, data = {}, name;
 	data.dom = el(this.multiple ? 'li' : 'span', { 'data-id': file.__id__ });
+	if (isNested(file)) name = file.__id__;
+	else name = this.descriptor.__valueId__ + '*' + file.__id__;
 	append.call(data.dom,
 		el('a', { href: file._url, target: '_blank' }, file._name), " ",
-		data.control = el('input', { type: 'hidden', name: this.name,
-			value: file.__id__ }),
-		el('a', { class: 'clear', onclick: this.removeItem.bind(this, data.dom) },
-			"x"));
+		el('input', { class: 'clear' },
+			el('input', { type: 'checkbox', name: name, value: '' }), "x"));
 	return data;
 };
 
