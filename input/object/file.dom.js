@@ -63,7 +63,7 @@ renderItem = function (file) {
 	var el = this.make, data = {}, name;
 	data.dom = el(this.multiple ? 'li' : 'span', { 'data-id': file.__id__ });
 	if (isNested(file)) name = file.__id__;
-	else name = this.descriptor.__valueId__ + '*' + file.__id__;
+	else name = this.descriptor.__valueId__ + '*7' + file.__id__;
 	append.call(data.dom,
 		el('a', { href: file._url, target: '_blank' }, file._name), " ",
 		el('input', { class: 'clear' },
