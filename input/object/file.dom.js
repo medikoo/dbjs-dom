@@ -1,30 +1,31 @@
 'use strict';
 
-var aFrom          = require('es5-ext/array/from')
-  , compact        = require('es5-ext/array/#/compact')
-  , isCopy         = require('es5-ext/array/#/is-copy')
-  , pluck          = require('es5-ext/function/pluck')
-  , copy           = require('es5-ext/object/copy')
-  , assign         = require('es5-ext/object/assign')
-  , isObject       = require('es5-ext/object/is-object')
-  , callable       = require('es5-ext/object/valid-callable')
-  , toArray        = require('es5-ext/array/to-array')
-  , isMap          = require('es6-map/is-map')
-  , d              = require('d')
-  , memoize        = require('memoizee/plain')
-  , memoizeMethods = require('memoizee/methods-plain')
-  , getNormalizer  = require('memoizee/normalizers/get-1')
-  , makeEl         = require('dom-ext/document/#/make-element')
-  , append         = require('dom-ext/element/#/append')
-  , clear          = require('dom-ext/element/#/clear')
-  , remove         = require('dom-ext/element/#/remove')
-  , replaceCont    = require('dom-ext/element/#/replace-content')
-  , dispatchEvnt   = require('dom-ext/html-element/#/dispatch-event-2')
-  , isNested       = require('dbjs/is-dbjs-nested-object')
-  , resolveOptions = require('../utils/resolve-options')
-  , DOMInput       = require('../_controls/input')
-  , eventOpts      = require('../_event-options')
-  , setup          = require('../')
+var aFrom           = require('es5-ext/array/from')
+  , compact         = require('es5-ext/array/#/compact')
+  , isCopy          = require('es5-ext/array/#/is-copy')
+  , pluck           = require('es5-ext/function/pluck')
+  , copy            = require('es5-ext/object/copy')
+  , assign          = require('es5-ext/object/assign')
+  , isObject        = require('es5-ext/object/is-object')
+  , callable        = require('es5-ext/object/valid-callable')
+  , toArray         = require('es5-ext/array/to-array')
+  , isMap           = require('es6-map/is-map')
+  , d               = require('d')
+  , memoize         = require('memoizee/plain')
+  , memoizeMethods  = require('memoizee/methods-plain')
+  , getNormalizer   = require('memoizee/normalizers/get-1')
+  , makeEl          = require('dom-ext/document/#/make-element')
+  , append          = require('dom-ext/element/#/append')
+  , clear           = require('dom-ext/element/#/clear')
+  , remove          = require('dom-ext/element/#/remove')
+  , replaceCont     = require('dom-ext/element/#/replace-content')
+  , dispatchEvnt    = require('dom-ext/html-element/#/dispatch-event-2')
+  , ObservableValue = require('observable-value')
+  , isNested        = require('dbjs/is-dbjs-nested-object')
+  , resolveOptions  = require('../utils/resolve-options')
+  , DOMInput        = require('../_controls/input')
+  , eventOpts       = require('../_event-options')
+  , setup           = require('../')
 
   , getMapValue = pluck(1)
   , isArray = Array.isArray, map = Array.prototype.map
@@ -109,6 +110,13 @@ Input = function (document, type/*, options*/) {
 			if (form.parentNode) form.parentNode.removeChild(form);
 		});
 	}
+	if (this._required) {
+		this.inputRequired = new ObservableValue(true);
+		this.castControlAttribute('required', true);
+		this.inputRequired.on('change', function (event) {
+			this.castControlAttribute('required', Boolean(event.newValue));
+		}.bind(this));
+	}
 };
 
 Input.prototype = Object.create(DOMInput.prototype, assign({
@@ -167,11 +175,11 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			this.control.value = null;
 			if (nu) {
 				replaceCont.call(this.valueDOM, this._renderItem(nu));
-				if (this._required) this.castControlAttribute('required', false);
+				if (this._required) this.inputRequired.value = this.type.getById(nu)._name.not();
 				this.dom.classList.add('filled');
 			} else {
 				clear.call(this.valueDOM);
-				if (this._required) this.castControlAttribute('required', true);
+				if (this._required) this.inputRequired.value = true;
 				this.dom.classList.remove('filled');
 			}
 			changed = true;
