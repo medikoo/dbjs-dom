@@ -9,6 +9,7 @@ var copy             = require('es5-ext/object/copy')
   , isSet            = require('es6-set/is-set')
   , d                = require('d')
   , castAttribute    = require('dom-ext/element/#/cast-attribute')
+  , isNestedObject   = require('dbjs/is-dbjs-nested-object')
   , PropObserv       = require('dbjs/_setup/1.property/observable')
   , DescPropObserv   = require('dbjs/_setup/3.descriptor-property/observable')
   , htmlAttributes   = require('./_html-attributes')
@@ -88,7 +89,7 @@ Object.defineProperties(PropObserv.prototype, {
 	}),
 	toDOMInputComponent: d(function (document/*, options*/) {
 		var options = copy(Object(arguments[1])), input, inputOptions, dom, cb
-		  , desc = this.ownDescriptor;
+		  , desc = this.ownDescriptor, db = desc.database;
 
 		inputOptions = filter(options, function (value, name) {
 			if (name === 'render') return false;
@@ -133,12 +134,25 @@ Object.defineProperties(PropObserv.prototype, {
 		// DBJS valid/invalid & empty/filled
 		this.on('change', cb = function () {
 			var isInvalid, value, isEmpty, isOwn;
-			isInvalid = desc.required && (this.value == null);
+			if (desc.required) {
+				if (this.value == null) {
+					isInvalid = true;
+				} else if (db.File && (this.value instanceof db.File) && isNestedObject(this.value)) {
+					isEmpty = isInvalid = !this.value.name;
+					this.value._name.once('change', cb);
+				} else {
+					isInvalid = false;
+				}
+			} else {
+				isInvalid = false;
+			}
 			dom.classList[isInvalid ? 'add' : 'remove']('dbjs-invalid');
 			dom.classList[isInvalid ? 'remove' : 'add']('dbjs-valid');
 			value = this.value;
-			if (isSet(value)) isEmpty = !value.size;
-			else isEmpty = value == null;
+			if (isEmpty == null) {
+				if (isSet(value)) isEmpty = !value.size;
+				else isEmpty = value == null;
+			}
 			dom.classList[isEmpty ? 'add' : 'remove']('dbjs-empty');
 			dom.classList[isEmpty ? 'remove' : 'add']('dbjs-filled');
 			if (input.isComposite) return;
