@@ -67,7 +67,7 @@ renderItem = function (file) {
 	else name = this.descriptor.__valueId__ + '*7' + file.__id__;
 	append.call(data.dom,
 		el('a', { href: file._url, target: '_blank' }, file._name), " ",
-		el('input', { class: 'clear' },
+		el('label', { class: 'clear' },
 			el('input', { type: 'checkbox', name: name, value: '' }), "x"));
 	return data;
 };
