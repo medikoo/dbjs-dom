@@ -201,6 +201,12 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			}
 			if (!value.length) value = null;
 		} else {
+			if (isNested(value)) {
+				value._name.on('change', function () {
+					getForceReset(this.document)(this.control);
+					this.onChange();
+				}.bind(this));
+			}
 			value = this.type.toInputValue(value);
 		}
 
