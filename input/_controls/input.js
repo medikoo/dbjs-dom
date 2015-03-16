@@ -29,7 +29,8 @@ module.exports = Input = function (document, type/*, options*/) {
 	this._render(options);
 	this.dom._dbjsInput = this;
 	if (options.name) this.name = options.name;
-	if (options.required || options.dbOptions.required) this.required = true;
+	this.required = (options.required != null)
+		? Boolean(options.required) : options.dbOptions.required;
 	forEach(options, function (value, name) {
 		if (name === 'class') {
 			mergeClass.call(this.dom, value);
