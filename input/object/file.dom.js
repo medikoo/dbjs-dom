@@ -11,6 +11,7 @@ var aFrom           = require('es5-ext/array/from')
   , toArray         = require('es5-ext/array/to-array')
   , isMap           = require('es6-map/is-map')
   , d               = require('d')
+  , autoBind        = require('d/auto-bind')
   , memoize         = require('memoizee/plain')
   , memoizeMethods  = require('memoizee/methods-plain')
   , getNormalizer   = require('memoizee/normalizers/get-1')
@@ -151,11 +152,6 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		if (this.multiple) {
 			if (nu) {
 				if (!old || !isCopy.call(nu, old)) {
-					this.control.value = null;
-					if (this.control.files && this.control.files.length) {
-						// In Opera control is not reset properly, force it with hack
-						getForceReset(this.document)(this.control);
-					}
 					replaceCont.call(this.valueDOM,
 						nu.sort(byNameLastModified.bind(this.type)).map(this._renderItem));
 					if (this._required) this.castControlAttribute('required', false);
@@ -201,12 +197,6 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			}
 			if (!value.length) value = null;
 		} else {
-			if (isNested(value)) {
-				value._name.on('change', function () {
-					getForceReset(this.document)(this.control);
-					this.onChange();
-				}.bind(this));
-			}
 			value = this.type.toInputValue(value);
 		}
 
@@ -221,6 +211,13 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	}),
 	onChange: d(function () {
 		var value, changed, valid, emitChanged, emitValid;
+		if (this.control.form) {
+			if (this.form !== this.control.form) {
+				if (this.form) this.form.removeEventListener('reset', this._onReset, false);
+				this.form = this.control.form;
+				this.form.addEventListener('reset', this._onReset, false);
+			}
+		}
 		value = this.inputValue;
 		changed = (this.multiple && (this._value != null) && (value != null))
 			? isCopy.call(value, this._value) : (value !== this._value);
@@ -244,7 +241,19 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		if (!this.multiple) this.dom.classList.remove('filled');
 		dispatchEvnt.call(this.control, 'change', eventOpts);
 	})
-}, memoizeMethods({
+}, autoBind({
+	_onReset: d(function () {
+		this.control.value = null;
+		if (this.control.files && this.control.files.length) {
+			// In Opera control is not reset properly, force it with hack
+			getForceReset(this.document)(this.control);
+		}
+		aFrom(this.valueDOM.querySelectorAll('input[type=checkbox]')).every(function (input) {
+			input.checked = false;
+		});
+		this.onChange();
+	})
+}), memoizeMethods({
 	_renderItem: d(function (file) {
 		var data;
 		file = this.type.getById(file);
