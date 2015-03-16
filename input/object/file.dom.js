@@ -20,7 +20,6 @@ var aFrom           = require('es5-ext/array/from')
   , remove          = require('dom-ext/element/#/remove')
   , replaceCont     = require('dom-ext/element/#/replace-content')
   , dispatchEvnt    = require('dom-ext/html-element/#/dispatch-event-2')
-  , ObservableValue = require('observable-value')
   , isNested        = require('dbjs/is-dbjs-nested-object')
   , resolveOptions  = require('../utils/resolve-options')
   , DOMInput        = require('../_controls/input')
@@ -110,13 +109,8 @@ Input = function (document, type/*, options*/) {
 			if (form.parentNode) form.parentNode.removeChild(form);
 		});
 	}
-	if (this._required) {
-		this.inputRequired = new ObservableValue(true);
-		this.castControlAttribute('required', true);
-		this.inputRequired.on('change', function (event) {
-			this.castControlAttribute('required', Boolean(event.newValue));
-		}.bind(this));
-	}
+	if (this._required) this.castControlAttribute('required', true);
+	this.valueDOM.addEventListener('change', this.updateRequired.bind(this));
 };
 
 Input.prototype = Object.create(DOMInput.prototype, assign({
@@ -175,11 +169,9 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			this.control.value = null;
 			if (nu) {
 				replaceCont.call(this.valueDOM, this._renderItem(nu));
-				if (this._required) this.inputRequired.value = this.type.getById(nu)._name.not();
 				this.dom.classList.add('filled');
 			} else {
 				clear.call(this.valueDOM);
-				if (this._required) this.inputRequired.value = true;
 				this.dom.classList.remove('filled');
 			}
 			changed = true;
@@ -191,6 +183,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		} else {
 			this.onChange();
 		}
+		this.updateRequired();
 	}),
 	value: d.gs(function () {
 		var value = this.inputValue;
@@ -212,6 +205,13 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		}
 
 		this.inputValue = value;
+	}),
+	updateRequired: d(function () {
+		if (!this._required) return;
+		this.castControlAttribute('required',
+			aFrom(this.valueDOM.querySelectorAll('input[type=checkbox]')).every(function (input) {
+				return input.checked;
+			}));
 	}),
 	onChange: d(function () {
 		var value, changed, valid, emitChanged, emitValid;
