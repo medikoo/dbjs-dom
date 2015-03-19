@@ -24,7 +24,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			maxlength: true, pattern: true, placeholder: true, readonly: true,
 			required: true, size: true })),
 	dbAttributes: d(assign(copy(DOMInput.prototype.dbAttributes),
-		{ max: 'maxlength', pattern: true, inputPlaceholder: 'placeholder',
+		{ max: 'maxlength', inputSize: 'size', pattern: true, inputPlaceholder: 'placeholder',
 			required: true })),
 	numberAttributes: d({ maxlength: true }),
 	_render: d(function () {
