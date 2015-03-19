@@ -96,6 +96,7 @@ Input = function (document, type/*, options*/) {
 
 	if (options.autoSubmit != null) {
 		action = options.autoSubmit;
+		this.dom.classList.add('auto-submit');
 		this.on('change', function () {
 			var form, parent, sibling;
 			if (!this.changed) return;
