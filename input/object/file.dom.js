@@ -112,7 +112,7 @@ Input = function (document, type/*, options*/) {
 		});
 	}
 	if (this._required) this.castControlAttribute('required', true);
-	this.valueDOM.addEventListener('change', this.updateRequired.bind(this));
+	this.valueDOM.addEventListener('change', this.onChange);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, assign({
@@ -133,19 +133,23 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		this.controls.forEach(function (input) { input.name = name; });
 	}),
 	inputValue: d.gs(function () {
-		var value;
+		var value, item;
 		if (!this.multiple) {
 			if (this.control.files && this.control.files[0]) return this.control.files[0];
-			if (!this.valueDOM.firstElementChild) return null;
+			item = this.valueDOM.firstElementChild;
+			if (!item) return null;
+			if (item.classList.contains('empty')) return null;
+			if (item.querySelector('input[type=checkbox]').checked) return null;
 			return this.valueDOM.firstElementChild.getAttribute('data-id');
 		}
-		value = map.call(this.valueDOM.childNodes, function (node) {
-			var id = node.getAttribute('data-id');
-			if (!id) {
-				throw new TypeError("Missing id (data-id attribute) on file item");
-			}
+		value = compact.call(map.call(this.valueDOM.childNodes, function (item) {
+			var id;
+			if (item.classList.contains('empty')) return null;
+			if (item.querySelector('input[type=checkbox]').checked) return null;
+			id = item.getAttribute('data-id');
+			if (!id) throw new TypeError("Missing id (data-id attribute) on file item");
 			return id;
-		}).concat(this.control.files ? aFrom(this.control.files) : []);
+		})).concat(this.control.files ? aFrom(this.control.files) : []);
 		return value.length ? value : null;
 	}, function (nu) {
 		var old = this.inputValue, changed;
@@ -198,6 +202,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			}
 			if (!value.length) value = null;
 		} else {
+			if (this.observable.descriptor.nested) value._name.on('change', this.onChange);
 			value = this.type.toInputValue(value);
 		}
 
@@ -220,6 +225,9 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			}
 		}
 		value = this.inputValue;
+		changed = aFrom(this.valueDOM.querySelectorAll('input[type=checkbox]')).some(function (input) {
+			input.checked = false;
+		});
 		changed = (this.multiple && (this._value != null) && (value != null))
 			? isCopy.call(value, this._value) : (value !== this._value);
 		valid = this.required ? (value != null) : true;
@@ -232,7 +240,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			this.valid = valid;
 			emitValid = true;
 		}
-
+		this.updateRequired();
 		this.emit('change', value);
 		if (emitChanged) this.emit('change:changed', this.changed);
 		if (emitValid) this.emit('change:valid', this.valid);
