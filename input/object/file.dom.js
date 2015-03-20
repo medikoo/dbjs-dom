@@ -112,7 +112,7 @@ Input = function (document, type/*, options*/) {
 		});
 	}
 	if (this._required) this.castControlAttribute('required', true);
-	this.valueDOM.addEventListener('change', this.onChange);
+	this.valueDOM.addEventListener('change', this.onChange(), false);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, assign({
@@ -226,7 +226,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		}
 		value = this.inputValue;
 		changed = aFrom(this.valueDOM.querySelectorAll('input[type=checkbox]')).some(function (input) {
-			input.checked = false;
+			return input.checked;
 		});
 		changed = (this.multiple && (this._value != null) && (value != null))
 			? isCopy.call(value, this._value) : (value !== this._value);
