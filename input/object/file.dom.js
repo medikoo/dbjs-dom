@@ -112,7 +112,7 @@ Input = function (document, type/*, options*/) {
 		});
 	}
 	if (this._required) this.castControlAttribute('required', true);
-	this.valueDOM.addEventListener('change', this.onChange(), false);
+	this.valueDOM.addEventListener('change', this.onChange, false);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, assign({
