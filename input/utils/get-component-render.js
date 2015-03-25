@@ -15,7 +15,7 @@ var getMdi = memoize(function (document) {
 module.exports = function (containerName) {
 	return function (input, options) {
 		var el = makeElement.bind(input.document), mdi = getMdi(input.document);
-		return el(containerName,
+		return el(containerName, { class: options.class },
 			(options.label && [el('label',
 				(input.control ? { for: getId.call(input.control) } : null),
 				options.label, ' ')]) || null,
