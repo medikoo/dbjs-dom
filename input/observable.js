@@ -114,8 +114,8 @@ Object.defineProperties(PropObserv.prototype, {
 		dom.classList.add('dbjs-input-component');
 
 		// Required
-		dom.classList[desc.required ? 'add' : 'remove']('required');
-		dom.classList[desc.required ? 'remove' : 'add']('optional');
+		dom.classList[desc.required ? 'add' : 'remove']('dbjs-required');
+		dom.classList[desc.required ? 'remove' : 'add']('dbjs-optional');
 
 		// Changed
 		input.on('change:changed', cb = function (value) {
