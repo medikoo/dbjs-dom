@@ -1,10 +1,10 @@
 'use strict';
 
-var d           = require('d')
-  , include     = require('dom-ext/element/#/include')
-  , exclude     = require('dom-ext/element/#/exclude')
-  , DOMInput    = require('./_observable')
-  , getFields   = require('./_get-fields')
+var d              = require('d')
+  , getId          = require('dom-ext/html-element/#/get-id')
+  , generateScript = require('dom-ext/html-document/#/generate-inline-script')
+  , DOMInput       = require('./_observable')
+  , getFields      = require('./_get-fields')
 
   , Input;
 
@@ -29,11 +29,10 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			data.observables[data.names.otherField].toDOMInput(this.document,
 				this.getOptions(data.observables[data.names.otherField])), observable.dbId);
 
-		selectInput.on('change', function () {
-			((selectInput.value === 'other') ? include : exclude).call(label);
-		});
-
-		this.dom = el('div', { class: 'inputs' }, selectInput, label = el('label',
-			data.observables[data.names.otherField].label, other));
+		label = el('label', data.observables[data.names.otherField].label, other);
+		this.dom = el('div', { class: 'inputs' }, selectInput, label,
+			generateScript.call(this.document, function (selectId, otherId) {
+				$.selectMatch(selectId, { other: otherId });
+			}, getId.call(selectInput.dom), getId.call(label)));
 	})
 });
