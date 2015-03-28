@@ -190,9 +190,7 @@ ee(Object.defineProperties(Table.prototype, assign({
 		return this.emptyRow;
 	}),
 	toDOM: d(function () { return this.dom; })
-}, lazy({
-	onChange: d(function () { return once(this.reload); })
-}), memoizeMethods({
+}, memoizeMethods({
 	rowRender: d(function (item) {
 		return makeElement.call(this.document, 'tr',
 			this.cellRenderers.map(function (render) {
@@ -200,10 +198,11 @@ ee(Object.defineProperties(Table.prototype, assign({
 			}, this));
 	}, { getNormalizer: getNormalizer })
 }), autoBind({
+	onChange: d(function () { this.reload(); }),
 	reload: d(function () {
 		var list;
 		if (this.list.length) {
-			list = this.list.map(this.rowRender);
+			list = aFrom(this.list).map(this.rowRender);
 			if (this.reverse) list = aFrom(list).reverse();
 		} else {
 			list = [this.emptyRow];
