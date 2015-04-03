@@ -161,10 +161,12 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 						nu.sort(byNameLastModified.bind(this.type)).map(this._renderItem));
 					if (this._required) this.castControlAttribute('required', false);
 					changed = true;
+					this.dom.classList.add('filled');
 				}
 			} else {
 				clear.call(this.valueDOM);
 				if (this._required) this.castControlAttribute('required', true);
+				this.dom.classList.remove('filled');
 			}
 		} else if (nu !== old) {
 			this.control.value = null;
