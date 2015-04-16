@@ -122,9 +122,7 @@ Radio.prototype = Object.create(DOMRadio.prototype, assign({
 }, autoBind({
 	reload: d(function () {
 		var options = this.dbOptions;
-		if (this.onlyFilter) {
-			options = options.filter(this.onlyFilter.has, this.onlyFilter);
-		}
+		if (this.onlyFilter) options = options.filter(this.onlyFilter.has, this.onlyFilter);
 		replaceContent.call(this.dom, options.map(this.createOption, this));
 	})
 })));
