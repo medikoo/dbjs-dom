@@ -32,6 +32,7 @@ var aFrom           = require('es5-ext/array/from')
   , defineProperty = Object.defineProperty
   , defineProperties = Object.defineProperties
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
+  , filterEmpty = function (file) { return file.path; }
   , Input, render, renderItem, getTempForm, getForceReset;
 
 getForceReset = memoize(function (document) {
@@ -197,7 +198,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		if (value == null) {
 			value = null;
 		} else if (this.multiple) {
-			if (isMap(value)) value = toArray(value).map(getMapValue);
+			if (isMap(value)) value = toArray(value).map(getMapValue).filter(filterEmpty);
 			else value = toArray(value);
 			if (value.length) {
 				value = compact.call(value.map(this.type.toInputValue, this.type));
