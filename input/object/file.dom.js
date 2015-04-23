@@ -32,7 +32,7 @@ var aFrom           = require('es5-ext/array/from')
   , defineProperty = Object.defineProperty
   , defineProperties = Object.defineProperties
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
-  , filterEmpty = function (file) { return file.path; };
+  , filterEmpty = function (file) { return file.name; };
 
 var getForceReset = memoize(function (document) {
 	var form = document.createElement('form');
@@ -162,8 +162,10 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 					if (this._required) this.castControlAttribute('required', false);
 					changed = true;
 					this.dom.classList.add('filled');
+					this.control.value = null;
 				}
 			} else {
+				this.control.value = null;
 				clear.call(this.valueDOM);
 				if (this._required) this.castControlAttribute('required', true);
 				this.dom.classList.remove('filled');
