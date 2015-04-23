@@ -32,10 +32,9 @@ var aFrom           = require('es5-ext/array/from')
   , defineProperty = Object.defineProperty
   , defineProperties = Object.defineProperties
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
-  , filterEmpty = function (file) { return file.path; }
-  , Input, render, renderItem, getTempForm, getForceReset;
+  , filterEmpty = function (file) { return file.path; };
 
-getForceReset = memoize(function (document) {
+var getForceReset = memoize(function (document) {
 	var form = document.createElement('form');
 	return function (input) {
 		var parent = input.parentNode, nextSibling = input.nextSibling;
@@ -45,7 +44,7 @@ getForceReset = memoize(function (document) {
 	};
 }, { normalizer: getNormalizer() });
 
-getTempForm = memoize(function (document) {
+var getTempForm = memoize(function (document) {
 	var form = document.createElement('form');
 	form.setAttribute('method', 'post');
 	form.setAttribute('enctype', 'multipart/form-data');
@@ -53,7 +52,7 @@ getTempForm = memoize(function (document) {
 	return form;
 }, { normalizer: getNormalizer() });
 
-render = function (options) {
+var render = function (options) {
 	var el = this.make;
 	return el('div', { class: 'dbjs-file' },
 		this.valueDOM = this.multiple ? el('ul') : el('span'),
@@ -61,7 +60,7 @@ render = function (options) {
 			this.control = el('input', { type: 'file' })));
 };
 
-renderItem = function (file) {
+var renderItem = function (file) {
 	var el = this.make, data = {}, name;
 	data.dom = el(this.multiple ? 'li' : 'span', { 'data-id': file.__id__ });
 	if (isNested(file)) name = file.__id__;
@@ -81,7 +80,7 @@ var byNameLastModified = function (f1, f2) {
 	return (f1 || Infinity) - (f2 || Infinity);
 };
 
-Input = function (document, type/*, options*/) {
+var Input = function (document, type/*, options*/) {
 	var options = arguments[2], action;
 	this.make = makeEl.bind(document);
 	this.controls = [];
