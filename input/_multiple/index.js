@@ -124,7 +124,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		this.items.forEach(function (input) {
 			input.castControlAttribute(name, value);
 		});
-		this.templateInput.castControlAttribute(name, value);
+		if (this.templateInput) this.templateInput.castControlAttribute(name, value);
 		if (name === 'disabled') {
 			if (this.addButton) setPresenceEl.call(this.addButton, !value);
 			this.removeButtons.forEach(function (btn) {
