@@ -141,7 +141,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		templateItem = this.renderItem();
 		this.templateInput = templateItem.input;
 		templateItem.input.name = options.name;
-		templateItem.input.index = 9999;
+		templateItem.input.index = true;
 		templateDom = el('ul', { class: 'template' }, templateItem.dom);
 		if (!isAnchor(this.addButton)) {
 			this.addButton = el('a', { class: 'dbjs-multiple-button-add' }, this.addButton);

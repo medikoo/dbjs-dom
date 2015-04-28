@@ -90,10 +90,11 @@ ee(Object.defineProperties(Input.prototype, assign({
 	}),
 	_index: d(null),
 	_indexString: d.gs(function () {
-		return (this._index == null) ? '' : '[' + this._index + ']';
+		return (this._index == null) ? '' : '[' + ((this._index === true) ? '' : this._index) + ']';
 	}),
 	index: d.gs(function () { return this._index; }, function (index) {
-		index = (index == null) ? null : (index >>> 0);
+		if (index == null) index = null;
+		else if (index !== true) index = (index >>> 0);
 		if (index === this._index) return;
 		this._index = index;
 		this.name = this._name;
