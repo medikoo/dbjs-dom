@@ -146,7 +146,7 @@ ee(Object.defineProperties(Input.prototype, assign({
 		this.emit('destroy');
 	}),
 	onChange: d(function () {
-		var value, inputValue, changed, valid, emitChanged, emitValid, control;
+		var value, inputValue, changed, valid, emitChanged, emitValid, control, isRequired;
 		control = this.control || (this.controls ? this.controls[Object.keys(this.controls)[0]] : null);
 		if (control) {
 			if (control.form) {
@@ -160,9 +160,14 @@ ee(Object.defineProperties(Input.prototype, assign({
 		inputValue = this.inputValue;
 		value = this.value;
 		changed = (inputValue !== this._value);
-		if (value != null) valid = this.type.is(value, this.observable && this.observable.descriptor);
-		else if (this.required) valid = false;
-		else valid = ((inputValue == null) || !inputValue.trim());
+		if (value != null) {
+			valid = this.type.is(value, this.observable && this.observable.descriptor);
+		} else {
+			if (this.required) isRequired = true;
+			else if (this.observable) isRequired = this.observable.descriptor.required;
+			if (isRequired) valid = false;
+			else valid = ((inputValue == null) || !inputValue.trim());
+		}
 
 		if (this.changed !== changed) {
 			this.changed = changed;

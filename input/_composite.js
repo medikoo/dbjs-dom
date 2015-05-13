@@ -33,10 +33,12 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	controlAttributes: d({}),
 	_render: d(function () { throw new Error("Not implemented"); }),
 	onChange: d(function () {
-		var value, changed, valid, emitChanged, emitValid;
+		var value, changed, valid, emitChanged, emitValid, isRequired;
 		value = this.value;
 		changed = some(this.items, function (item) { return item.changed; });
-		valid = this.required ? (value != null) : true;
+		if (this.required) isRequired = true;
+		else if (this.observable) isRequired = this.observable.descriptor.required;
+		valid = isRequired ? (value != null) : true;
 
 		if (this.changed !== changed) {
 			this.changed = changed;
