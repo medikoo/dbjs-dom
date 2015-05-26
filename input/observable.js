@@ -70,7 +70,7 @@ Object.defineProperties(PropObserv.prototype, {
 			if ((isMap || isSet(nuValue)) && (nuValue !== value)) {
 				if (value && (typeof value.off === 'function')) value.off('change', onChange);
 				value = nuValue;
-				nuValue.on('change', onChange);
+				if (nuValue && (typeof nuValue.on === 'function')) nuValue.on('change', onChange);
 			}
 			input.value = nuValue;
 		}.bind(this);
