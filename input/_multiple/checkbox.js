@@ -32,10 +32,12 @@ module.exports = DOMMultiple = function (document, type/*, options*/) {
 DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 	constructor: d(DOMMultiple),
 	onChange: d(function () {
-		var value, changed, valid, emitChanged, emitValid;
+		var value, changed, valid, emitChanged, emitValid, isRequired;
 		value = this.value;
 		changed = this.items.some(function (item) { return item.changed; });
-		valid = this.required ? Boolean(value.length) : true;
+		if (this.required) isRequired = true;
+		else if (this.observable) isRequired = this.observable.descriptor.required;
+		valid = isRequired ? Boolean(value.length) : true;
 
 		if (this.changed !== changed) {
 			this.changed = changed;
