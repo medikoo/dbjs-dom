@@ -19,9 +19,13 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.type = type;
 	options = resolveOptions(options, type);
 	DOMInput.call(this, document, type, options);
-	if (options.chooseLabel != null) chooseLabel = options.chooseLabel;
-	else if (options.dbOptions.chooseLabel != null) chooseLabel = options.dbOptions.chooseLabel;
-	else chooseLabel = type.chooseLabel;
+	if (options.chooseLabel != null) {
+		chooseLabel = options.chooseLabel;
+	} else if (options.dbOptions && (options.dbOptions.chooseLabel != null)) {
+		chooseLabel = options.dbOptions.chooseLabel;
+	} else {
+		chooseLabel = type.chooseLabel;
+	}
 	if (chooseLabel) {
 		this.chooseOption = this.items[''] = this.document.createElement('option');
 		this.chooseOption.setAttribute('value', '');
