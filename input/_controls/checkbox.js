@@ -18,8 +18,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
 	_value: d(null),
 	valid: d(true),
-	controlAttributes: d(assign(copy(DOMInput.prototype.controlAttributes),
-		{ required: true })),
+	controlAttributes: d(assign(copy(DOMInput.prototype.controlAttributes), { required: true })),
 	_render: d(function () {
 		var input = this.control = this.dom = this.document.createElement('input');
 		input.setAttribute('type', 'checkbox');
@@ -38,9 +37,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		if (nu == null) {
 			this.control.removeAttribute('checked');
 		} else {
-			if (this._value == null) {
-				this.control.setAttribute('checked', 'checked');
-			}
+			if (this._value == null) this.control.setAttribute('checked', 'checked');
 			this.control.setAttribute('value', nu);
 		}
 
@@ -54,7 +51,5 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			this.onChange();
 		}
 	}),
-	value: d.gs(getValue, function (value) {
-		this.inputValue = this.type.toInputValue(value);
-	})
+	value: d.gs(getValue, function (value) { this.inputValue = this.type.toInputValue(value); })
 });
