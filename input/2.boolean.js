@@ -38,7 +38,6 @@ Radio = function (document, type/*, options*/) {
 
 	reverse = Number(options.order) < 0;
 	this.dom.appendChild(reverse ? fOption : tOption);
-	this.dom.appendChild(document.createTextNode(' '));
 	this.dom.appendChild(reverse ? tOption : fOption);
 };
 Radio.prototype = Object.create(DOMRadio.prototype, { constructor: d(Radio) });
