@@ -98,12 +98,25 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		return uniq.call(this.items.map(function (item) { return item.value; })
 			.filter(function (value) { return value != null; }));
 	}, function (value) {
-		var length, item, index = -1;
-		if (value == null) value = new Set();
+		var length, item, index = -1, nestedMap;
+		if (value == null) {
+			value = new Set();
+		} else if ((value.key === 'map') && value.owner && this.type.database.NestedMap &&
+				(value.owner instanceof this.type.database.NestedMap)) {
+			nestedMap = value.owner;
+			value = nestedMap.ordered;
+		}
 		this._value = value;
 		value.forEach(function (value) {
-			var item = this.items[++index];
+			var item = this.items[++index], hiddenInput;
 			if (!item) item = this.addItem();
+			if (nestedMap) {
+				hiddenInput = this.document.createElement('input');
+				hiddenInput.type = 'hidden';
+				hiddenInput.name = nestedMap.map.__id__ + '[]';
+				hiddenInput.value = value.__id__;
+				item.dom.appendChild(hiddenInput);
+			}
 			item.index = index;
 			item.value = value;
 		}, this);
