@@ -26,6 +26,7 @@ module.exports = DOMMultiple = function (document, type/*, options*/) {
 	if (options.renderItem !== undefined) this.customRenderItem = callable(options.renderItem);
 	this.listItemIdPrefix = options.listItemIdPrefix;
 	this.allItems = [];
+	this.itemsByValue = {};
 	this.reload();
 };
 
@@ -104,6 +105,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 		input.control.setAttribute('value', value);
 		input.on('change', this.onChange);
 		this.allItems.push(input);
+		this.itemsByValue[value] = input;
 		return { dom: dom, input: input };
 	})
 })));
