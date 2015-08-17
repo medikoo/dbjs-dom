@@ -220,7 +220,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 			}));
 	}),
 	onChange: d(function () {
-		var value, changed, valid, emitChanged, emitValid;
+		var value, changed, valid, emitChanged, emitValid, isRequired;
 		if (this.control.form) {
 			if (this.form !== this.control.form) {
 				if (this.form) this.form.removeEventListener('reset', this._onReset, false);
@@ -234,7 +234,9 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		});
 		changed = (this.multiple && (this._value != null) && (value != null))
 			? isCopy.call(value, this._value) : (value !== this._value);
-		valid = this.required ? (value != null) : true;
+		if (this.required) isRequired = true;
+		else if (this.observable) isRequired = this.observable.descriptor.required;
+		valid = isRequired ? (value != null) : true;
 
 		if (this.changed !== changed) {
 			this.changed = changed;
