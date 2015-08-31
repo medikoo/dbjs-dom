@@ -72,9 +72,10 @@ Object.defineProperties(Fieldset.prototype, assign({
 	getItem: d(function (path) {
 		var result = null;
 		path = ensureString(path);
-		if (path[0] === '/') path = path.slice(1);
+		if (this.items[path]) return this.items[path];
+		if (path[0] !== '/') path = '/' + path;
 		some(this.items, function (item, key) {
-			if ((key === path) || endsWith.call(key, '/' + path)) {
+			if (endsWith.call(key, path)) {
 				result = item;
 				return true;
 			}
