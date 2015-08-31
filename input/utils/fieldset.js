@@ -1,8 +1,11 @@
 'use strict';
 
 var assign          = require('es5-ext/object/assign')
+  , ensureString    = require('es5-ext/object/validate-stringifiable-value')
   , forEach         = require('es5-ext/object/for-each')
+  , some            = require('es5-ext/object/some')
   , startsWith      = require('es5-ext/string/#/starts-with')
+  , endsWith        = require('es5-ext/string/#/ends-with')
   , toArray         = require('es5-ext/array/to-array')
   , d               = require('d')
   , autoBind        = require('d/auto-bind')
@@ -63,6 +66,21 @@ Object.defineProperties(Fieldset.prototype, assign({
 		li = this.document.createElement('li');
 		li.appendChild(dom);
 		return li;
+	}),
+	// Allows to retrieve a generated item (field) by path string
+	// (property path must end with provided path string)
+	getItem: d(function (path) {
+		var result = null;
+		path = ensureString(path);
+		if (this.items[path]) return this.items[path];
+		if (path[0] !== '/') path = '/' + path;
+		some(this.items, function (item, key) {
+			if (endsWith.call(key, path)) {
+				result = item;
+				return true;
+			}
+		});
+		return result;
 	}),
 	toDOM: d(function () { return this.dom; }),
 	getOptions: d(DOMComposite.prototype.getOptions)
