@@ -67,6 +67,8 @@ Object.defineProperties(Fieldset.prototype, assign({
 		li.appendChild(dom);
 		return li;
 	}),
+	// Allows to retrieve a generated item (field) by path string
+	// (property path must end with provided path string)
 	getItem: d(function (path) {
 		var result = null;
 		path = ensureString(path);
