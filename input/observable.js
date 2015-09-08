@@ -88,7 +88,7 @@ Object.defineProperties(PropObserv.prototype, {
 		return input;
 	}),
 	toDOMInputComponent: d(function (document/*, options*/) {
-		var options = copy(Object(arguments[1])), input, inputOptions, dom, cb
+		var options = normalizeOptions(arguments[1]), input, inputOptions, dom, cb
 		  , desc = this.ownDescriptor, db = desc.database;
 
 		inputOptions = filter(options, function (value, name) {
