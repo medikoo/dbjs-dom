@@ -88,9 +88,10 @@ Object.defineProperties(PropObserv.prototype, {
 		return input;
 	}),
 	toDOMInputComponent: d(function (document/*, options*/) {
-		var options = normalizeOptions(arguments[1]), input, inputOptions, dom, cb
+		var options, input, inputOptions, dom, cb
 		  , desc = this.ownDescriptor, db = desc.database;
 
+		options = normalizeOptions(arguments[1], desc.type.fieldOptions, desc.fieldOptions);
 		inputOptions = filter(options, function (value, name) {
 			if (name === 'render') return false;
 			return !htmlAttributes[name];
