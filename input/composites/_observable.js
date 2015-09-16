@@ -40,9 +40,10 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		name = this.name;
 	}),
 	inputValue: d.gs(function () {
-		var mock = setPrototypeOf({}, this.observable.object);
+		var mock = setPrototypeOf({}, this.observable.object.master), context = mock
+		  , path, current, dbjsObj;
 		forEach(getInputValue.call(this), function (value, keyPath) {
-			var names = tokenize(keyPath), propName = names.pop(), name
+			var names = tokenize(keyPath.slice()), propName = names.pop(), name
 			  , obj = mock, dbjsObj = this.observable.object;
 			names.shift(); // clear object id
 			while ((name = names.shift())) {
@@ -55,6 +56,22 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			defineProperty(obj, propName, d('cew', value));
 			defineProperty(obj, '_' + propName, d('cew', value));
 		});
-		return this.getValue.call(mock, observeMock);
+		if (this.observable.object !== this.observable.object.master) {
+			path = [];
+			current = this.observable.object;
+			while (current && (current !== this.observable.object.master)) {
+				path.push(current.key);
+				current = current.owner;
+			}
+			dbjsObj = this.observable.object.master;
+			path.forEach(function (name) {
+				if (!context.hasOwnProperty(name)) {
+					defineProperty(context, name, d('cew', {}));
+					if (dbjsObj[name]) setPrototypeOf(context[name], dbjsObj[name]);
+				}
+				context = context[name];
+			});
+		}
+		return this.getValue.call(context, observeMock);
 	}, noop)
 });
