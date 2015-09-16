@@ -49,7 +49,10 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			while ((name = names.shift())) {
 				if (!obj.hasOwnProperty(name)) {
 					defineProperty(obj, name, d('cew', {}));
-					if (dbjsObj[name]) setPrototypeOf(obj[name], dbjsObj[name]);
+					if (dbjsObj[name]) {
+						setPrototypeOf(obj[name], dbjsObj[name]);
+						dbjsObj = dbjsObj[name];
+					}
 				}
 				obj = obj[name];
 			}
@@ -64,10 +67,13 @@ Input.prototype = Object.create(DOMInput.prototype, {
 				current = current.owner;
 			}
 			dbjsObj = this.observable.object.master;
-			path.forEach(function (name) {
+			path.reverse().forEach(function (name) {
 				if (!context.hasOwnProperty(name)) {
 					defineProperty(context, name, d('cew', {}));
-					if (dbjsObj[name]) setPrototypeOf(context[name], dbjsObj[name]);
+					if (dbjsObj[name]) {
+						setPrototypeOf(context[name], dbjsObj[name]);
+						dbjsObj = dbjsObj[name];
+					}
 				}
 				context = context[name];
 			});
