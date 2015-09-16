@@ -1,19 +1,20 @@
 'use strict';
 
-var last           = require('es5-ext/array/#/last')
-  , noop           = require('es5-ext/function/noop')
-  , mapKeys        = require('es5-ext/object/map-keys')
+var noop           = require('es5-ext/function/noop')
+  , forEach        = require('es5-ext/object/for-each')
   , setPrototypeOf = require('es5-ext/object/set-prototype-of')
   , callable       = require('es5-ext/object/valid-callable')
   , d              = require('d')
-  , splitId        = require('dbjs/_setup/unserialize/id')
+  , tokenize       = require('dbjs/_setup/utils/resolve-property-path').tokenize
+  , isObservable   = require('observable-value/is-observable-value')
   , resolveOptions = require('../utils/resolve-options')
   , DOMInput       = require('../_composite')
 
-  , getPrototypeOf = Object.getPrototypeOf
+  , defineProperty = Object.defineProperty, getPrototypeOf = Object.getPrototypeOf
   , getInputValue = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'inputValue').get
-  , mapKey = function (id) { return last.call(splitId(id)); }
   , Input;
+
+var observeMock = function (value) { return isObservable(value) ? value.value : value; };
 
 module.exports = Input = function (document, type/*, options*/) {
 	var options = arguments[2], fn, proto;
@@ -39,7 +40,20 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		name = this.name;
 	}),
 	inputValue: d.gs(function () {
-		return this.getValue.call(setPrototypeOf(mapKeys(getInputValue.call(this), mapKey),
-			this.observable.object));
+		var mock = setPrototypeOf({}, this.observable.object);
+		forEach(getInputValue.call(this), function (value, keyPath) {
+			var names = tokenize(keyPath), propName = names.pop(), name
+			  , obj = mock, dbjsObj = this.observable.object;
+			while ((name = names.shift())) {
+				if (!obj.hasOwnProperty(name)) {
+					defineProperty(obj, name, d('cew', {}));
+					if (dbjsObj[name]) setPrototypeOf(obj[name], dbjsObj[name]);
+				}
+				obj = obj[name];
+			}
+			defineProperty(obj, propName, d('cew', value));
+			defineProperty(obj, '_' + propName, d('cew', value));
+		});
+		return this.getValue.call(mock, observeMock);
 	}, noop)
 });
