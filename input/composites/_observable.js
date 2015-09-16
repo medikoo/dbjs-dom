@@ -58,7 +58,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 			}
 			defineProperty(obj, propName, d('cew', value));
 			defineProperty(obj, '_' + propName, d('cew', value));
-		});
+		}, this);
 		if (this.observable.object !== this.observable.object.master) {
 			path = [];
 			current = this.observable.object;
