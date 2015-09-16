@@ -44,6 +44,7 @@ Input.prototype = Object.create(DOMInput.prototype, {
 		forEach(getInputValue.call(this), function (value, keyPath) {
 			var names = tokenize(keyPath), propName = names.pop(), name
 			  , obj = mock, dbjsObj = this.observable.object;
+			names.shift(); // clear object id=
 			while ((name = names.shift())) {
 				if (!obj.hasOwnProperty(name)) {
 					defineProperty(obj, name, d('cew', {}));
