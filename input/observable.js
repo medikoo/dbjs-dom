@@ -138,6 +138,10 @@ Object.defineProperties(PropObserv.prototype, {
 			if (desc.required) {
 				if (this.value == null) {
 					isInvalid = true;
+				} else if (db.NestedMap && isNestedObject(this.value) && (this.value.key === 'map') &&
+						(this.value.owner instanceof db.NestedMap)) {
+					isEmpty = isInvalid = !this.value.owner.ordered.size;
+					this.value.owner.ordered._size.once('change', cb);
 				} else if (db.File && (this.value instanceof db.File) && isNestedObject(this.value)) {
 					isEmpty = isInvalid = !this.value.name;
 					this.value._name.once('change', cb);
