@@ -32,7 +32,7 @@ var aFrom           = require('es5-ext/array/from')
   , defineProperty = Object.defineProperty
   , defineProperties = Object.defineProperties
   , getName = Object.getOwnPropertyDescriptor(DOMInput.prototype, 'name').get
-  , filterEmpty = function (file) { return file.name; };
+  , filterEmpty = function (file) { return file.name || file.path; };
 
 var getForceReset = memoize(function (document) {
 	var form = document.createElement('form');
