@@ -156,14 +156,12 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 		this._value = nu;
 		if (this.multiple) {
 			if (nu) {
-				if (!old || !isCopy.call(nu, old)) {
-					replaceCont.call(this.valueDOM,
-						nu.sort(byNameLastModified.bind(this.type)).map(this._renderItem));
-					if (this._required) this.castControlAttribute('required', false);
-					changed = true;
-					this.dom.classList.add('filled');
-					this.control.value = null;
-				}
+				replaceCont.call(this.valueDOM,
+					nu.sort(byNameLastModified.bind(this.type)).map(this._renderItem));
+				if (this._required) this.castControlAttribute('required', false);
+				changed = true;
+				this.dom.classList.add('filled');
+				this.control.value = null;
 			} else {
 				this.control.value = null;
 				clear.call(this.valueDOM);
