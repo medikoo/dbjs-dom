@@ -105,6 +105,7 @@ Object.defineProperties(PropObserv.prototype, {
 		if (options.label === false) options.label = null;
 		else if (options.label == null) options.label = desc.label;
 		if (options.hint == null) options.hint = desc.inputHint;
+		if (options.optionalInfo == null) options.optionalInfo = desc.inputOptionalInfo;
 
 		dom = (options.render || componentRender)(input, options);
 		if (!dom._dbjsInput) dom._dbjsInput = input;
