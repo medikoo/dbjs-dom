@@ -32,18 +32,14 @@ module.exports = Input = function (document, type/*, options*/) {
 
 Input.prototype = Object.create(DOMInput.prototype, {
 	_render: d(function (options) {
-		var el = this.make, desc = options.dbOptions, triggers, object = options.observable.object, fn;
-		fn = desc._value_;
-		while ((fn !== undefined) && (typeof fn !== 'function')) {
-			desc = getPrototypeOf(desc);
-			fn = desc._value_;
-		}
-		triggers = resolve(callable(fn));
+		var el       = this.make
+		  , object   = options.observable.object
+		  , triggers = this._resolveTriggers(options);
 
 		this.dom = el('div', { class: 'inputs' },  options.prepend,
 			separate.call(compact.call(triggers.map(function (name) {
 				if (metaNames[name]) return;
-				return this._get(name);
+				return this.resolveSKeyPath(name).observable;
 			}, object)).map(function (observable) {
 				var desc = observable.descriptor, opts = this.getOptions(desc);
 				if ((opts.placeholder == null) && desc.label) {
@@ -52,5 +48,16 @@ Input.prototype = Object.create(DOMInput.prototype, {
 				return this.addItem(observable.toDOMInput(this.document, opts),
 					observable.dbId);
 			}, this), (options.sep != null) ? options.sep : ' '), options.append);
+	}),
+	_resolveTriggers: d(function (options) {
+		var desc = options.dbOptions
+		  , fn   = desc._value_;
+
+		while ((fn !== undefined) && (typeof fn !== 'function')) {
+			desc = getPrototypeOf(desc);
+			fn = desc._value_;
+		}
+
+		return resolve(callable(fn));
 	})
 });

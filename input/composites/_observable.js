@@ -17,22 +17,29 @@ var noop           = require('es5-ext/function/noop')
 var observeMock = function (value) { return isObservable(value) ? value.value : value; };
 
 module.exports = Input = function (document, type/*, options*/) {
-	var options = arguments[2], fn, proto;
+	var options = arguments[2];
+
 	this.type = type;
 	options = resolveOptions(options, type);
 	options.dbOptions = Object(options.dbOptions);
-	proto = options.dbOptions;
-	fn = proto._value_;
-	while ((fn !== undefined) && (typeof fn !== 'function')) {
-		proto = getPrototypeOf(proto);
-		fn = proto._value_;
-	}
-	this.getValue = callable(fn);
+	this._initialize(options);
+
 	DOMInput.call(this, document, type, options);
 };
 
 Input.prototype = Object.create(DOMInput.prototype, {
 	constructor: d(Input),
+	_initialize: d(function (options) {
+		var proto = options.dbOptions
+		  , fn    = proto._value_;
+
+		while ((fn !== undefined) && (typeof fn !== 'function')) {
+			proto = getPrototypeOf(proto);
+			fn = proto._value_;
+		}
+
+		this.getValue = callable(fn);
+	}),
 	name: d.gs(function () {
 		return this._name ? (this._name + this._indexString) : '';
 	}, function (name) {
