@@ -22,7 +22,7 @@ defineProperties(Attr.prototype, {
 				return;
 			}
 			if ((this.type.__id__ !== 'Base') && !isObject(value)) {
-				value = new this.type(value);
+				value = this.type.getObjectValue(value, this.observable.descriptor);
 				value = value.toString(this.observable && this.observable.descriptor);
 			}
 			this.element.setAttribute(this.name, value);
@@ -45,7 +45,7 @@ Object.defineProperties(Text.prototype, {
 			return;
 		}
 		if ((this.type.__id__ !== 'Base') && !isObject(value)) {
-			value = new this.type(value);
+			value = this.type.getObjectValue(value, this.observable.descriptor);
 			value = value.toString(this.observable && this.observable.descriptor);
 		}
 		this.dom.data = value;
