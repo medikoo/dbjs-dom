@@ -51,6 +51,7 @@ module.exports = Input = function (document, type/*, options*/) {
 	this.options.required = false;
 	this.options.dbOptions = options.dbOptions;
 	this.options.control = Object(this.options.control);
+	this.options.toDOMInput = (typeof options.toDOMInput === 'function') && options.toDOMInput;
 	DOMInput.call(this, document, type, options);
 };
 
@@ -181,7 +182,11 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	}),
 	renderItem: d(function () {
 		var el = this.make, dom, input, removeButton;
-		input = this.type.toDOMInput(this.document, this.options);
+		if (this.options.toDOMInput) {
+			input = this.options.toDOMInput.call(this.type, this.document, this.options);
+		} else {
+			input = this.type.toDOMInput(this.document, this.options);
+		}
 		dom = el('li');
 		removeButton = this.deleteLabel();
 		if (!isAnchor(removeButton)) {
