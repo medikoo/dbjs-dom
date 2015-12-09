@@ -183,7 +183,7 @@ Input.prototype = Object.create(DOMInput.prototype, assign({
 	renderItem: d(function () {
 		var el = this.make, dom, input, removeButton;
 		if (this.options.toDOMInput) {
-			input = this.options.toDOMInput.call(this);
+			input = this.options.toDOMInput.call(this.document, this.options);
 		} else {
 			input = this.type.toDOMInput(this.document, this.options);
 		}
