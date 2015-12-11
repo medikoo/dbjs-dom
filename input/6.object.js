@@ -7,6 +7,7 @@ var separate          = require('es5-ext/array/#/separate')
   , callable          = require('es5-ext/object/valid-callable')
   , validObject       = require('es5-ext/object/valid-object')
   , validValue        = require('es5-ext/object/valid-value')
+  , includes          = require('es5-ext/string/#/contains')
   , memoize           = require('memoizee/plain')
   , memoizeMethods    = require('memoizee/methods-plain')
   , getNormalizer     = require('memoizee/normalizers/get-1')
@@ -251,7 +252,7 @@ module.exports = exports = function (db) {
 	defineProperties(db.Object, {
 		choosLabel: d("Choose:"),
 		fromInputValue: d(function (value) {
-			var empty;
+			var empty, result, owner, index;
 			if (value == null) return null;
 			if (isPlainObject(value)) {
 				empty = true;
@@ -266,7 +267,18 @@ module.exports = exports = function (db) {
 			}
 			value = value.trim();
 			if (!value) return null;
-			return this.getById(value);
+			result = this.getById(value);
+			if (result) return result;
+			if (db.objects.getById(value)) return null;
+			// If it's about nested, it might be that it's not loaded into memory
+			// Below logic ensures it's retrieved properly
+			index = value.indexOf('/');
+			if (index === -1) return null;
+			owner = db.objects.getById(value.slice(0, index));
+			if (!owner) return null;
+			value = owner.resolveSKeyPath(value.slice(index + 1)).value;
+			if (value && (value instanceof this)) return value;
+			return null;
 		}),
 		toInputValue: d(function (value) {
 			if (value == null) return null;
