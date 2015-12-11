@@ -252,7 +252,7 @@ module.exports = exports = function (db) {
 	defineProperties(db.Object, {
 		choosLabel: d("Choose:"),
 		fromInputValue: d(function (value) {
-			var empty, result, owner, index;
+			var empty, result, owner, index, resolvedPath;
 			if (value == null) return null;
 			if (isPlainObject(value)) {
 				empty = true;
@@ -276,7 +276,9 @@ module.exports = exports = function (db) {
 			if (index === -1) return null;
 			owner = db.objects.getById(value.slice(0, index));
 			if (!owner) return null;
-			value = owner.resolveSKeyPath(value.slice(index + 1)).value;
+			resolvedPath = owner.resolveSKeyPath(value.slice(index + 1));
+			if (!resolvedPath) return null;
+			value = resolvedPath.value;
 			if (value && (value instanceof this)) return value;
 			return null;
 		}),
