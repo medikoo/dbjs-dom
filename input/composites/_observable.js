@@ -58,6 +58,8 @@ Input.prototype = Object.create(DOMInput.prototype, {
 					defineProperty(obj, name, d('cew', {}));
 					if (dbjsObj[name]) {
 						setPrototypeOf(obj[name], dbjsObj[name]);
+						defineProperty(obj[name], 'owner', d('cew', obj));
+						defineProperty(obj[name], 'master', d('cew', mock));
 						dbjsObj = dbjsObj[name];
 					}
 				}
