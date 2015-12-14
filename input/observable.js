@@ -146,6 +146,10 @@ Object.defineProperties(PropObserv.prototype, {
 				} else if (db.File && (this.value instanceof db.File) && isNestedObject(this.value)) {
 					isEmpty = isInvalid = !this.value.name;
 					this.value._name.once('change', cb);
+				} else if (isNestedObject(this.value) &&
+						(typeof this.value.getDescriptor('resolvedValue')._value_ === 'function')) {
+					isEmpty = isInvalid = (this.value.resolvedValue == null);
+					this.value._resolvedValue.once('change', cb);
 				} else {
 					isInvalid = false;
 				}
