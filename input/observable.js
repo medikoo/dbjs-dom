@@ -76,6 +76,10 @@ Object.defineProperties(PropObserv.prototype, {
 		}.bind(this);
 		this.on('change', onChange);
 		if (isMap || isSet(value)) value.on('change', onChange);
+		if (isNestedObject(value) &&
+				(typeof value.getDescriptor('resolvedValue')._value_ === 'function')) {
+			value._resolvedValue.on('change', onChange);
+		}
 
 		input.once('destroy', function () {
 			delete input.observable;
