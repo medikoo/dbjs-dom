@@ -29,9 +29,11 @@ var hasOwn = function (obj, desc, sKey) {
 Object.defineProperties(PropObserv.prototype, {
 	DOMInput: d(null),
 	toDOMInput: d(function (document/*, options*/) {
-		var input, options = normalizeOptions(arguments[1]), type, value, onChange, desc, isMap = false;
+		var input, options = normalizeOptions(arguments[1]), type, value, onChange, desc, isMap = false
+		  , db;
 
 		desc = this.descriptor;
+		db = desc.database;
 		if (desc.nested) {
 			isMap = this.object.database.isObjectType(this.value.__descriptorPrototype__.type);
 		}
@@ -76,9 +78,12 @@ Object.defineProperties(PropObserv.prototype, {
 		}.bind(this);
 		this.on('change', onChange);
 		if (isMap || isSet(value)) value.on('change', onChange);
-		if (isNestedObject(value) &&
-				(typeof value.getDescriptor('resolvedValue')._value_ === 'function')) {
-			value._resolvedValue.on('change', onChange);
+		if (isNestedObject(value)) {
+			if (db.NestedMap && this.value.key === 'map' && (this.value.owner instanceof db.NestedMap)) {
+				this.value.owner.ordered._size.on('change', onChange);
+			} else if (typeof value.getDescriptor('resolvedValue')._value_ === 'function') {
+				value._resolvedValue.on('change', onChange);
+			}
 		}
 
 		input.once('destroy', function () {
