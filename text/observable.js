@@ -50,11 +50,11 @@ common = {
 
 Object.defineProperties(PropObserv.prototype, assign(common, {
 	toDOMText: d(function (document/*, options*/) {
-		var options = Object(arguments[1]), text;
+		var options = Object(arguments[1]), desc = this.descriptor, text;
 		options.observable = this;
-		if (options.DOMText) text = new options.DOMText(document, options);
-		else if (this.descriptor.DOMText) text = new this.descriptor.DOMText(document, options);
-		else text = this.descriptor.type.toDOMText(document, options);
+		if (options.DOMText) text = new options.DOMText(document, desc.type, options);
+		else if (this.descriptor.DOMText) text = new desc.DOMText(document, desc.type, options);
+		else text = desc.type.toDOMText(document, options);
 		return this.assignDOMText(text);
 	}),
 	toDOMAttrBox: d(function (element/*, name, options*/) {
