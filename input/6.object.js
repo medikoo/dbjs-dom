@@ -46,13 +46,16 @@ getResolver = memoize(function (type) {
 }, { normalizer: getNormalizer() });
 
 resolveDbOptions = function (type, options) {
-	if (options.list != null) {
-		if (isObservableSet(options.list)) {
-			this.dbOptions = options.list.toArray().map(getResolver(type), this);
-		} else if (isObservableArray(options.list)) {
-			this.dbOptions = options.list.map(getResolver(type), this);
+	var list = (typeof options.list === 'function') ? options.list.call(this, options) : options.list;
+	if (list != null) {
+		if (isObservableSet(list)) {
+			this.dbOptions = list.toArray().map(getResolver(type), this);
+		} else if (isObservableArray(list)) {
+			this.dbOptions = list.map(getResolver(type), this);
+		} else if (typeof list === 'function') {
+			this.dbOptions = map.call(list, getResolver(type), this);
 		} else {
-			this.dbOptions = map.call(options.list, getResolver(type), this);
+			this.dbOptions = map.call(list, getResolver(type), this);
 		}
 	} else {
 		this.dbOptions = type.instances.toArray(options.compare);
