@@ -3,8 +3,13 @@
 var d           = require('d')
   , DOMTextarea = require('./_controls/textarea')
 
-  , defineProperty = Object.defineProperty;
+  , defineProperties = Object.defineProperties;
 
 module.exports = function (db) {
-	defineProperty(db.String, 'DOMInput', d(DOMTextarea));
+	defineProperties(db.String, {
+		DOMInput: d(DOMTextarea),
+		inputSize: d(35), // for single line inputs
+		inputCols: d(50), // for textareas
+		inputRows: d(3) // for textareas
+	});
 };
