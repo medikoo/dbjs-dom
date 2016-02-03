@@ -111,8 +111,13 @@ Object.defineProperties(PropObserv.prototype, {
 		}
 		input = this.toDOMInput(document, inputOptions);
 
-		if (options.label === false) options.label = null;
-		else if (options.label == null) options.label = desc.label;
+		if (options.label == null) {
+			options.label = desc.dynamicLabelKey ? desc.object.getObservable(desc.dynamicLabelKey)
+				: desc.label;
+		} else if (options.label === false) {
+			options.label = null;
+		}
+
 		if (options.hint == null) options.hint = desc.inputHint;
 		if (options.optionalInfo == null) options.optionalInfo = desc.inputOptionalInfo;
 
