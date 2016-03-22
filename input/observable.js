@@ -98,13 +98,18 @@ Object.defineProperties(PropObserv.prototype, {
 	}),
 	toDOMInputComponent: d(function (document/*, options*/) {
 		var options, input, inputOptions, dom, cb
-		  , desc = this.ownDescriptor, db = desc.database;
+		  , desc = this.ownDescriptor, db = desc.database, isRequired;
 
 		options = normalizeOptions(arguments[1], desc.type.fieldOptions, desc.fieldOptions);
 		inputOptions = filter(options, function (value, name) {
 			if (name === 'render') return false;
 			return !htmlAttributes[name];
 		});
+		if (options.modelRequired != null) {
+			isRequired = inputOptions.required = options.modelRequired;
+		} else {
+			isRequired = desc.required;
+		}
 		if (options.input) {
 			assign(inputOptions, options.input);
 			delete inputOptions.input;
@@ -130,8 +135,8 @@ Object.defineProperties(PropObserv.prototype, {
 		dom.classList.add('dbjs-input-component');
 
 		// Required
-		dom.classList[desc.required ? 'add' : 'remove']('dbjs-required');
-		dom.classList[desc.required ? 'remove' : 'add']('dbjs-optional');
+		dom.classList[isRequired ? 'add' : 'remove']('dbjs-required');
+		dom.classList[isRequired ? 'remove' : 'add']('dbjs-optional');
 
 		// Changed
 		input.on('change:changed', cb = function (value) {
@@ -150,7 +155,7 @@ Object.defineProperties(PropObserv.prototype, {
 		// DBJS valid/invalid & empty/filled
 		this.on('change', cb = function () {
 			var isInvalid, value, isEmpty, isOwn;
-			if (desc.required) {
+			if (isRequired) {
 				if (this.value == null) {
 					isInvalid = true;
 				} else if (db.NestedMap && isNestedObject(this.value) && (this.value.key === 'map') &&
