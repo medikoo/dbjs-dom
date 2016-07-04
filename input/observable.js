@@ -55,7 +55,7 @@ Object.defineProperties(PropObserv.prototype, {
 		if (options.DOMInput) input = new options.DOMInput(document, type, options);
 		else if (desc.DOMInput) input = new desc.DOMInput(document, type, options);
 		else input = type.toDOMInput(document, options);
-		input.observable = this;
+		if (!input.observable) input.observable = this;
 
 		// Set input value
 		value = this.value;
