@@ -81,7 +81,7 @@ var byNameLastModified = function (f1, f2) {
 };
 
 var Input = function (document, type/*, options*/) {
-	var options = arguments[2], action;
+	var options = arguments[2], action, descriptor;
 	this.make = makeEl.bind(document);
 	this.controls = [];
 	this.type = type;
@@ -92,7 +92,9 @@ var Input = function (document, type/*, options*/) {
 		? renderItem : callable(options.renderItem)));
 	DOMInput.call(this, document, type, options);
 	if (this.multiple) this.control.setAttribute('multiple', 'multiple');
-	this.control.setAttribute('accept', toArray(type.accept).join(','));
+	if (this.observable) descriptor = this.observable.descriptor;
+	this.control.setAttribute('accept',
+		(descriptor && descriptor.accept) || toArray(type.accept).join(','));
 
 	if (options.autoSubmit != null) {
 		action = options.autoSubmit;
