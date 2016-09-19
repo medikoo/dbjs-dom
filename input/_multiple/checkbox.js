@@ -92,7 +92,7 @@ DOMMultiple.prototype = Object.create(DOMInput.prototype, assign({
 			? normalizeOpts(this.options, this.itemOptions[value]) : this.options;
 		input = new DOMCheckbox(this.document, this.type, options);
 		if (this.customRenderItem) {
-			dom = this.customRenderItem(input, label);
+			dom = this.customRenderItem(input, label, value);
 			if (this.listItemIdPrefix) dom.id = this.listItemIdPrefix + toIdent(value);
 		} else {
 			if (this.listItemIdPrefix) itemAttrs = { id: this.listItemIdPrefix + toIdent(value) };
