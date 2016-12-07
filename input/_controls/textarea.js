@@ -41,7 +41,13 @@ Input.prototype = Object.create(DOMInput.prototype, {
 	}),
 	inputValue: d.gs(getInputValue, function (nu) {
 		var old = this.inputValue;
-		if (this._value !== nu) this.control.firstChild.data = this._value = nu;
+		if (this._value !== nu) {
+			if (!this.control.firstChild) {
+				console.error("No text node for textarea found, applied workaround");
+				this.control.appendChild(this.document.createTextNode(''));
+			}
+			this.control.firstChild.data = this._value = nu;
+		}
 		if (nu !== old) {
 			this.control.value = nu;
 			try {
