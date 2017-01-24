@@ -1,5 +1,5 @@
 # DBJS-DOM
-## Two-way DOM bindings for [DBJS](https://github.com/medikoo/dbjs) objects
+## DOM bindings for [DBJS](https://github.com/medikoo/dbjs) objects
 
 ## Installation
 ### NPM
