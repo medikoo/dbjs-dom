@@ -80,12 +80,12 @@ user._firstName.toDOMInput(document, {
 
 * `accesskey`, `class`, `dir`, `hidden`, `id`, `insert`, `lang`, `spellcheck`, `style`, `title`, `translate`, `data-*` - HTML attributes that will be set on result DOM element.
 * `name` - Overrides name of a control (it defaults to id of a property)
-* `control` - Hash of options dedicated for input control element. Sometimes DOM result does not contain only pure form controls, but it comes with some needed surrounding. if we want to be sure that some options (e.g. html attributes) are targeted directly for control element, we need to pass it via `control` hash
+* `control` - Hash of options dedicated for input control element. Sometimes DOM result does not contain only pure form controls, but it comes with some needed surrounding. if we want to be sure that some options (e.g. HTML attributes) are targeted directly for control element, we need to pass it via `control` hash
 * `controls` - If input is build of out many controls (e.g. radio list), then with `controls` hash we may pass options per control individually (e.g. in case of `radio` with `options.controls.foo = {..}` we will pass options for _radio_ with name `'foo'`.
 
 ###### `Boolean` type
 
-By default represented with `input[type=radio]` contorls
+By default represented with `input[type=radio]` controls
 
 * `type` - When set to `'checkbox'`, property will be represented with `input[type=checkbox]` control
 * `required` - In case of `'checkbox'` type, forcing it to true demands that checkbox must be checked for submission
@@ -200,7 +200,7 @@ By default represented with `select`
 	* `set`- Map of group labels e.g. `{ group1: "Label for group 1", ... }`
 * `append` - (_select_ only) Extra select options to be DateTime.
 
-###### `addedw` type
+###### `DateTime` type
 
 By default represented with `input[type=datetime-local]`
 
