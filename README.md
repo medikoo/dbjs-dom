@@ -10,7 +10,7 @@ In your project path:
 
 #### Browser
 
-You can easily bundle NPM packages for browser with [modules-webmake](https://github.com/medikoo/modules-webmake)
+To port it to Browser or any other (non CJS) environment, use your favorite CJS bundler. No favorite yet? Try: [Browserify](http://browserify.org/), [Webmake](https://github.com/medikoo/modules-webmake) or [Webpack](http://webpack.github.io/)
 
 ## Introduction
 
@@ -24,13 +24,12 @@ Bindings are split into two categories:
 To add bindings for basic types of DBJS engine just do:
 
 ```javascript
-require('dbjs-dom/text');
+require('dbjs-dom/text')(db); // db is your DBJS database instance
 ```
 
-After that each DBJS property will have implemented `toDOM` method, that will return DOM objects representing the value.
+After that each DBJS property observable will have implemented `toDOM` method, that will return DOM objects representing the value.
 
-`toDOM` is environment agnostic, and needs _document_ object to be passed as first of the arguments
-
+`toDOM` is environment agnostic, and needs _document_ object to be passed as first of the arguments.
 ```javascript
 var p = document.body.appendChild(document.createElement('p'));
 p.appendChild(user._firstName.toDOM(document));
@@ -38,33 +37,30 @@ user._firstName.toDOMAttr(p, 'title');
 ```
 
 Above describes low-level way of working with things, which it's not very effective for common dev work.
-You can configure your tool of choice to detect `toDOM` functions automatically and call them behind the scenes.
-
-It's what e.g. [`dom-ext/document/#/normalize`](https://github.com/medikoo/dom-ext/blob/master/document/%23/normalize.js) does, which is used internally by [DOMJS](https://github.com/medikoo/domjs) engine.
-Therefore with DOMJS onboard, you can build templates as:
+You can configure your tool of choice to detect `toDOM` functions automatically and call them behind the scenes, e.g. it's already supported by [domjs](https://github.com/medikoo/domjs#domjs), with which you an work as follows:
 
 ```javascript
 h1({ title: article._title }, article._title);
 p(article._content);
 ```
 
-Additionally there's special handling provided for [DBJS-EXT's Enum type](https://github.com/medikoo/dbjs-ext#available-extensions-type-hierarchy). All extensions handling need to be required individually:
+Additionally to basic type bindings there's a special handling provided for [DBJS-EXT's Enum type](https://github.com/medikoo/dbjs-ext#available-extensions-type-hierarchy). All extensions handling need to be required individually:
 
 ```javascript
-require('dbjs-dom/text/string/string-line/enum');
+require('dbjs-dom/text/enum')(EnumType);
 ```
 
-#### Input bindings
+### Input bindings
 
-Input binding are much more sophisticated than text bindings, they reproduce all meta characteristics of the property, whether it's _required_, whether there are some constraints like _pattern_ or _min_, _max_ values
+Input binding are more complex than text bindings, as producing a form input control they resolve from all meta characteristics of a property.
 
-To load bindings for basic types:
+To load bindings for basic types do
 
 ```javascript
-require('dbjs-dom/input');
+require('dbjs-dom/input')(db); // db is your DBJS database instance
 ```
 
-Having that, you generate input control for any mutable property:
+Having that, you generate reactive input control for any mutable property:
 
 ```javascript
 p.appendChild(user._firstName.toDOMInput(document));
@@ -74,65 +70,175 @@ You can additionally customize the input by providing additional options:
 
 ```javascript
 user._firstName.toDOMInput(document, {
-  required: true // force it to be required
+  required: true // force it to be required, even though it's not required in model
 });
 ```
 
-Following options are accepted by any type of input:
-* `accesskey`, `class`, `dir`, `hidden`, `id`, `intert`, `lang`, `spellcheck`, `style`, `title`, `translate`, `data-*` - HTML attributes that will be set on result DOM element.
+#### Possible Input configurations:
+
+##### Options applicable to all kind of inputs
+
+* `accesskey`, `class`, `dir`, `hidden`, `id`, `insert`, `lang`, `spellcheck`, `style`, `title`, `translate`, `data-*` - HTML attributes that will be set on result DOM element.
 * `name` - Overrides name of a control (it defaults to id of a property)
-* `control` - Hash of options dedicated for input control element. Sometimes output DOM result in wrapper element that holds control element with some others, if we want to be sure that some options (e.g. html attributes) are targeted directly for control element, we need to pass it via `control` hash
+* `control` - Hash of options dedicated for input control element. Sometimes DOM result does not contain only pure form controls, but it comes with some needed surrounding. if we want to be sure that some options (e.g. html attributes) are targeted directly for control element, we need to pass it via `control` hash
+* `controls` - If input is build of out many controls (e.g. radio list), then with `controls` hash we may pass options per control individually (e.g. in case of `radio` with `options.controls.foo = {..}` we will pass options for _radio_ with name `'foo'`.
 
-`Boolean` type takes following additional options:
-* `required` - whether control should be required (in case of checkbox it's demands that checkbox must be checked for submission)
-* `type` - _radio_ or _checkbox_
+###### `Boolean` type
 
-`Number` type, options: `autocomplete`, `list`, `max`, `min`, `placeholder`, `readonly`, `required`, `step`.
+By default represented with `input[type=radio]` contorls
 
-`String` type, options: `cols`, `inputmode`, `maxlength`, `placeholder`, `readonly`, `required`, `rows`, `wrap`.
+* `type` - When set to `'checkbox'`, property will be represented with `input[type=checkbox]` control
+* `required` - In case of `'checkbox'` type, forcing it to true demands that checkbox must be checked for submission
+* `trueLabel`, `falseLabel` (`radio` only), Labels to show, which by default are read from property descriptor or type
 
-`DateTime` type, options: `autocomplete`, `list`, `max`, `min`, `readonly`, `required`, `step`.
+###### `Number` type
 
-Currently there's no defined input representation for `RegExp` and `Function` types (it will be added).
+By default represented with `input[type=number]`
 
-`Object` type options:
-* type - _checkbox_, _select_, _edit_, _radio_:
-    * _checkbox_: Is valid only for multiple values. By default multiple input is presented as list of select controls, with checkbox option, list of checkboxes with labels is output instead.
-    * _select_ (default) - Object value is choosen from provided list in select box
-    * _edit_ - Object value is edited with fieldset of object fields, that way we may create new object and add it as a value, or edit object that is assigned as a value.
-    * _radio_. Instead of listing objects in select control, list them with radios
+- `autocomplete`, `list`, `readonly` - An HTML attributes
+- `max`, `min`, `placeholder` (in model: `inputPlaceholder`), `required`, `step`. - A HTML attributes for which default values are read from property descriptor or Type
 
-There are also bindings for various (where applicable) [DBJS-EXT](https://github.com/medikoo/dbjs-ext) types. 
-They need to be required individually, e.g.:
+###### `Percentage` type
+
+Binding needs to be additionally loaded via:
 
 ```javascript
-require('dbjs-dom/input/string/string-line');
+require('dbjs-dom/input/number/percentage')(db);
 ```
-Options for configured types:
 
-`Date` type, it derives from `DateTime` configurations and options are same just take date instead of datetime for `min` and `max` values.
+By default represented with `input[type=number]`
 
-`StringLine` type, options: `autocomplete`, `dirname`, `inputmode`, `list`, `maxlength`, `pattern`, `placeholder`, `readonly`, `required`, `size`.
+Internally follows logic for `Number` but ensures that `1%` is exposed as `1` and not `0.01` as it would happen using normal `Number` binding
 
-`Email` type, options: `autocomplete`, `list`, `maxlength`, `pattern`, `placeholder`, `readonly`, `required`, `size`.
+###### `Time` type
 
-`Enum`, type, options:
+Binding needs to be additionally loaded via:
+
+```javascript
+require('dbjs-dom/input/number/integer/u-integer/time')(db);
+```
+
+By default represented with `input[type=time]`
+
+Internally extends `DateTime` DOM binding, so same options apply
+
+###### `String` type
+
+By default represented with `textarea`
+
+- `inputmode`, `readonly`, `wrap` - An HTML attributes
+- `cols` (in model: `inputCols`), `maxlength` (in model: `max`), `placeholder` (in model: `inputPlaceholder`),  `required`, `rows` (in model: `inputRows`) - An HTML attributes for which default values are read from property descriptor or Type
+
+###### `StringLine` type
+
+Binding needs to be additionally loaded via:
+
+```javascript
+require('dbjs-dom/input/string/string-line')(db);
+```
+
+By default represented with `input[type=text]`
+
+- `autocomplete`, `dirname`, `inputmode`, `list`, `readonly`
+- `maxlength` (in model: `max`), `pattern`, `placeholder` (in model: `inputPlaceholder`), `required`, `size` (in model `inputSize`) - An HTML attributes for which default values are read from property descriptor or Type
+
+###### `Email` type
+
+Binding needs to be additionally loaded via:
+
+```javascript
+require('dbjs-dom/input/string/string-line/email')(db);
+```
+
+By default represented with `input[type=email]`
+
+- `autocomplete`, `inputmode`, `list`, `readonly`
+- `maxlength` (in model: `max`), `pattern`, `placeholder` (in model: `inputPlaceholder`), `required`, `size` (in model `inputSize`) - An HTML attributes for which default values are read from property descriptor or Type
+
+###### `Password` type
+
+Binding needs to be additionally loaded via:
+
+```javascript
+require('dbjs-dom/input/string/string-line/password')(db);
+```
+
+By default represented with `input[type=password]`
+
+- `autocomplete`, `readonly`
+- `maxlength` (in model: `max`), `pattern`, `placeholder` (in model: `inputPlaceholder`), `required`, `size` (in model `inputSize`) - An HTML attributes for which default values are read from property descriptor or Type
+
+###### `Url` type
+
+Binding needs to be additionally loaded via:
+
+```javascript
+require('dbjs-dom/input/string/string-line/url')(db);
+```
+
+By default represented with `input[type=url]`
+
+- `autocomplete`, `list`, `readonly`
+- `maxlength` (in model: `max`), `pattern`, `placeholder` (in model: `inputPlaceholder`), `required`, `size` (in model `inputSize`) - An HTML attributes for which default values are read from property descriptor or Type
+
+###### Enum type
+
+Binding needs to be additionally loaded via:
+
+```javascript
+require('dbjs-dom/input/enum')(db);
+```
+
+By default represented with `select`
+
 * `type` - _radio_ or _select_ (default). If you want to choose enum value with radios, pass _radio_ type
-* `multiType` - _base_ or _checkbox_ (default). Strictly for multiple values, by default you choose values with checkboxes but you can choose _base_ and choose with multiple select controls (which is default multiple input representation in DBJS)
+* `multiType` - (_multiple_ only), _base_ or _checkbox_ (default). Strictly for multiple values, by default you choose values with checkboxes but you can choose _base_ and choose with multiple select controls (which is default multiple input representation in DBJS)
+* `only` - Provide filtered list of options to display (as set, can be observable)
+* `labels` - Map of eventual custom labels for items
+* `group` - (_select_ only) Provide grouping instruction (will generate select with options grouped with `<optgroup>` element). `group` is a hash object with following properties:
+  * `name` - Name of enum meta property, at which name of group can be retrieved
+	* `set`- Map of group labels e.g. `{ group1: "Label for group 1", ... }`
+* `append` - (_select_ only) Extra select options to be DateTime.
 
-Other options are typical for chosen type of control.
+###### `addedw` type
 
-`Password` type, options: `autocomplete`, `maxlength`, `pattern`, `placeholder`, `readonly`, `required`, `size`.
+By default represented with `input[type=datetime-local]`
 
-`Url` type, options: `autocomplete`, `list`, `maxlength`, `pattern`, `placeholder`, `readonly`, `required`, `size`.
+- `autocomplete`, `list`, `readonly` - An HTML attributes.
+- `max`, `min`, `required`, `step` - An HTML attributes for which default values are read from property descriptor or Type
+
+###### `Date` type
+
+Binding needs to be additionally loaded via:
+
+```javascript
+require('dbjs-dom/input/date-time/date')(db);
+```
+
+By default represented with `input[type=date]`
+
+- `autocomplete`, `list`, `readonly` - An HTML attributes.
+- `max`, `min`, `required`, `step` - An HTML attributes for which default values are read from property descriptor or Type
+
+###### `Object` type
+
+By default represented with `select` in which all type instances are listed.
+
+* `type` - Possible options are:
+    * `checkbox`: (_multiple_ only), by default multiple input is presented as list of select controls, while with checkbox option, list of checkboxes with labels is output instead.
+    * `select`: (default) - Object value is chosen from provided list in select box
+    * `edit` - Object value is edited with fieldset of object fields, that way we may create new object and add it as a value, or edit object that is assigned as a value.
+    * `radio`. Instead of listing objects in select control, we list them with radios
+* `list` - (only _select_ and _radio_) - Custom (most likely filter) list of objects to display, can be observable set or array, Otherwise an array of items
+* `compare` - (only _select_ and _radio_) - Function used to establish order of items. Has no effect with `list` option.
+* `getOptionLabel` - (only _select_) - Custom label resolver (function) for item
+* `property` - (only _select_ and _radio_) Object property from which label for item should be resolved
 
 ##### Composite inputs
 
 Few inputs can be configured in related group of controls, e.g. we can configure dynamic property that relies on few static properties, and then express it with set of composite inputs.
 
 Predefined composite inputs can be found at https://github.com/medikoo/dbjs-dom/blob/master/input/composites/
-
-_On how to configure composite inputs, documentation coming soon._
 
 ##### Input component
 
@@ -159,6 +265,3 @@ div(user.toDOMFieldset(document, {
 	tag: 'personal' // Output only properties tagged as 'personal'
 }));
 ```
-
-
-
