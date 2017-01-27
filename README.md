@@ -82,11 +82,22 @@ user._firstName.toDOMInput(document, {
 * `name` - Overrides name of a control (it defaults to id of a property)
 * `control` - Hash of options dedicated for input control element. Sometimes DOM result does not contain only pure form controls, but it comes with some needed surrounding. if we want to be sure that some options (e.g. HTML attributes) are targeted directly for control element, we need to pass it via `control` hash
 * `controls` - If input is build of out many controls (e.g. radio list), then with `controls` hash we may pass options per control individually (e.g. in case of `radio` with `options.controls.foo = {..}` we will pass options for _radio_ with name `'foo'`.
+* `multiple` - Force or dismiss _multiple_ render. By default the properties with `multiple: true` are rendered as multiple controls.
+
+##### Options applicable to _multiple_ inputs
+
+* `minInputsCount` (_default_ mode only) - How many inputs show at minimum
+* `addLabel` (_default_ mode only) - The label to use for _add_ button. Can DOM element, or a function that generates the element.
+* `deleteLabel` (_default_ mode only) - The label to use for _delete_ button. Can be string or a function that generates the element.
+* `item` (_default_ mode only) - Hash of options to provide to `toDOMInput` of single item
+* `toDOMInput` (_default_ mode only) - Custom input generator
+* `listItemIdPrefix` (_checkbox_ mode only) - HTML id prefix for list item
 
 ###### `Boolean` type
 
 By default represented with `input[type=radio]` controls
 
+Additionally supported options:
 * `type` - When set to `'checkbox'`, property will be represented with `input[type=checkbox]` control
 * `required` - In case of `'checkbox'` type, forcing it to true demands that checkbox must be checked for submission
 * `trueLabel`, `falseLabel` (`radio` only), Labels to show, which by default are read from property descriptor or type
@@ -95,6 +106,7 @@ By default represented with `input[type=radio]` controls
 
 By default represented with `input[type=number]`
 
+Additionally supported options:
 - `autocomplete`, `list`, `readonly` - An HTML attributes
 - `max`, `min`, `placeholder` (in model: `inputPlaceholder`), `required`, `step`. - A HTML attributes for which default values are read from property descriptor or Type
 
@@ -126,6 +138,7 @@ Internally extends `DateTime` DOM binding, so same options apply
 
 By default represented with `textarea`
 
+Additionally supported options:
 - `inputmode`, `readonly`, `wrap` - An HTML attributes
 - `cols` (in model: `inputCols`), `maxlength` (in model: `max`), `placeholder` (in model: `inputPlaceholder`),  `required`, `rows` (in model: `inputRows`) - An HTML attributes for which default values are read from property descriptor or Type
 
@@ -139,6 +152,7 @@ require('dbjs-dom/input/string/string-line')(db);
 
 By default represented with `input[type=text]`
 
+Additionally supported options:
 - `autocomplete`, `dirname`, `inputmode`, `list`, `readonly`
 - `maxlength` (in model: `max`), `pattern`, `placeholder` (in model: `inputPlaceholder`), `required`, `size` (in model `inputSize`) - An HTML attributes for which default values are read from property descriptor or Type
 
@@ -152,6 +166,7 @@ require('dbjs-dom/input/string/string-line/email')(db);
 
 By default represented with `input[type=email]`
 
+Additionally supported options:
 - `autocomplete`, `inputmode`, `list`, `readonly`
 - `maxlength` (in model: `max`), `pattern`, `placeholder` (in model: `inputPlaceholder`), `required`, `size` (in model `inputSize`) - An HTML attributes for which default values are read from property descriptor or Type
 
@@ -165,6 +180,7 @@ require('dbjs-dom/input/string/string-line/password')(db);
 
 By default represented with `input[type=password]`
 
+Additionally supported options:
 - `autocomplete`, `readonly`
 - `maxlength` (in model: `max`), `pattern`, `placeholder` (in model: `inputPlaceholder`), `required`, `size` (in model `inputSize`) - An HTML attributes for which default values are read from property descriptor or Type
 
@@ -178,6 +194,7 @@ require('dbjs-dom/input/string/string-line/url')(db);
 
 By default represented with `input[type=url]`
 
+Additionally supported options:
 - `autocomplete`, `list`, `readonly`
 - `maxlength` (in model: `max`), `pattern`, `placeholder` (in model: `inputPlaceholder`), `required`, `size` (in model `inputSize`) - An HTML attributes for which default values are read from property descriptor or Type
 
@@ -191,6 +208,7 @@ require('dbjs-dom/input/enum')(db);
 
 By default represented with `select`
 
+Additionally supported options:
 * `type` - _radio_ or _select_ (default). If you want to choose enum value with radios, pass _radio_ type
 * `multiType` - (_multiple_ only), _base_ or _checkbox_ (default). Strictly for multiple values, by default you choose values with checkboxes but you can choose _base_ and choose with multiple select controls (which is default multiple input representation in DBJS)
 * `only` - Provide filtered list of options to display (as set, can be observable)
@@ -199,11 +217,13 @@ By default represented with `select`
   * `name` - Name of enum meta property, at which name of group can be retrieved
 	* `set`- Map of group labels e.g. `{ group1: "Label for group 1", ... }`
 * `append` - (_select_ only) Extra select options to be DateTime.
+* `filter` (_multiple select_ only) Filter function for items
 
 ###### `DateTime` type
 
 By default represented with `input[type=datetime-local]`
 
+Additionally supported options:
 - `autocomplete`, `list`, `readonly` - An HTML attributes.
 - `max`, `min`, `required`, `step` - An HTML attributes for which default values are read from property descriptor or Type
 
@@ -217,6 +237,7 @@ require('dbjs-dom/input/date-time/date')(db);
 
 By default represented with `input[type=date]`
 
+Additionally supported options:
 - `autocomplete`, `list`, `readonly` - An HTML attributes.
 - `max`, `min`, `required`, `step` - An HTML attributes for which default values are read from property descriptor or Type
 
@@ -224,15 +245,38 @@ By default represented with `input[type=date]`
 
 By default represented with `select` in which all type instances are listed.
 
+Additionally supported options:
 * `type` - Possible options are:
     * `checkbox`: (_multiple_ only), by default multiple input is presented as list of select controls, while with checkbox option, list of checkboxes with labels is output instead.
     * `select`: (default) - Object value is chosen from provided list in select box
     * `edit` - Object value is edited with fieldset of object fields, that way we may create new object and add it as a value, or edit object that is assigned as a value.
     * `radio`. Instead of listing objects in select control, we list them with radios
-* `list` - (only _select_ and _radio_) - Custom (most likely filter) list of objects to display, can be observable set or array, Otherwise an array of items
+* `list` - (only _select_ and _radio_ and _multiple checkbox_) - Custom (most likely filter) list of objects to display, can be observable set or array, Otherwise an array of items
 * `compare` - (only _select_ and _radio_) - Function used to establish order of items. Has no effect with `list` option.
+* `sort` - (only _multiple select_) - Function used to establish order of items. Has no effect with `list` option.
 * `getOptionLabel` - (only _select_) - Custom label resolver (function) for item
 * `property` - (only _select_ and _radio_) Object property from which label for item should be resolved
+* `group` - (_select_ only) Provide grouping instruction (will generate select with options grouped with `<optgroup>` element). `group` is a hash object with following properties:
+  * `propertyName` - Name of property at which _group_ entity can be found
+	* `labelPropertyName`- Name of property at which on _group_ entity we should resolve label
+* `render` - (only _edit_) Object fieldset custm render function
+* `inputProperties` - (only _edit_) list of properties which should be listed in object form (if not provided via options it read from property descriptor (also at `inputProperties` property) or Type.
+If not found on any entity, then all defined object properties are exposed in a form.
+
+###### `File` type
+
+Binding needs to be additionally loaded via:
+
+```javascript
+require('dbjs-dom/input/object/file')(db);
+```
+
+By default represented with `input[type=file]`
+
+Additionally supported options:
+- `render` - Custom render function (if provided you're obliged to set `this.valueDOM` and `this.control` internally).
+- `renderItem` - Custom render to represent already uploaded file (with checkbox allowing to remove the file)
+- `autoSubmit` - An url, to which to automatically upload of a file will be initiated after file is selected.
 
 ##### Composite inputs
 
