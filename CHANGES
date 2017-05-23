@@ -1,2 +1,67 @@
+v0.1.0  --  2017.05.23
+* Introduce Perecentage type handling
+* Introduce MultipleSelect component
+* Support needed actions in legacy engines via inline scripts
+* Improve form reset handling
+* Support markdown for hints
+* Support nested maps (concept introduced in eRegistrations)
+* Suport for constrained values (concept introduced in eRegistrations)
+* Support dynamicLabelKey option (concept introduced in eRegistrations)
+* Introduce dbjs-own and dbjs-not-own classes
+* In statuses rename `required` class to `db-required`
+* Introduce toDOMInputComponent concept
+* Introduce modelRequired options to components resolver
+* Remove colons after label
+* Rework File component to include checkbox through which deletion is marked
+* In File component Respect `access` setting on descriptor
+* Support `size` customization on input[text]
+* Ensure descriptor settings are taken into account in string representation
+* Error fogiving group handling for enum types
+* Ignore not finite values for input[type=text] attributes
+* Ensure early exposure of observable
+* Fix valid status resolution
+* Support `maxlength`, `cols` and `rows` on textarea control
+* In radio input, support options per control
+* Support overriding required
+* Fix id resolution in composites handling
+* Fix per field options resolution from descriptor in fieldset handling
+* Allow to override initial value
+* In objects select:
+  - Support reactive custom objects options lists
+  - Allow custom resolution of labels
+  - Support function as list option
+* Allow custom DOMText
+* Fix fromInputValue for Date type
+* Simplify statuses resolution
+* Support grouping in object type select
+* Improve generic component markup
+* Fix multiple handling in checkbox control
+* Support filter on enum checkboxes control
+* Expose itemsByValue (mapping by value) on MultipleCheckbox
+* Fix resolution of values in composites
+* Allow customization of render option
+* Seclude resolveObservable utility
+* Add classes to generic elements of default multiple control
+* `listItemIdPrefix` option for multiple checkbox representation
+* In composites/line allow custom render method
+* Expose fieldset binding on DOM element
+* Introduce fieldset.getItem
+* Rework and unify options handling
+* Seclude getComponentRenderer
+* Expose input on field DOM
+* Remove sort links support from Table component
+* In Table component set 'empty' class on row not on cells
+* In Table component support custom render 
+* Support read only display in File component (for SSR)
+* Support nested keys in composites fields resolution
+* Improve index handling (in case of multiples)
+* Workaround issue when there's no child text node in textarea
+* Improve documentation
+* Added .editorconfig settings
+* Configure lint scripts
+* Remove Makefile
+* Fix spelling of LICENSE
+
+
 v0.0.1  --  2014.05.08
 * Initial (unstable API)
