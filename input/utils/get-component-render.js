@@ -39,7 +39,7 @@ module.exports = function (containerName) {
 					el('span', { class: 'status-error' }, '✕')),
 				// error message
 				el('span', { class: 'error-message error-message-' +
-					input._name.replace(/[:#\/]/g, '-') }),
+					input._name.replace(/[:#\/]/g, '-'), "data-name": input._name }),
 				// hint
 				options.hint && el('span', { class: 'hint' },
 					typeof options.hint === 'string' ? mdi(options.hint) : options.hint)));
