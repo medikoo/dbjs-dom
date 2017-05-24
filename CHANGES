@@ -1,3 +1,5 @@
+For new changes see CHANGELOG.md
+
 v0.1.0  --  2017.05.23
 * Introduce Perecentage type handling
 * Introduce MultipleSelect component

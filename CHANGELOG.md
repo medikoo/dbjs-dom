@@ -9,3 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 * configure missing dependency ([3ba449b](https://github.com/medikoo/dbjs-dom/commit/3ba449b))
+
+## Old Changelog
+
+See `CHANGES` file
